@@ -59,7 +59,7 @@ module Merb::Test::Fixtures::Controllers
 
   class ConsumesMessage < Testing
     def index
-      message[:notice].inspect
+      message[:notice]
     end
   end
   

@@ -324,7 +324,7 @@ module Merb
     def message
       return {} unless params[:_message]
       begin
-        Marshal.load(Merb::Parse.unescape(params[:_message]).unpack("m").first)
+        Marshal.load(params[:_message].unpack("m").first)
       rescue ArgumentError, TypeError
         {}
       end

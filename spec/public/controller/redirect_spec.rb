@@ -60,9 +60,13 @@ describe Merb::Controller, " redirects" do
   end
 
   it "consumes redirects with messages" do
-    message = Merb::Parse.escape([Marshal.dump(:notice => "what?")].pack("m"))
-    @controller = dispatch_to(Merb::Test::Fixtures::Controllers::ConsumesMessage, :index, {:_message => message})
-    @controller.body.should == "\"what?\""
+    Merb::Router.prepare do
+      match('/consumes_message')
+      .to(:controller => 'merb/test/fixtures/controllers/consumes_message', :action => 'index')
+    end
+    expected_url = Merb::Parse.escape([Marshal.dump(:notice => '<b>1 > 2 + 100</b>')].pack('m'))
+    response = visit("/consumes_message?_message=#{expected_url}")
+    response.body.to_s.should == '<b>1 > 2 + 100</b>'
   end
   
   it "supports setting the message for use immediately" do
