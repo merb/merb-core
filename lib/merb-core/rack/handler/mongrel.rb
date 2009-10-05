@@ -83,16 +83,20 @@ module Merb
   
           begin
             response.status = status.to_i
+            response.send_status(body.respond_to?(:length) ? body.length : nil)
+
             headers.each { |k, vs|
               Array(vs).each { |v|
                 response.header[k] = v
               }
             }
+            response.send_header
             
             body.each { |part|
-              response.body << part
+              response.write(part)
+              response.socket.flush
             }
-            response.finished
+            response.done = true
           ensure
             body.close  if body.respond_to? :close
           end
