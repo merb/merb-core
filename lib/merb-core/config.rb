@@ -31,7 +31,8 @@ module Merb
           :verbose                => false,
           :name                   => "merb",
           :kernel_dependencies    => true,
-          :gemfile                => nil
+          :gemfile                => nil,
+          :gemenv                 => nil
         }
       end
 

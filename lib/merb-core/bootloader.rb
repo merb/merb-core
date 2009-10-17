@@ -379,11 +379,33 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
       load_initfile
       load_env_config
     end
+    load_bundler_environment
     expand_ruby_path
     load_bundler_dependencies
     load_kernel_dependencies if Merb::Config[:kernel_dependencies]
     enable_json_gem unless Merb::disabled?(:json)
     update_logger
+    nil
+  end
+  
+  # Try to load the gem environment file (set via Merb::Config[:gemenv])
+  # defaults to ./gems/environment
+  # 
+  # Falls back to rubygems if no bundler environment exists
+  # 
+  # ==== Returns
+  # nil
+  #
+  # :api: private
+  def self.load_bundler_environment
+    begin
+      # Try to load the bundler environment from Merb::Config[:gemenv]
+      # default to ./gems/environment.rb
+      require Merb.root / (Merb::Config[:gemenv] || "gems" / "environment")
+    rescue LoadError
+      # Default to using system rubygems if not bundled
+      require "rubygems"
+    end
     nil
   end
   
