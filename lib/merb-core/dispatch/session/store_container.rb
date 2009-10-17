@@ -6,6 +6,9 @@ module Merb
     # :api: private
     attr_accessor  :_fingerprint
     
+    # Determines how many times to try generating a unique session key before we give up
+    GENERATE_MAX_TRIES = 100
+
     # The class attribute :store holds a reference to an object that implements 
     # the following interface:
     #
@@ -54,7 +57,17 @@ module Merb
       # 
       # :api: private
       def generate
-        session = new(Merb::SessionMixin.rand_uuid)
+        
+        # make sure we generate a unique session uuid
+        sid = nil
+        GENERATE_MAX_TRIES.times do |i|
+          sid = Merb::SessionMixin.rand_uuid
+          data = store.retrieve_session(sid) rescue nil
+          break if data.nil?
+          raise "Unable to Generate Unique Session key" if i == (GENERATE_MAX_TRIES-1)
+        end
+        
+        session = new(sid)
         session.needs_new_cookie = true
         session
       end

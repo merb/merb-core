@@ -2,6 +2,36 @@ require File.join(File.dirname(__FILE__), "spec_helper")
 startup_merb(:session_store => "memory")
 require File.join(File.dirname(__FILE__), "controllers", "sessions")
 
+describe Merb::MemorySession, "container" do
+
+  it "should always generate unique session" do
+    # Fix session id generation
+    Merb::SessionMixin.stub!(:rand_uuid).and_return(1, 1, 2)
+
+    s1 = Merb::MemorySession.generate
+    s1.store.store_session(s1.session_id, {:foo => 'bar'})
+    s1.session_id.should eql 1
+
+    s2 = Merb::MemorySession.generate
+    s2.session_id.should eql 2
+    # Cleanup
+    s1.store.delete_session(1)
+    s2.store.delete_session(2)
+  end
+
+  it "should raise exception if unable to generate unique ID" do
+    # Fix session id generation
+    Merb::SessionMixin.stub!(:rand_uuid).and_return(1, 1)
+
+    s1 = Merb::MemorySession.generate
+    s1.store.store_session(s1.session_id, {:foo => 'bar'})
+
+    lambda { s2 = Merb::MemorySession.generate }.should raise_error
+
+    s1.store.delete_session(1)
+  end
+end
+
 describe Merb::MemorySession do
   
   before do 
