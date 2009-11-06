@@ -1,151 +1,77 @@
-require "rake"
-require "rake/clean"
-require "rake/gempackagetask"
+require 'rubygems'
+require 'rake'
 require "rake/rdoctask"
 require "rake/testtask"
 require "spec/rake/spectask"
 require "fileutils"
 require "extlib"
 
-def __DIR__
-  File.dirname(__FILE__)
-end
+# Load code annotation support library
+require File.expand_path("../tools/annotation_extract", __FILE__)
 
-require __DIR__ + "/tools/rakehelp"
-require __DIR__ + "/tools/annotation_extract"
+# Load this library's version information
+require File.expand_path('../lib/merb-core/version', __FILE__)
 
 include FileUtils
 
-require __DIR__ + "/lib/merb-core/version"
-require __DIR__ + "/lib/merb-core/tasks/merb_rake_helper"
+begin
 
-##############################################################################
-# Package && release
-##############################################################################
-RUBY_FORGE_PROJECT  = "merb"
-PROJECT_URL         = "http://merbivore.com"
-PROJECT_SUMMARY     = "Merb. Pocket rocket web framework."
-PROJECT_DESCRIPTION = PROJECT_SUMMARY
+  require 'jeweler'
 
-AUTHOR = "Ezra Zygmuntowicz"
-EMAIL  = "ez@engineyard.com"
+  Jeweler::Tasks.new do |gemspec|
 
-GEM_NAME    = "merb-core"
-PKG_BUILD   = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
-GEM_VERSION = Merb::VERSION + PKG_BUILD
+    gemspec.version     = Merb::VERSION
 
-RELEASE_NAME    = "REL #{GEM_VERSION}"
+    gemspec.name        = "merb-core"
+    gemspec.description = "Merb. Pocket rocket web framework."
+    gemspec.summary     = "Merb plugin that provides caching (page, action, fragment, object)"
 
-require "extlib/tasks/release"
+    gemspec.authors     = [ "Ezra Zygmuntowicz" ]
+    gemspec.email       = "ez@engineyard.com"
+    gemspec.homepage    = "http://merbivore.com/"
 
-spec = Gem::Specification.new do |s|
-  s.name         = GEM_NAME
-  s.version      = GEM_VERSION
-  s.platform     = Gem::Platform::RUBY
-  s.author       = AUTHOR
-  s.email        = EMAIL
-  s.homepage     = PROJECT_URL
-  s.summary      = PROJECT_SUMMARY
-  s.bindir       = "bin"
-  s.description  = PROJECT_DESCRIPTION
-  s.executables  = %w( merb )
-  s.require_path = "lib"
-  s.files        = %w( LICENSE README Rakefile TODO CHANGELOG PUBLIC_CHANGELOG CONTRIBUTORS ) + Dir["{doc/rdoc,bin,lib}/**/*"]
+    gemspec.extra_rdoc_files.include [ 'CHANGELOG' ]
 
-  # rdoc
-  s.has_rdoc         = true
-  s.extra_rdoc_files = %w( README LICENSE TODO )
+    gemspec.files = Dir["{bin,lib,spec,spec10}/**/*"] + [
+      'LICENSE',
+      'README',
+      'Rakefile',
+      'TODO',
+      'CHANGELOG',
+      'PUBLIC_CHANGELOG',
+      'CONTRIBUTORS'
+    ]
 
-  s.required_rubygems_version = ">= 1.3.5"
-  
-  # Dependencies
-  s.add_dependency "bundler"
-  s.add_dependency "extlib", ">= 0.9.8"
-  s.add_dependency "erubis", ">= 2.6.2"
-  s.add_dependency "rake"
-  s.add_dependency "rspec"
-  s.add_dependency "rack"
-  # require mimetypes 1.16 or greater to make sure we support Ruby 1.9.x
-  s.add_dependency "mime-types", ">= 1.16"
-  # this escalates to "regular" dependencies, comment it out
-  # for now. RubyGems need some love.
-  #s.add_development_dependency "libxml-ruby"
-  #s.add_development_dependency "memcache-client"
-  s.add_development_dependency "webrat", ">= 0.3.1"
-  # Requirements
-  s.requirements << "install the json gem to get faster json parsing"
-  s.required_ruby_version = ">= 1.8.6"
-end
+    # Runtime dependencies
+    gemspec.add_dependency 'bundler'
+    gemspec.add_dependency 'extlib',     '>= 0.9.14'
+    gemspec.add_dependency 'erubis',     '>= 2.6.2'
+    gemspec.add_dependency 'rake'
+    gemspec.add_dependency 'rspec'
+    gemspec.add_dependency 'rack'
+    gemspec.add_dependency 'mime-types', '>= 1.16' # supports ruby-1.9
 
-Rake::GemPackageTask.new(spec) do |package|
-  package.gem_spec = spec
-end
+    # Development dependencies
+    gemspec.add_development_dependency 'rspec',  '>= 1.2.9'
+    gemspec.add_development_dependency 'webrat', '>= 0.3.1'
 
-desc "Run :package and install the resulting .gem"
-task :install => :clean do
-  Merb::RakeHelper.install(GEM_NAME, :version => GEM_VERSION)
-end
+    # Executable files
+    gemspec.executables  = 'merb'
 
-desc "Install Merb with development dependencies"
-task :dev_install => :clean do
-  Merb::RakeHelper.install(GEM_NAME, :version => GEM_VERSION, :development => true)
-end
-
-desc "Run :clean and uninstall the .gem"
-task :uninstall => :clean do
-  Merb::RakeHelper.uninstall(GEM_NAME, :version => GEM_VERSION)
-end
-
-desc "Create a gemspec file"
-task :gemspec do
-  File.open("#{GEM_NAME}.gemspec", "w") do |file|
-    file.puts spec.to_ruby
   end
+
+  Jeweler::GemcutterTasks.new
+
+rescue LoadError
+  puts "Jeweler (or a dependency) not available. Install it with: gem install jeweler"
 end
 
-CLEAN.include ["**/.*.sw?", "pkg", "lib/*.bundle", "lib/*.so", "*.gem", "doc/rdoc", ".config", "coverage", "cache", "spec/**/*.log", "gems/*"]
 
 desc "Run the specs."
 task :default => :specs
 
 task :merb => [:clean, :rdoc, :package]
 
-##############################################################################
-# Github
-##############################################################################
-namespace :github do
-  desc "Update Github Gemspec"
-  task :update_gemspec do
-    skip_fields = %w(new_platform original_platform)
-    integer_fields = %w(specification_version)
-
-    result = "Gem::Specification.new do |s|\n"
-    spec.instance_variables.each do |ivar|
-      value = spec.instance_variable_get(ivar)
-      name  = ivar.split("@").last
-      next if skip_fields.include?(name) || value.nil? || value == "" || (value.respond_to?(:empty?) && value.empty?)
-      if name == "dependencies"
-        value.each do |d|
-          dep, *ver = d.to_s.split(" ")
-          result <<  "  s.add_dependency #{dep.inspect}, #{ver.join(" ").inspect.gsub(/[()]/, "")}\n"
-        end
-      else
-        case value
-        when Array
-          value =  name != "files" ? value.inspect : value.inspect.split(",").join(",\n")
-        when String
-          value = value.to_i if integer_fields.include?(name)
-          value = value.inspect
-        else
-          value = value.to_s.inspect
-        end
-        result << "  s.#{name} = #{value}\n"
-      end
-    end
-    result << "end"
-    File.open(File.join(File.dirname(__FILE__), "#{spec.name}.gemspec"), "w"){|f| f << result}
-  end
-end
 
 ##############################################################################
 # Documentation
@@ -158,7 +84,7 @@ namespace :doc do
     rdoc.rdoc_files.add(files)
     rdoc.main = "README"
     rdoc.title = "Merb Docs"
-    rdoc.template = __DIR__ + "/tools/allison-2.0.2/lib/allison.rb"
+    rdoc.template = File.expand_path("../tools/allison-2.0.2/lib/allison.rb", __FILE__)
     rdoc.rdoc_dir = "doc/rdoc"
     rdoc.options << "--line-numbers" << "--inline-source"
   end
@@ -166,12 +92,6 @@ namespace :doc do
   desc "run webgen"
   task :webgen do
     sh %{cd doc/site; webgen}
-  end
-
-  desc "rdoc to rubyforge"
-  task :rubyforge do
-    sh %{#{Merb::RakeHelper.sudo} chmod -R 755 doc} unless Merb::RakeHelper.windows?
-    sh %{/usr/bin/scp -r -p doc/rdoc/* ezmobius@rubyforge.org:/var/www/gforge-projects/merb}
   end
 
 end
@@ -282,6 +202,10 @@ Spec::Rake::SpecTask.new("specs_html") do |t|
   t.spec_files = Dir["spec/**/*_spec.rb"].sort
 end
 
+##############################################################################
+# CODE STATISTICS
+##############################################################################
+
 STATS_DIRECTORIES = [
   ['Code', 'lib/'],
   ['Unit tests', 'spec']
@@ -290,7 +214,7 @@ STATS_DIRECTORIES = [
 
 desc "Report code statistics (KLOCs, etc) from the application"
 task :stats do
-  require __DIR__ + "/tools/code_statistics"
+  require File.expand_path("../tools/code_statistics", __FILE__)
   # require "extra/stats"
   verbose = true
   CodeStatistics.new(*STATS_DIRECTORIES).to_s
@@ -303,102 +227,6 @@ end
 task :check_syntax do
   `find . -name "*.rb" |xargs -n1 ruby -c |grep -v "Syntax OK"`
   puts "* Done"
-end
-
-##############################################################################
-# Git and SVN
-##############################################################################
-namespace :repo do
-
-  desc "Add new files to repository"
-  task :add do
-    if File.directory?(".git")
-      system "git add *"
-    elsif File.directory?(".svn")
-      system "svn status | grep '^\?' | sed -e 's/? *//' | sed -e 's/ /\ /g' | xargs svn add"
-    end
-  end
-
-  desc "Fetch changes from master repository"
-  task :rebase do
-    if File.directory?(".git")
-      system "git stash ; git svn rebase ; git stash apply"
-    elsif File.directory?(".svn")
-      system "svn update"
-    end
-  end
-
-  desc "commit modified changes to the repository"
-  task :commit do
-    if File.directory?(".git")
-      system "git commit"
-    elsif File.directory?(".svn")
-      system "svn commit"
-    end
-  end
-
-end
-
-def git_log(since_release = nil, log_format = "%an")
-  git_log_query = "git log"
-  git_log_query << " v#{since_release}..HEAD" if since_release
-  git_log_query << " --pretty='format:#{log_format}' --no-merges"
-  puts
-  puts "Running #{git_log_query}"
-  puts
-  `#{git_log_query}`
-end
-
-def contributors(since_release = nil)
-  git_log(since_release).split("\n").uniq.sort
-end
-
-PREVIOUS_RELEASE = '0.9.10'
-namespace :history do
-  namespace :update do
-    desc "updates contributors list"
-    task :contributors do
-      list = contributors.join "\n"
-
-      path = File.join(File.dirname(__FILE__), 'CONTRIBUTORS')
-
-      rm path if File.exists?(path)
-
-      puts "Writing contributors (#{contributors.size} entries)."
-      # windows needs wb
-      File.open(path, "wb") do |io|
-        io << "Use #{RUBY_FORGE_PROJECT}? Say thanks the following people:\n\n"
-        io << list
-      end
-    end
-  end
-
-  
-  namespace :alltime do
-    desc 'shows all-time committers'
-    task :contributors do
-      puts 'All-time contributors (#{contributors.size} total): '
-      puts '=============================='
-      puts
-      puts contributors.join("\n")
-    end
-  end
-  
-  namespace :current_release do
-    desc "show changes since previous release"
-    task :changes do
-      puts git_log(PREVIOUS_RELEASE, "* %s")
-    end
-
-
-    desc 'shows current release committers'
-    task :contributors do
-      puts "Current release contributors (#{contributors.size} total): "
-      puts '=============================='
-      puts
-      puts contributors(PREVIOUS_RELEASE).join("\n")
-    end
-  end
 end
 
 
