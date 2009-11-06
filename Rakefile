@@ -44,7 +44,7 @@ begin
 
     # Runtime dependencies
     gemspec.add_dependency 'bundler'
-    gemspec.add_dependency 'extlib',     '>= 0.9.14'
+    gemspec.add_dependency 'extlib',     '>= 0.9.13'
     gemspec.add_dependency 'erubis',     '>= 2.6.2'
     gemspec.add_dependency 'rake'
     gemspec.add_dependency 'rspec'
