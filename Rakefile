@@ -4,7 +4,6 @@ require "rake/rdoctask"
 require "rake/testtask"
 require "spec/rake/spectask"
 require "fileutils"
-require "extlib"
 
 # Load code annotation support library
 require File.expand_path("../tools/annotation_extract", __FILE__)
