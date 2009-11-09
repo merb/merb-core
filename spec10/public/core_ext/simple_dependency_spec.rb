@@ -6,8 +6,8 @@ describe "using dependency to require a simple gem" do
     dependency "simple_gem"
   end
   
-  it "doesn't load it right away" do
-    defined?(Merb::SpecFixture::SimpleGem2).should be_nil
+  it "does load it right away" do
+    defined?(Merb::SpecFixture::SimpleGem2).should_not be_nil
   end
   
   it "loads it when merb starts" do

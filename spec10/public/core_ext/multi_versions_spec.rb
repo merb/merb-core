@@ -7,14 +7,8 @@ describe "using dependency to update the version of a previously required depend
     dependency "simple_gem", "= 0.0.2"
   end
   
-  it "doesn't load it right away" do
+  it "loads it right away" do
     defined?(Merb::SpecFixture::SimpleGem).should be_nil
-    defined?(Merb::SpecFixture::SimpleGem2).should be_nil
-  end
-  
-  it "loads the second one when merb starts" do
-    startup_merb
-    defined?(Merb::SpecFixture::SimpleGem).should be_nil
-    defined?(Merb::SpecFixture::SimpleGem2).should_not be_nil    
+    defined?(Merb::SpecFixture::SimpleGem2).should_not be_nil
   end
 end

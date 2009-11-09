@@ -6,8 +6,8 @@ describe "using dependency to require a bad gem" do
     dependency "bad_require_gem", :require_as => "BadRequireGem"
   end
   
-  it "doesn't load it right away" do
-    defined?(Merb::SpecFixture::BadRequireGem).should be_nil
+  it "loads it right away" do
+    defined?(Merb::SpecFixture::BadRequireGem).should_not be_nil
   end
   
   it "loads the file once Merb is started" do

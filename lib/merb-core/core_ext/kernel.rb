@@ -1,4 +1,36 @@
 module Kernel
+  # Loads the given string as a gem.
+  #
+  # :api: public
+  # @deprecated
+  def dependency(name, *opts, &blk)
+    warn "DEPRECATED: Use bundler to setup and load dependency #{name}."
+    options = opts.last.is_a?(Hash) ? opts.pop : {}
+    version = opts.pop unless opts.empty?
+    if version
+      warn "DEPRECATED: You want to load gem #{name} with specific version " \
+           "#{version}. This feature is not supported and the LATEST VERSION " \
+           "OF THE GEM WILL BE LOADED."
+    end
+    require (options[:require_as] ? options[:require_as] : name)
+    nil
+  end
+
+  # Loads both gem and library dependencies that are passed in as arguments.
+  #
+  # :api: public
+  # @deprecated
+  def dependencies(*args)
+    args.map do |arg|
+      case arg
+      when String then dependency(arg)
+      when Hash then arg.map { |r,v| dependency(r, v) }
+      when Array then arg.map { |r| dependency(r) }
+      end
+    end
+    nil
+  end
+
   # Used in Merb.root/config/init.rb to tell Merb which ORM (Object Relational
   # Mapper) you wish to use. Currently Merb has plugins to support
   # ActiveRecord, DataMapper, and Sequel.
@@ -20,7 +52,7 @@ module Kernel
   #   call takes over other.
   #
   # :api: public
-  def use_orm(orm, &blk)
+  def use_orm(orm)
     Merb.orm = orm
     nil
   end
@@ -31,7 +63,6 @@ module Kernel
   # ==== Parameters
   # test_framework<Symbol>::
   #   The test framework to use. Currently only supports :rspec and :test_unit.
-  # test_dependencies<Array>:: Deprecated, will be removed in 1.1.1
   #
   # ==== Returns
   # nil
@@ -43,7 +74,7 @@ module Kernel
   #   $ merb-gen model ActivityEvent
   #
   # :api: public
-  def use_testing_framework(test_framework, *test_dependencies)
+  def use_testing_framework(test_framework)
     Merb.test_framework = test_framework
     nil
   end
@@ -58,7 +89,6 @@ module Kernel
   # ==== Parameters
   # template_engine<Symbol>
   #   The template engine to use.
-  # blk<Block>:: Deprecated, will be removed in 1.1.1
   #
   # ==== Returns
   # nil
@@ -70,7 +100,7 @@ module Kernel
   #   $ merb-gen resource_controller Project 
   #
   # :api: public
-  def use_template_engine(template_engine, &blk)
+  def use_template_engine(template_engine)
     Merb.template_engine = template_engine
     nil
   end

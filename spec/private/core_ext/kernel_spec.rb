@@ -28,8 +28,8 @@ describe "Kernel#dependencies" do
     Kernel.dependency("hpricot")
   end
 
-  it "should warn that dependency() is deprecated" do
+  it "should warn that dependencies() is deprecated" do
     Kernel.should_receive(:warn).twice
-    Kernel.dependencies("hpricot", "rspec")
+    Kernel.dependencies("hpricot", "extlib")
   end
 end

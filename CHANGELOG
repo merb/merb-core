@@ -1,3 +1,41 @@
+== 1.1.0 "" 2009-11-
+
+* !!!BC!!! Dependency handling using Bundler
+  In this version we dropped old way of loading dependencies using the Kernel
+  extensions and started to use Bundler for dependency management. This allows
+  us to move the whole dependency handling and gem management outside the
+  Merb. Therefore we can simplify some internals and remove some of the Kernel
+  monkeypatching:
+  
+  The old Kernel.dependency and Kernel.dependencies will only 'require
+  gem_name' or 'require require_as' when you call this methods. These methods
+  will also emit the DEPRECATED warnings when you will use them. If you see
+  the warning you should move your dependency to the Gemfile or Rakefile.
+  
+  If you used dependencies to load exact version of the Gem and you have
+  installed multiple versions of the same gem you now get one more DEPRECATED
+  warning. This is because we don't use 'gem' command from RubyGems which was
+  used deep inside to load exact gem version. ALSO THE LATEST VERSION OF THE
+  GEM WILL BE LOADED BECAUSE WE DO SIMPLE 'require'.
+  
+  Also methods: use_orm, use_test, use_testing_framework and use_template_engine
+  DON'T require any gems now, you must require it in Gemfile.
+  
+  Merb generators was changed to generate you Gemfile for your application and
+  settings instead of the dependencies.rb.
+  
+  So what still works? Almost everything except it doesn't defer to the Merb
+  start and doesn't load exact version of gem if more versions are installed:
+  
+  dependency "json"                           => works
+  dependency "rspec", :require_as => 'spec'   => works try to require 'spec'
+  dependency "json", '1.1.6'                  => works unless you have
+                                                 >= 1.1.6 installed
+  dependency "json" { }                       => works but doesn't yield
+  
+  For more information how to migrate to Bundler see:
+  http://wiki.github.com/merb/merb/howto-using-the-bundler
+
 == 0.9.8 "Time Machine" 2008-06-10
 
 * Pre-release contributors file update.
