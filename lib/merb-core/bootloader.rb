@@ -379,11 +379,32 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
       load_initfile
       load_env_config
     end
+    load_bundler_environment
     expand_ruby_path
-    load_bundler_dependencies
-    load_kernel_dependencies if Merb::Config[:kernel_dependencies]
+    load_dependencies
     enable_json_gem unless Merb::disabled?(:json)
     update_logger
+    nil
+  end
+  
+  # Try to load the gem environment file (set via Merb::Config[:gemenv])
+  # defaults to ./gems/environment
+  # 
+  # Falls back to rubygems if no bundler environment exists
+  # 
+  # ==== Returns
+  # nil
+  #
+  # :api: private
+  def self.load_bundler_environment
+    begin
+      # Try to load the bundler environment from Merb::Config[:gemenv]
+      # default to ./gems/environment.rb
+      require Merb.root / (Merb::Config[:gemenv] || "gems" / "environment")
+    rescue LoadError
+      # Default to using system rubygems if not bundled
+      require "rubygems"
+    end
     nil
   end
   
@@ -394,7 +415,7 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
   # nil
   #
   # :api: private
-  def self.load_bundler_dependencies
+  def self.load_dependencies
     if Merb.verbose_logging?
       if Merb::Config[:gemfile]
         Merb.logger.debug!("Loading Gemfile from #{Merb::Config[:gemfile]}")
@@ -409,18 +430,6 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
     Merb.logger.warn! "You didn't create Bundler Gemfile manifest or you " \
                        "are not in a Merb application. If you are trying to " \
                        "create a new merb application, use merb-gen app."
-    nil
-  end
-
-  # Load each dependency that has been declared so far within the Kernel.
-  #
-  # ==== Returns
-  # nil
-  #
-  # :api: private
-  # @deprecated
-  def self.load_kernel_dependencies
-    dependencies.each { |dependency| Kernel.load_dependency(dependency, nil) }
     nil
   end
 
