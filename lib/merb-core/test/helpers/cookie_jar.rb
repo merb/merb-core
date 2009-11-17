@@ -52,7 +52,7 @@ module Merb
       
       # :api: private
       def valid?(uri)
-        domain_ = domain.index('.').to_i == 0 ? domain[1..-1] : domain
+        domain_ = domain.index('.') == 0 ? domain[1..-1] : domain
         uri_path = uri.path.blank? ? "/" : uri.path
 
         uri.host =~ Regexp.new("#{Regexp.escape(domain_)}$") &&
