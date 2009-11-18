@@ -127,7 +127,9 @@ module Merb
         else
           data = body
         end
-        paramhsh = normalize_params(paramhsh,name,data) unless key_memo.include?(name)
+        unless key_memo.include?(name) && name !~ /\[\]/ 
+          paramhsh = normalize_params(paramhsh,name,data) 
+        end
         key_memo << name
         break  if buf.empty? || content_length == -1
       }

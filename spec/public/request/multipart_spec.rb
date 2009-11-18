@@ -39,6 +39,8 @@ describe Merb::Request do
     body, head = m.to_multipart
     body.should match(/model\[child_attributes\]\[\]\[file\]/)
     body.split('----------0xKhTmLbOuNdArY').size.should eql(6)
+    request = fake_request({:request_method => "POST", :content_type => head, :content_length => body.length}, :req => body)
+    request.params[:model][:child_attributes].size.should == 2
   end
 
   it "should accept env['rack.input'] as IO object (instead of StringIO)" do
