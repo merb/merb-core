@@ -15,6 +15,7 @@ include FileUtils
 
 begin
 
+  gem 'jeweler', '~> 1.4'
   require 'jeweler'
 
   Jeweler::Tasks.new do |gemspec|
