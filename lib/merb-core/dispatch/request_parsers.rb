@@ -187,15 +187,24 @@ module Merb
 
     # ==== Parameter
     # s<String>:: String to URL unescape.
+    # encoding<String>:: Encoding which we force to return. Only for 
+    #                    Ruby 1.9. If encoding is not passed it defaults
+    #                    to Encoding.default_internal. When this is nil
+    #                    (default) no encoding forcing is done.
     #
     # ==== returns
     # String:: The unescaped string.
     #
     # :api: public
-    def self.unescape(s)
-      s.tr('+', ' ').gsub(/((?:%[0-9a-fA-F]{2})+)/n){
+    def self.unescape(s, encoding = nil)
+      s = s.tr('+', ' ').gsub(/((?:%[0-9a-fA-F]{2})+)/n){
         [$1.delete('%')].pack('H*')
       }
+      if RUBY_VERSION >= '1.9'
+        encoding ||= Encoding.default_internal
+        s.force_encoding(encoding) if encoding
+      end
+      s
     end
 
     # ==== Parameters
