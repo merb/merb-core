@@ -419,7 +419,7 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
       # We must load bundler
       require "bundler"
       # And require gemfile manually
-      Bundler::Environment.load(Merb::Config[:gemfile]).require_env(Merb.environment)
+      Bundler::Dsl.load_gemfile(Merb::Config[:gemfile]).require_env(Merb.environment)
     end
     nil
   end
