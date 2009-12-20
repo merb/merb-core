@@ -6,7 +6,6 @@ root_key = %w[-m --merb-root].detect { |o| ARGV.index(o) }
 root = ARGV[ARGV.index(root_key) + 1] if root_key
 root = root.to_a.empty? ? Dir.getwd : root
 
-require 'bundler'
 require "thread"
 require "set"
 require "fileutils"

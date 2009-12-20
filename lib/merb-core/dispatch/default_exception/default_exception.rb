@@ -31,7 +31,7 @@ Merb::BootLoader.after_app_loads do
             elsif filename.index(Merb.root) == 0
               type = "app"
               shortname = Pathname.new(filename).relative_path_from(Pathname.new(Merb.root))
-            elsif path = Gem.path.find {|p| filename.index(p) == 0}
+            elsif Module.const_defined?(:Gem) && Gem.respond_to?(:path) && path = Gem.path.find {|p| filename.index(p) == 0}
               type = "gem"
               shortname = Pathname.new(filename).relative_path_from(Pathname.new(path))
             else

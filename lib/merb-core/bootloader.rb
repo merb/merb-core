@@ -379,7 +379,6 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
       load_initfile
       load_env_config
     end
-    load_bundler_environment
     expand_ruby_path
     load_dependencies
     enable_json_gem unless Merb::disabled?(:json)
@@ -389,6 +388,9 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
   
   # Try to load the gem environment file (set via Merb::Config[:gemenv])
   # defaults to ./gems/environment
+  #
+  # Load each the dependencies defined in the Merb::Config[:gemfile] 
+  # using the bundler gem's Bundler::require_env
   # 
   # Falls back to rubygems if no bundler environment exists
   # 
@@ -396,43 +398,32 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
   # nil
   #
   # :api: private
-  def self.load_bundler_environment
+  def self.load_dependencies
     begin
       # Try to load the bundler environment from Merb::Config[:gemenv]
       # default to ./gems/environment.rb
       require Merb.root / (Merb::Config[:gemenv] || "gems" / "environment")
+      if Merb.verbose_logging?
+        if Merb::Config[:gemfile]
+          Merb.logger.debug!("Loading Gemfile from #{Merb::Config[:gemfile]}")
+        else
+          Merb.logger.debug!("Loading default Gemfile from Merb.root/Gemfile")
+        end
+      end
+
+      # Require the bundler environment
+      Bundler.require_env(Merb.environment)
     rescue LoadError
       # Default to using system rubygems if not bundled
       require "rubygems"
+      # We must load bundler
+      require "bundler"
+      # And require gemfile manually
+      Bundler::Environment.load(Merb::Config[:gemfile]).require_env(Merb.environment)
     end
     nil
   end
   
-  # Load each the dependencies defined in the Merb::Config[:gemfile] 
-  # using the bundler gem's Bundler::Environment.load
-  #
-  # ==== Returns
-  # nil
-  #
-  # :api: private
-  def self.load_dependencies
-    if Merb.verbose_logging?
-      if Merb::Config[:gemfile]
-        Merb.logger.debug!("Loading Gemfile from #{Merb::Config[:gemfile]}")
-      else
-        Merb.logger.debug!("Loading default Gemfile from Merb.root/Gemfile")
-      end
-    end
-
-    Bundler::Environment.load(Merb::Config[:gemfile]).require_env(Merb.environment)
-    nil
-  rescue Bundler::DefaultManifestNotFound => e
-    Merb.logger.warn! "You didn't create Bundler Gemfile manifest or you " \
-                       "are not in a Merb application. If you are trying to " \
-                       "create a new merb application, use merb-gen app."
-    nil
-  end
-
   # Requires json or json_pure.
   #
   # ==== Returns
@@ -484,7 +475,7 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
   #
   # :api: private
   def self.set_encoding
-    unless Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9")
+    unless RUBY_VERSION >= '1.9'
       $KCODE = 'UTF8' if $KCODE == 'NONE' || $KCODE.blank?
     end
     
