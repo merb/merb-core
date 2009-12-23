@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new("> 1.3.1") if s.respond_to? :required_rubygems_version=
   s.authors = ["Ezra Zygmuntowicz"]
-  s.date = %q{2009-11-06}
+  s.date = %q{2009-12-24}
   s.default_executable = %q{merb}
   s.description = %q{Merb. Pocket rocket web framework.}
   s.email = %q{ez@engineyard.com}
@@ -47,7 +47,6 @@ Gem::Specification.new do |s|
      "lib/merb-core/controller/template.rb",
      "lib/merb-core/core_ext.rb",
      "lib/merb-core/core_ext/class.rb",
-     "lib/merb-core/core_ext/dependencies.rb",
      "lib/merb-core/core_ext/hash.rb",
      "lib/merb-core/core_ext/kernel.rb",
      "lib/merb-core/core_ext/time.rb",
@@ -101,6 +100,7 @@ Gem::Specification.new do |s|
      "lib/merb-core/rack/stream_wrapper.rb",
      "lib/merb-core/server.rb",
      "lib/merb-core/tasks/audit.rake",
+     "lib/merb-core/tasks/merb.rb",
      "lib/merb-core/tasks/stats.rake",
      "lib/merb-core/test.rb",
      "lib/merb-core/test/helpers.rb",
@@ -325,6 +325,7 @@ Gem::Specification.new do |s|
      "spec/public/test/controllers/dispatch_controller.rb",
      "spec/public/test/controllers/request_controller.rb",
      "spec/public/test/controllers/spec_helper_controller.rb",
+     "spec/public/test/cookie_jar_spec.rb",
      "spec/public/test/mock_request_helper_spec.rb",
      "spec/public/test/multipart_request_helper_spec.rb",
      "spec/public/test/multipart_upload_text_file.txt",
@@ -2265,8 +2266,8 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<bundler>, [">= 0"])
-      s.add_runtime_dependency(%q<extlib>, [">= 0.9.14"])
+      s.add_runtime_dependency(%q<bundler>, [">= 0.7.2"])
+      s.add_runtime_dependency(%q<extlib>, [">= 0.9.13"])
       s.add_runtime_dependency(%q<erubis>, [">= 2.6.2"])
       s.add_runtime_dependency(%q<rake>, [">= 0"])
       s.add_runtime_dependency(%q<rspec>, [">= 0"])
@@ -2275,8 +2276,8 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<rspec>, [">= 1.2.9"])
       s.add_development_dependency(%q<webrat>, [">= 0.3.1"])
     else
-      s.add_dependency(%q<bundler>, [">= 0"])
-      s.add_dependency(%q<extlib>, [">= 0.9.14"])
+      s.add_dependency(%q<bundler>, [">= 0.7.2"])
+      s.add_dependency(%q<extlib>, [">= 0.9.13"])
       s.add_dependency(%q<erubis>, [">= 2.6.2"])
       s.add_dependency(%q<rake>, [">= 0"])
       s.add_dependency(%q<rspec>, [">= 0"])
@@ -2286,8 +2287,8 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<webrat>, [">= 0.3.1"])
     end
   else
-    s.add_dependency(%q<bundler>, [">= 0"])
-    s.add_dependency(%q<extlib>, [">= 0.9.14"])
+    s.add_dependency(%q<bundler>, [">= 0.7.2"])
+    s.add_dependency(%q<extlib>, [">= 0.9.13"])
     s.add_dependency(%q<erubis>, [">= 2.6.2"])
     s.add_dependency(%q<rake>, [">= 0"])
     s.add_dependency(%q<rspec>, [">= 0"])
