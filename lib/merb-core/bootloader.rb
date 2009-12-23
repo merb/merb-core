@@ -400,26 +400,26 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
   # :api: private
   def self.load_dependencies
     begin
-      # Try to load the bundler environment from Merb::Config[:gemenv]
+
+      gemfile = Merb.root / (Merb::Config[:gemfile] || 'Gemfile')
+      Merb::Config[:gemfile] = File.exists?(gemfile) ? gemfile : nil
+
+      # Try to load the bundled environment from Merb::Config[:gemenv]
       # default to ./gems/environment.rb
       require Merb.root / (Merb::Config[:gemenv] || "gems" / "environment")
-      if Merb.verbose_logging?
-        if Merb::Config[:gemfile]
-          Merb.logger.debug!("Loading Gemfile from #{Merb::Config[:gemfile]}")
-        else
-          Merb.logger.debug!("Loading default Gemfile from Merb.root/Gemfile")
-        end
-      end
 
       # Require the bundler environment
       Bundler.require_env(Merb.environment)
     rescue LoadError
       # Default to using system rubygems if not bundled
       require "rubygems"
-      # We must load bundler
-      require "bundler"
-      # And require gemfile manually
-      Bundler::Dsl.load_gemfile(Merb::Config[:gemfile]).require_env(Merb.environment)
+      if Merb::Config[:gemfile]
+        require "bundler"
+        Merb.logger.debug!("Loading Gemfile from #{Merb::Config[:gemfile]}") if Merb.verbose_logging?
+        Bundler::Dsl.load_gemfile(Merb::Config[:gemfile]).require_env(Merb.environment)
+      else
+        Merb.logger.warn!("Couldn't find a Gemfile. No dependencies will be loaded.")
+      end
     end
     nil
   end
