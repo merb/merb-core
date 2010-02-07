@@ -29,6 +29,29 @@ module Merb
       def started?
         !@worker.nil?
       end
+
+      # ==== Returns
+      # Whether the Merb::Worker instance thread is alive
+      #
+      # :api: private
+      def alive?
+        started? and @worker.thread.alive?
+      end
+
+      # restarts the worker thread
+      #
+      # ==== Returns
+      # Merb::Worker:: instance of a worker.
+      #
+      # :api: private
+      def restart
+        # if we have a worker or thread, kill it.
+        if started?
+          @worker.thread.exit
+          @worker = nil
+        end
+        start
+      end
     end
     
     # Creates a new worker thread that loops over the work queue.

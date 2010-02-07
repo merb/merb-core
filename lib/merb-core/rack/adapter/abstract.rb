@@ -92,6 +92,9 @@ module Merb
       # :api: private
       def self.spawn_worker(port)
         worker_pid = Kernel.fork
+
+        # restart the run_later worker, unless we're in the parent or it's alive.
+        Merb::Worker.restart unless worker_pid or Merb::Worker.alive?
         start_at_port(port, @opts) unless worker_pid
 
         # If we have a worker_pid, we're in the parent.
