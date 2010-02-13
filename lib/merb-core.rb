@@ -580,9 +580,8 @@ module Merb
     # :log_level<Symbol>::        logger level, default is :info
     #
     # :disabled_components<Array[Symbol]>::
-    #   array of disabled component names,
-    #   for instance, to disable json gem,
-    #   specify :json. Default is empty array.
+    #   array of disabled component names
+    #   Default is empty array.
     #
     # :deferred_actions<Array(Symbol, String)]>::
     #   names of actions that should be deferred
