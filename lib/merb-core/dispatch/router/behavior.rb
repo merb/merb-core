@@ -709,6 +709,9 @@ module Merb
         end
         
         @params.merge!(:controller => controller.to_s.gsub(%r{^/}, '')) if controller
+
+        # Normalise action into a string
+        @params[:action] = @params[:action].to_s if @params.has_key?(:action)
         
         # Sorts the identifiers so that modules that are at the bottom of the
         # inheritance chain come first (more specific modules first). Object
