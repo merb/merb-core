@@ -86,7 +86,7 @@ module Merb
         kookie  << 'HttpOnly; ' if http_only
         cookies << kookie.rstrip
       end
-      cookies.empty? ? {} : { 'Set-Cookie' => cookies }
+      cookies.empty? ? {} : { 'Set-Cookie' => cookies.join(Merb::Const::NEWLINE) }
     end
     
   end
