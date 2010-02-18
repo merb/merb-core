@@ -16,6 +16,8 @@ module Merb
           @body.each_line(&callback)
         elsif @body.nil?
           @body.to_s.each_line(&callback)
+        elsif @body.is_a?(Integer)
+          @body.to_s.each_line(&callback)
         else
           @body.each(&callback)
         end

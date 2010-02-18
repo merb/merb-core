@@ -18,7 +18,7 @@ describe Merb::Test::RequestHelper do
   include WithPathPrefixHelper
 
   before(:each) do
-    Merb::Controller._default_cookie_domain = "example.org"
+    Merb::Controller._default_cookie_domain = "example.com"
 
     Merb::Router.prepare do
       with(:controller => "merb/test/request_controller") do
@@ -30,123 +30,123 @@ describe Merb::Test::RequestHelper do
 
   it "should remove the path_prefix configuration option" do
     with_path_prefix '/foo' do
-      request("/foo/path").should have_body('1')
+      visit("/foo/path").should have_body('1')
     end
   end
   
   it "should dispatch a request using GET by defalt" do
-    request("/request_method").should have_body("Method - GET")
+    visit("/request_method").should have_body("Method - GET")
   end
   
   it "should work with have_selector" do
-    request("/document").should have_selector("div div")
+    visit("/document").should have_selector("div div")
   end
   
   it "should work with have_xpath" do
-    request("/document").should have_xpath("//div/div")
+    visit("/document").should have_xpath("//div/div")
   end
   
   it "should work with have_content" do
-    request("/request_method").should contain("Method")
+    visit("/request_method").should contain("Method")
   end
   
   it "should persist cookies across sequential cookie setting requests" do
-    request("/counter").should have_body("1")
-    request("/counter").should have_body("2")
+    visit("/counter").should have_body("1")
+    visit("/counter").should have_body("2")
   end
   
   it "should persist cookies across requests that don't return any cookie headers" do
-    request("/counter").should have_body("1")
-    request("/void").should    have_body("Void")
-    request('/counter').should have_body("2")
+    visit("/counter").should have_body("1")
+    visit("/void").should    have_body("Void")
+    visit('/counter').should have_body("2")
   end
   
   it "should delete cookies from the jar" do
-    request("/counter").should have_body("1")
-    request("/delete").should  have_body("Delete")
-    request("/counter").should have_body("1")
+    visit("/counter").should have_body("1")
+    visit("/delete").should  have_body("Delete")
+    visit("/counter").should have_body("1")
   end
   
   it "should be able to disable the cookie jar" do
-    request("/counter", :jar => nil).should have_body("1")
-    request("/counter", :jar => nil).should have_body("1")
-    request("/counter").should have_body("1")
-    request("/counter").should have_body("2")
+    visit("/counter", :jar => nil).should have_body("1")
+    visit("/counter", :jar => nil).should have_body("1")
+    visit("/counter").should have_body("1")
+    visit("/counter").should have_body("2")
   end
   
   it "should be able to specify separate jars" do
-    request("/counter", :jar => :one).should have_body("1")
-    request("/counter", :jar => :two).should have_body("1")
-    request("/counter", :jar => :one).should have_body("2")
-    request("/counter", :jar => :two).should have_body("2")
+    visit("/counter", :jar => :one).should have_body("1")
+    visit("/counter", :jar => :two).should have_body("1")
+    visit("/counter", :jar => :one).should have_body("2")
+    visit("/counter", :jar => :two).should have_body("2")
   end
 
   it 'should allow a cookie to be set' do
-    cookie = request("/counter").headers['Set-Cookie']
-    request("/delete")
-    request("/counter", :cookie => cookie).should have_body("2")
+    cookie = visit("/counter").headers['Set-Cookie']
+    visit("/delete")
+    visit("/counter", :cookie => cookie).should have_body("2")
   end
   
   it "should respect cookie domains when no domain is explicitly set" do
-    request("http://example.org/counter").should     have_body("1")
-    request("http://www.example.org/counter").should have_body("2")
-    request("http://example.org/counter").should     have_body("3")
-    request("http://www.example.org/counter").should have_body("4")
+    visit("http://example.com/counter").should     have_body("1")
+    visit("http://www.example.com/counter").should have_body("2")
+    visit("http://example.com/counter").should     have_body("3")
+    visit("http://www.example.com/counter").should have_body("4")
   end
   
   it "should respect the domain set in the cookie" do
-    request("http://example.org/domain").should     have_body("1")
-    request("http://foo.example.org/domain").should have_body("1")
-    request("http://example.org/domain").should     have_body("1")
-    request("http://foo.example.org/domain").should have_body("2")
+    visit("http://example.org/domain").should     have_body("1")
+    visit("http://foo.example.org/domain").should have_body("1")
+    visit("http://example.org/domain").should     have_body("1")
+    visit("http://foo.example.org/domain").should have_body("2")
   end
   
   it "should respect the path set in the cookie" do
-    request("/path").should      have_body("1")
-    request("/path/zomg").should have_body("1")
-    request("/path").should      have_body("1")
-    request("/path/zomg").should have_body("2")
+    visit("/path").should      have_body("1")
+    visit("/path/zomg").should have_body("1")
+    visit("/path").should      have_body("1")
+    visit("/path/zomg").should have_body("2")
   end
   
   it "should use the most specific path cookie" do
-    request("/set/short")
-    request("/set/short/long")
-    request("/set/short/long/read").should have_body("/set/short/long")
+    visit("/set/short")
+    visit("/set/short/long")
+    visit("/set/short/long/read").should have_body("/set/short/long")
   end
   
   it "should use the most specific path cookie even if it was defined first" do
-    request("/set/short/long")
-    request("/set/short")
-    request("/set/short/long/read").should have_body("/set/short/long")
+    visit("/set/short/long")
+    visit("/set/short")
+    visit("/set/short/long/read").should have_body("/set/short/long")
   end
   
   it "should leave the least specific cookie intact when specifying a more specific path" do
-    request("/set/short")
-    request("/set/short/long/zomg/what/hi")
-    request("/set/short/long/read").should have_body("/set/short")
+    visit("/set/short")
+    visit("/set/short/long/zomg/what/hi")
+    visit("/set/short/long/read").should have_body("/set/short")
   end
   
   it "should use the most specific domain cookie" do
-    request("http://test.com/domain_set")
-    request("http://one.test.com/domain_set")
-    request("http://one.test.com/domain_get").should have_body("one.test.com")
+    visit("http://test.com/domain_set")
+    visit("http://one.test.com/domain_set")
+    visit("http://one.test.com/domain_get").should have_body("one.test.com")
   end
   
   it "should keep the less specific domain cookie" do
-    request("http://test.com/domain_set").should be_successful
-    request("http://one.test.com/domain_set").should be_successful
-    request("http://test.com/domain_get").should have_body("test.com")
+    visit("http://test.com/domain_set").should be_successful
+    visit("http://one.test.com/domain_set").should be_successful
+    visit("http://test.com/domain_get").should have_body("test.com")
   end
   
   it "should be able to handle multiple cookies" do
-    request("/multiple").should have_body("1 - 1")
-    request("/multiple").should have_body("2 - 2")
+    visit("/multiple").should have_body("1 - 1")
+    visit("/multiple").should have_body("2 - 2")
   end
   
   it "should respect the expiration" do
-    request("/expires").should have_body("1")
+    visit("/expires").should have_body("1")
     sleep(1)
-    request("/expires").should have_body("1")
+    visit("/expires").should have_body("1")
   end
   
 end
