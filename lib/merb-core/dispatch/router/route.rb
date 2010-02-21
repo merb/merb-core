@@ -124,6 +124,8 @@ module Merb
         end
         
         params = extract_options_from_args!(args) || { }
+        # Duplicating to avoid mutating arguments
+        params = params ? params.dup : {}
         
         params.each do |k, v|
           params[k] = identify(v, k)
