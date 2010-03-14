@@ -68,23 +68,23 @@ describe Merb::Test::RequestHelper do
   end
   
   it "should be able to disable the cookie jar" do
-    visit("/counter", :jar => nil).should have_body("1")
-    visit("/counter", :jar => nil).should have_body("1")
+    visit("/counter", :get, :jar => nil).should have_body("1")
+    visit("/counter", :get, :jar => nil).should have_body("1")
     visit("/counter").should have_body("1")
     visit("/counter").should have_body("2")
   end
   
   it "should be able to specify separate jars" do
-    visit("/counter", :jar => :one).should have_body("1")
-    visit("/counter", :jar => :two).should have_body("1")
-    visit("/counter", :jar => :one).should have_body("2")
-    visit("/counter", :jar => :two).should have_body("2")
+    visit("/counter", :get, :jar => :one).should have_body("1")
+    visit("/counter", :get, :jar => :two).should have_body("1")
+    visit("/counter", :get, :jar => :one).should have_body("2")
+    visit("/counter", :get, :jar => :two).should have_body("2")
   end
 
   it 'should allow a cookie to be set' do
     cookie = visit("/counter").headers['Set-Cookie']
     visit("/delete")
-    visit("/counter", :cookie => cookie).should have_body("2")
+    visit("/counter", :get, :cookie => cookie).should have_body("2")
   end
   
   it "should respect cookie domains when no domain is explicitly set" do

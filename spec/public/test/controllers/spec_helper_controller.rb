@@ -1,3 +1,4 @@
+require 'json'
 class SpecHelperController < Merb::Controller
   
   def index
