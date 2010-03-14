@@ -97,6 +97,15 @@ module Merb
   end
 end
 
+# Helper to extract cookies from headers
+#
+# This is needed in some specs for sessions and cookies
+module Merb::Test::CookiesHelper
+  def extract_cookies(header)
+    header['Set-Cookie'] ? header['Set-Cookie'].split(Merb::Const::NEWLINE) : []
+  end
+end
+
 Spec::Runner.configure do |config|
   config.include Merb::Test::Helper
   config.include Merb::Test::RspecMatchers

@@ -33,6 +33,7 @@ describe "All session-store backends", :shared => true do
 end
 
 describe "All session-stores mixed into Merb::Controller", :shared => true do
+  include Merb::Test::CookiesHelper
   
   before(:all) { @controller_klass = Merb::Test::Fixtures::Controllers::SessionsController }
   
@@ -48,7 +49,7 @@ describe "All session-stores mixed into Merb::Controller", :shared => true do
     with_cookies(@controller_klass) do
       controller = dispatch_to(@controller_klass, :index, :foo => session_store_type)
       controller.request.session[:foo].should == session_store_type
-      cookie_header = controller.headers["Set-Cookie"].first
+      cookie_header = extract_cookies(controller.headers).first
       cookie_header.should_not match(/expires/) # sessions expire when browser quits
     end
   end
@@ -81,7 +82,7 @@ describe "All session-stores mixed into Merb::Controller", :shared => true do
       
       controller = dispatch_to(@controller_klass, :destroy)
       controller.request.session.should be_empty
-      cookie_header = controller.headers["Set-Cookie"].first
+      cookie_header = extract_cookies(controller.headers).first
       cookie_header.should match(/_session_id=;/)
       cookie_header.should match(/01-Jan-1970/)
     end

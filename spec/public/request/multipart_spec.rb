@@ -1,8 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 startup_merb
 
-require "mongrel"
-
 describe Merb::Request do
   it "should handle file upload for multipart/form-data posts" do
     file = Struct.new(:read, :filename, :path).

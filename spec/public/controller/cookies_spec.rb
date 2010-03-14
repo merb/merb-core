@@ -24,42 +24,43 @@ describe Merb::Controller, "._default_cookie_domain" do
 end
 
 describe Merb::Controller, "#cookies creating" do
+  include Merb::Test::CookiesHelper
   
   it "should set all the cookies for a request" do
     controller = dispatch_to(Merb::Test::Fixtures::Controllers::CookiesController, :store_cookies)
-    controller.headers['Set-Cookie'].length.should == 5
+    extract_cookies(controller.headers).length.should == 5
   end
   
   it "should set a simple cookie" do
     controller = dispatch_to(Merb::Test::Fixtures::Controllers::CookiesController, :store_cookies)
-    cookie = controller.headers['Set-Cookie'].sort[1]
+    cookie = extract_cookies(controller.headers).sort[1]
     cookie.should match(/foo=bar;/)
     cookie.should match(/domain=specs.merbivore.com;/)
   end
   
   it "should set the cookie domain correctly when it is specified" do
     controller = dispatch_to(Merb::Test::Fixtures::Controllers::CookiesController, :store_cookies)
-    cookie = controller.headers['Set-Cookie'].sort[0]
+    cookie = extract_cookies(controller.headers).sort[0]
     cookie.should match(/awesome=super-cookie;/)
     cookie.should match(/domain=blog.merbivore.com;/)
   end
   
   it "should format the expires time to the correct format" do
     controller = dispatch_to(Merb::Test::Fixtures::Controllers::CookiesController, :store_cookies)
-    cookie = controller.headers['Set-Cookie'].sort[2]
+    cookie = extract_cookies(controller.headers).sort[2]
     cookie.should include("oldcookie=this+is+really+old;")
     cookie.should include("expires=Wed, 01-Jan-2020 00:00:00 GMT;")
   end
   
   it "should append secure to the end of the cookie header when marked as such" do
     controller = dispatch_to(Merb::Test::Fixtures::Controllers::CookiesController, :store_cookies)
-    cookie = controller.headers['Set-Cookie'].sort[3]
+    cookie = extract_cookies(controller.headers).sort[3]
     cookie.should match(/secure;$/)
   end
   
   it "should append HttpOnly to the end of the cookie header when marked as such" do
     controller = dispatch_to(Merb::Test::Fixtures::Controllers::CookiesController, :store_cookies)
-    cookie = controller.headers['Set-Cookie'].sort[4]
+    cookie = extract_cookies(controller.headers).sort[4]
     cookie.should match(/HttpOnly;$/)
   end
   
@@ -67,7 +68,7 @@ describe Merb::Controller, "#cookies creating" do
     controller_klass = Merb::Test::Fixtures::Controllers::EmptyDefaultCookieDomain
     with_cookies(controller_klass) do |cookie_jar|
       controller = dispatch_to(controller_klass, :store_cookies)
-      cookies = controller.headers['Set-Cookie'].sort
+      cookies = extract_cookies(controller.headers).sort
       cookies[1].should == "foo=bar; path=/;"
     end
   end
@@ -86,15 +87,16 @@ describe Merb::Controller, "#cookies creating" do
 end
 
 describe Merb::Controller, "#cookies destroying" do
+  include Merb::Test::CookiesHelper
   
   it "should send a cookie when deleting a cookie" do
     controller = dispatch_to(Merb::Test::Fixtures::Controllers::CookiesController, :destroy_cookies)
-    controller.headers['Set-Cookie'].length.should == 1
+    extract_cookies(controller.headers).length.should == 1
   end
   
   it "should set the expiration time of the cookie being destroyed to the past" do
     controller = dispatch_to(Merb::Test::Fixtures::Controllers::CookiesController, :destroy_cookies)
-    cookie = controller.headers['Set-Cookie'].sort[0]
+    cookie = extract_cookies(controller.headers).sort[0]
     cookie.should include("expires=Thu, 01-Jan-1970 00:00:00 GMT;")
   end
   

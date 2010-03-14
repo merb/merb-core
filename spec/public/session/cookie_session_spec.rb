@@ -20,6 +20,7 @@ describe Merb::CookieSession do
 end
 
 describe Merb::CookieSession, "mixed into Merb::Controller" do
+  include Merb::Test::CookiesHelper
   
   before(:all) { @controller_klass = Merb::Test::Fixtures::Controllers::SessionsController }
   
@@ -72,7 +73,7 @@ describe Merb::CookieSession, "mixed into Merb::Controller" do
 
   it "should set cookie domain to default_cookie_domain if set" do
     controller = dispatch_to(@controller_klass, :index, :foo => "cookie")
-    cookie = controller.headers['Set-Cookie'].sort[0]
+    cookie = extract_cookies(controller.headers).sort[0]
     cookie.should match(/_session_id=/)
     cookie.should match(/domain=.localhost.com/)
   end
