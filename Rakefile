@@ -20,7 +20,7 @@ begin
 
   Jeweler::Tasks.new do |gemspec|
 
-    gemspec.version     = Merb::VERSION
+    gemspec.version     = Merb::VERSION.dup
 
     gemspec.name        = "merb-core"
     gemspec.description = "Merb. Pocket rocket web framework."
