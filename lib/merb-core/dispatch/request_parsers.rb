@@ -127,12 +127,17 @@ module Merb
         else
           data = body
         end
+
         unless key_memo.include?(name) && name !~ /\[\]/ 
           paramhsh = normalize_params(paramhsh,name,data) 
         end
-        key_memo << name
+
+        # Prevent from double processing files but process other params
+        key_memo << name if filename && !filename.empty?
+
         break  if buf.empty? || content_length == -1
       }
+
       paramhsh
     end
 
