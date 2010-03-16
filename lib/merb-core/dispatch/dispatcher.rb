@@ -18,8 +18,6 @@ module Merb
         @@work_queue
       end  
       
-      Merb::Dispatcher.use_mutex = ::Merb::Config[:use_mutex]
-      
       # Dispatch the rack environment. ControllerExceptions are rescued here
       # and redispatched.
       #

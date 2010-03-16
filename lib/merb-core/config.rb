@@ -173,6 +173,9 @@ module Merb
           config[:bind_fail_fatal] = dev_mode
         end
         
+        # Set mutex to dispatcher
+        ::Merb::Dispatcher.use_mutex = config[:use_mutex]
+
         @configuration = config
       end
 
