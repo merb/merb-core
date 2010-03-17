@@ -7,93 +7,94 @@
 # +request_fresh?+ that is used after setting of
 # last modification time or ETag:
 #
-# ==== Example
+# 
+# @example
+#   def show
+#     self.etag = Digest::SHA1.hexdigest(calculate_cache_key(params))
 #
-# def show
-#   self.etag = Digest::SHA1.hexdigest(calculate_cache_key(params))
-#
-#   if request_fresh?
-#     self.status = 304
-#     return ''
-#   else
-#     @product = Product.get(params[:id])
-#     display @product
+#     if request_fresh?
+#       self.status = 304
+#       return ''
+#     else
+#       @product = Product.get(params[:id])
+#       display @product
+#     end
 #   end
-# end
 module Merb::ConditionalGetMixin
 
-  # Sets ETag response header by calling
-  # #to_s on the argument.
+  # Sets ETag response header by calling #to_s on the argument
   #
-  # ==== Parameters
-  # tag<~to_s>::
-  #   value of ETag header enclosed in double quotes
-  #   as required by the RFC
+  # @param tag [#to_s] value of ETag header
   #
-  # :api: public
+  # @return [String] value of ETag header enclosed in double quotes as required by the RFC
+  #
+  # @api public
   def etag=(tag)
     headers[Merb::Const::ETAG] = %("#{tag}")
   end
 
-  # ==== Returns
-  # <String>::
-  #   Value of ETag response header or nil if it's not set.
+  # Value of the ETag header
   #
-  # :api: public
+  # @return [String] Value of ETag response header if set.
+  # @return [nil] If ETag header not set.
+  #
+  # @api public
   def etag
     headers[Merb::Const::ETAG]
   end
 
-  # ==== Returns
-  # <Boolean>::
-  # true if ETag response header equals If-None-Match request header,
-  # false otherwise
+  # Test to see if the request's Etag matches the one supplied locally
   #
-  # :api: public
+  # @return [true] if ETag response header equals If-None-Match request header
+  # @return [true] if it does not.
+  #
+  # @api public
   def etag_matches?(tag = self.etag)
     tag == self.request.if_none_match
   end
 
-  # Sets Last-Modified response header.
+  # Sets Last-Modified response header
   #
-  # ==== Parameters
-  # tag<Time>::
-  # resource modification timestamp converted into format
-  # required by the RFC
+  # @param time [Time,DateTime] The last modified time of the resource
   #
-  # :api: public
+  # @return [String] The last modified time of the resource in the format required by the RFC
+  #
+  # @api public
   def last_modified=(time)
     time = time.to_time if time.is_a?(DateTime)
     # time.utc.strftime("%a, %d %b %Y %X") if we could rely on locale being American
     headers[Merb::Const::LAST_MODIFIED] = time.httpdate
   end
 
-  # ==== Returns
-  # <String>::
-  #   Value of Last-Modified response header or nil if it's not set.
+  # Value of the Last-Modified header
   #
-  # :api: public
+  # @return [Time] Value of Last-Modified response header if set.
+  # @return [nil] If Last-Modified not set.
+  #
+  # @api public
   def last_modified
     last_mod = headers[Merb::Const::LAST_MODIFIED]
     Time.rfc2822(last_mod) if last_mod
   end
 
-  # ==== Returns
-  # <Boolean>::
-  # true if Last-Modified response header is < than
-  # If-Modified-Since request header value, false otherwise.
+  # Test to see if the request's If-Modified-Since is satisfied
   #
-  # :api: public
+  # @param time [Time] Time to test if the If-Modified-Since header against
+  #
+  # @return [true] Last-Modified response header is < than If-Modified-Since request header
+  # @return [false] otherwise
+  #
+  # @api public
   def not_modified?(time = self.last_modified)
     request.if_modified_since && time && time <= request.if_modified_since
   end
 
-  # ==== Returns
-  # <Boolean>::
-  # true if ETag matches and entity is not modified,
-  # so request is fresh; false otherwise
+  # Tests freshness of response using all supplied validators
   #
-  # :api: public
+  # @return [true] ETag matches and entity is not modified
+  # @return [false] One or more validators failed.
+  #
+  # @api public
   def request_fresh?
     fresh = true
 
