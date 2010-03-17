@@ -3,9 +3,9 @@ require File.join(File.dirname(__FILE__), "spec_helper")
 Controllers = Merb::Test::Fixtures::Controllers
 
 describe Merb::Controller, "#etag=" do
-  
+
   before do
-    Merb.push_path(:layout, File.dirname(__FILE__) / "controllers" / "views" / "layouts")    
+    Merb.push_path(:layout, File.dirname(__FILE__) / "controllers" / "views" / "layouts")
     Merb::Router.prepare do
       default_routes
     end
@@ -21,7 +21,7 @@ end
 
 describe Merb::Controller, "#last_modified=" do
   before do
-    Merb.push_path(:layout, File.dirname(__FILE__) / "controllers" / "views" / "layouts")    
+    Merb.push_path(:layout, File.dirname(__FILE__) / "controllers" / "views" / "layouts")
     Merb::Router.prepare do
       default_routes
     end
@@ -53,7 +53,7 @@ describe Merb::Controller, "#modified_since?" do
     @controller = dispatch_to(Merb::Test::Fixtures::Controllers::ConditionalGet,
                               :sets_last_modified, {}, { Merb::Const::HTTP_IF_MODIFIED_SINCE => Time.at(7000).httpdate })
   end
-  
+
   it 'return true when response Last-Modified header value <= request If-Modified-Since header' do
     @controller.not_modified?(Time.at(5000)).should be(true)
     @controller.not_modified?(Time.at(6999)).should be(true)
@@ -79,23 +79,23 @@ describe Merb::Controller, "#request_fresh?" do
     env = { Merb::Const::HTTP_IF_MODIFIED_SINCE => Time.at(7000).httpdate }
     @controller = dispatch_to(Merb::Test::Fixtures::Controllers::ConditionalGet,
                               :sets_last_modified, {}, env)
-    
+
     @controller.request_fresh?.should be(true)
   end
 
   it 'return true when both etag and last modification date satisfy request freshness' do
-    env = { 'HTTP_IF_MODIFIED_SINCE' => Time.at(7000).httpdate, Merb::Const::HTTP_IF_NONE_MATCH => '"39791e6fb09"' }    
+    env = { 'HTTP_IF_MODIFIED_SINCE' => Time.at(7000).httpdate, Merb::Const::HTTP_IF_NONE_MATCH => '"39791e6fb09"' }
     @controller = dispatch_to(Merb::Test::Fixtures::Controllers::ConditionalGet,
                               :superfresh, {}, env)
-    
+
     @controller.request_fresh?.should be(true)
   end
 
   it 'return false when neither etag nor last modification date satisfy request freshness' do
-    env = { 'HTTP_IF_MODIFIED_SINCE' => Time.at(7000).httpdate, Merb::Const::HTTP_IF_NONE_MATCH => '"39791e6fb09"' }    
+    env = { 'HTTP_IF_MODIFIED_SINCE' => Time.at(7000).httpdate, Merb::Const::HTTP_IF_NONE_MATCH => '"39791e6fb09"' }
     @controller = dispatch_to(Merb::Test::Fixtures::Controllers::ConditionalGet,
                               :stale, {}, env)
-    
+
     @controller.request_fresh?.should be(false)
-  end  
+  end
 end
