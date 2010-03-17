@@ -19,6 +19,18 @@ describe Merb::Controller, " redirects" do
     @controller.headers["Location"].should == "/"
   end
 
+  it "recirect with :permanent and :stauts use :status" do
+    @controller = dispatch_to(Merb::Test::Fixtures::Controllers::PermanentAndStatusRedirect, :index)
+    @controller.status.should == 302
+    @controller.headers["Location"].should == "/"
+  end
+
+  it "redirect with status" do
+    @controller = dispatch_to(Merb::Test::Fixtures::Controllers::WithStatusRedirect, :index)
+    @controller.status.should == 307
+    @controller.headers["Location"].should == "/"
+  end
+
   it "redirects with messages" do
     @controller = dispatch_to(Merb::Test::Fixtures::Controllers::RedirectWithMessage, :index)
     @controller.status.should == 302

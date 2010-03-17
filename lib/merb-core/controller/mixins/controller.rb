@@ -124,6 +124,10 @@ module Merb
     #   Shorthand for common usage :message => {:error => "..."}
     # :success<String>::
     #   Shorthand for common usage :message => {:success => "..."}
+    # :status<String, Symbol>::
+    #   Status code to set for the response. Can be any valid redirect
+    #   status. Has precedence over the :permanent parameter, which is
+    #   retained for convenience.
     # 
     # ==== Returns
     # String:: Explanation of redirect.
@@ -141,7 +145,11 @@ module Merb
       opts = default_redirect_options.merge(opts)
 
       url = handle_redirect_messages(url,opts)
-      self.status = opts[:permanent] ? 301 : 302
+
+      _status   = opts[:status] if opts[:status]
+      _status ||= opts[:permanent] ? 301 : 302
+      self.status = _status
+
       Merb.logger.info("Redirecting to: #{url} (#{self.status})")
       headers['Location'] = url
       "<html><body>You are being <a href=\"#{url}\">redirected</a>.</body></html>"

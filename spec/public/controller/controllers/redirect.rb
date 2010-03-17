@@ -21,6 +21,18 @@ module Merb::Test::Fixtures::Controllers
     end
   end
   
+  class PermanentAndStatusRedirect < Testing
+    def index
+      redirect("/", :permanent => true, :status => 302)
+    end
+  end
+
+  class WithStatusRedirect < Testing
+    def index
+      redirect("/", :status => 307)
+    end
+  end
+
   class RedirectWithMessage < Testing
     def index
       redirect("/", :message => { :notice => "what?" })
