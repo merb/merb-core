@@ -187,6 +187,10 @@ module Merb::Template
   require 'erubis'
 
   class Erubis    
+    # Fixing bug in Erubis
+    # http://rubyforge.org/tracker/index.php?func=detail&aid=21825&group_id=1320&atid=5201
+    XmlHelper = ::Erubis::XmlHelper
+
     # ==== Parameters
     # io<#path>:: An IO containing the full path of the template.
     # name<String>:: The name of the method that will be created.
