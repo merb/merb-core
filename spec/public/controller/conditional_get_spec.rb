@@ -91,6 +91,22 @@ describe Merb::Controller, "#request_fresh?" do
     @controller.request_fresh?.should be(true)
   end
 
+  it 'return false if etag satisfies but the last modification date does not satisfy request freshness' do
+    env = { 'HTTP_IF_MODIFIED_SINCE' => Time.at(6999).httpdate, Merb::Const::HTTP_IF_NONE_MATCH => '"39791e6fb09"' }
+    @controller = dispatch_to(Merb::Test::Fixtures::Controllers::ConditionalGet,
+                              :superfresh, {}, env)
+
+    @controller.request_fresh?.should be(false)
+  end
+
+  it 'return false if etag does not satisfy but the last modification date does satisfy request freshness' do
+    env = { 'HTTP_IF_MODIFIED_SINCE' => Time.at(7000).httpdate, Merb::Const::HTTP_IF_NONE_MATCH => '"wrong"' }
+    @controller = dispatch_to(Merb::Test::Fixtures::Controllers::ConditionalGet,
+                              :superfresh, {}, env)
+
+    @controller.request_fresh?.should be(false)
+  end
+
   it 'return false when neither etag nor last modification date satisfy request freshness' do
     env = { 'HTTP_IF_MODIFIED_SINCE' => Time.at(7000).httpdate, Merb::Const::HTTP_IF_NONE_MATCH => '"39791e6fb09"' }
     @controller = dispatch_to(Merb::Test::Fixtures::Controllers::ConditionalGet,

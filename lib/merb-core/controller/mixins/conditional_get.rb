@@ -90,11 +90,16 @@ module Merb::ConditionalGetMixin
 
   # ==== Returns
   # <Boolean>::
-  # true if either ETag matches or entity is not modified,
+  # true if ETag matches and entity is not modified,
   # so request is fresh; false otherwise
   #
   # :api: public
   def request_fresh?
-    etag_matches?(self.etag) || not_modified?(self.last_modified)
+    fresh = true
+
+    # only check if we have the right headers
+    fresh &&= etag_matches?(self.etag) if etag
+    fresh &&= not_modified?(self.last_modified) if last_modified
+    fresh
   end
 end
