@@ -86,19 +86,28 @@ module Merb::ConditionalGetMixin
   #
   # @api public
   def not_modified?(time = self.last_modified)
-    request.if_modified_since && time && time <= request.if_modified_since
+    if !request.if_modified_since.nil? and !time.nil?
+      time <= request.if_modified_since
+    else
+      false
+    end
   end
 
   # Tests freshness of response using all supplied validators
   #
+  # A response with no validators is always stale.
+  #
   # @return [true] ETag matches and entity is not modified
-  # @return [false] One or more validators failed.
+  # @return [false] One or more validators failed, or none were supplied
   #
   # @api public
   def request_fresh?
+    # make sure we have something to compare too.
+    return false unless last_modified or etag
+
     fresh = true
 
-    # only check if we have the right headers
+    # only check if we have set the right headers
     fresh &&= etag_matches?(self.etag) if etag
     fresh &&= not_modified?(self.last_modified) if last_modified
     fresh

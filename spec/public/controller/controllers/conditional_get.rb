@@ -30,6 +30,10 @@ module Merb::Test::Fixtures
         
         "can has stale request"
       end
+
+      def sets_nothing
+        "can has nothing"
+      end
     end
   end
 end

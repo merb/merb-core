@@ -67,12 +67,54 @@ end
 
 
 describe Merb::Controller, "#request_fresh?" do
+  it "returns false if no headers are supplied" do
+    @controller = dispatch_to(Merb::Test::Fixtures::Controllers::ConditionalGet,
+                              :superfresh, {}, {})
+    @controller.request_fresh?.should be(false)
+  end
+
+  it "returns false if no validation information is supplied by the action and no headers are sent" do
+    @controller = dispatch_to(Merb::Test::Fixtures::Controllers::ConditionalGet,
+                              :sets_nothing, {}, {})
+    @controller.request_fresh?.should be(false)
+  end
+
+  it "returns false if no validation information is supplied by the action and an ETag header is sent" do
+    env = { Merb::Const::HTTP_IF_NONE_MATCH => '"39791e6fb09"' }
+    @controller = dispatch_to(Merb::Test::Fixtures::Controllers::ConditionalGet,
+                              :sets_nothing, {}, env)
+    @controller.request_fresh?.should be(false)
+  end
+
+  it "returns false if no validation information is supplied by the action and an If-Modified-Since header is sent" do
+    env = { Merb::Const::HTTP_IF_MODIFIED_SINCE => Time.at(7000).httpdate }
+    @controller = dispatch_to(Merb::Test::Fixtures::Controllers::ConditionalGet,
+                              :sets_nothing, {}, env)
+    @controller.request_fresh?.should be(false)
+  end
+
+  it "returns false if no validation information is supplied by the action and both headers are sent" do
+    env = { 'HTTP_IF_MODIFIED_SINCE' => Time.at(7000).httpdate, Merb::Const::HTTP_IF_NONE_MATCH => '"39791e6fb09"' }
+    @controller = dispatch_to(Merb::Test::Fixtures::Controllers::ConditionalGet,
+                              :sets_nothing, {}, env)
+
+    @controller.request_fresh?.should be(false)
+  end
+
+
   it 'return true when ETag matches' do
-    env = { 'HTTP_IF_MODIFIED_SINCE' => Time.at(8000).httpdate, Merb::Const::HTTP_IF_NONE_MATCH => '"39791e6fb09"' }
+    env = { Merb::Const::HTTP_IF_NONE_MATCH => '"39791e6fb09"' }
     @controller = dispatch_to(Merb::Test::Fixtures::Controllers::ConditionalGet,
                               :sets_etag, {}, env)
 
     @controller.request_fresh?.should be(true)
+  end
+
+  it 'return false when no If-None-Match is sent, but an ETag is set' do
+    @controller = dispatch_to(Merb::Test::Fixtures::Controllers::ConditionalGet,
+                              :sets_etag, {}, {})
+
+    @controller.request_fresh?.should be(false)
   end
 
   it 'return true when entity is not modified since date given in request header' do
@@ -81,6 +123,13 @@ describe Merb::Controller, "#request_fresh?" do
                               :sets_last_modified, {}, env)
 
     @controller.request_fresh?.should be(true)
+  end
+
+  it 'return false when a Last-Modified is set, but no header is sent' do
+    @controller = dispatch_to(Merb::Test::Fixtures::Controllers::ConditionalGet,
+                              :sets_last_modified, {}, {})
+
+    @controller.request_fresh?.should be(false)
   end
 
   it 'return true when both etag and last modification date satisfy request freshness' do
