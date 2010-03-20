@@ -372,15 +372,12 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
   # :api: plugin
   def self.run
     set_encoding
-    # this is crucial: load init file with all the preferences
-    # then environment init file, then start enabling specific
-    # components, load dependencies and update logger.
+    load_dependencies
     unless Merb::disabled?(:initfile)
       load_initfile
       load_env_config
     end
     expand_ruby_path
-    load_dependencies
     update_logger
     nil
   end
