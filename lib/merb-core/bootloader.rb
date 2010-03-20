@@ -1033,7 +1033,6 @@ class Merb::BootLoader::LoadClasses < Merb::BootLoader
         error_map = {}
 
         klasses.each do |klass|
-          klasses.delete(klass)
           begin
             load_file klass
           rescue NameError => ne
@@ -1041,6 +1040,7 @@ class Merb::BootLoader::LoadClasses < Merb::BootLoader
             failed_classes.push(klass)
           end
         end
+        klasses.clear
 
         # Keep list of classes unique
         failed_classes.each { |k| klasses.push(k) unless klasses.include?(k) }
