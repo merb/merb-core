@@ -83,7 +83,7 @@ module Merb
   
           begin
             response.status = status.to_i
-            response.send_status(body.respond_to?(:length) ? body.length : nil)
+            response.send_status(nil)
 
             headers.each { |k, vs|
               Array(vs).each { |v|
