@@ -1315,7 +1315,7 @@ class Merb::BootLoader::RackUpApplication < Merb::BootLoader
     else
       Merb::Config[:app] = ::Rack::Builder.new {
          use Rack::Head # handle head requests
-         use Merb::Rack::ContentLength # report content length
+         use Rack::ContentLength # report content length
          if prefix = ::Merb::Config[:path_prefix]
            use Merb::Rack::PathPrefix, prefix
          end
