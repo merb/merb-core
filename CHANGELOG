@@ -1,4 +1,18 @@
-== 1.1.0 "" 2009-11-
+== 1.1.0 "Black Hole" 2010-03-22
+
+* Ruby 1.9 support. The big one. Merb now runs on ruby 1.9.1. This mandated some
+  small changes to the internals as well as some changes to the specs. However,
+  it shouldn't require any changes in your app level code, or at least the merb
+  specific parts of your app level code.
+
+* Unicorns! Merb is now better behaved as a rack app and works with a config.ru
+  file[2]. This change should make working with whatever is the latest and
+  greatest ruby webserver a lot easier.
+
+* Bugfixes. So many bug fixes. As part of the release process we've done our
+  best to clear out many of the bugs which have been gathering dust over the
+  past year. Some do still remain, but those generally require a more complex
+  solution which needs some thought.
 
 * !!!BC!!! Dependency handling using Bundler
   In this version we dropped old way of loading dependencies using the Kernel
@@ -6,35 +20,51 @@
   us to move the whole dependency handling and gem management outside the
   Merb. Therefore we can simplify some internals and remove some of the Kernel
   monkeypatching:
-  
+
   The old Kernel.dependency and Kernel.dependencies will only 'require
   gem_name' or 'require require_as' when you call this methods. These methods
   will also emit the DEPRECATED warnings when you will use them. If you see
   the warning you should move your dependency to the Gemfile or Rakefile.
-  
+
   If you used dependencies to load exact version of the Gem and you have
   installed multiple versions of the same gem you now get one more DEPRECATED
   warning. This is because we don't use 'gem' command from RubyGems which was
   used deep inside to load exact gem version. ALSO THE LATEST VERSION OF THE
   GEM WILL BE LOADED BECAUSE WE DO SIMPLE 'require'.
-  
+
   Also methods: use_orm, use_test, use_testing_framework and use_template_engine
   DON'T require any gems now, you must require it in Gemfile.
-  
+
   Merb generators was changed to generate you Gemfile for your application and
   settings instead of the dependencies.rb.
-  
+
   So what still works? Almost everything except it doesn't defer to the Merb
   start and doesn't load exact version of gem if more versions are installed:
-  
+
   dependency "json"                           => works
   dependency "rspec", :require_as => 'spec'   => works try to require 'spec'
   dependency "json", '1.1.6'                  => works unless you have
                                                  >= 1.1.6 installed
   dependency "json" { }                       => works but doesn't yield
-  
+
   For more information how to migrate to Bundler see:
   http://wiki.github.com/merb/merb/howto-using-the-bundler
+
+=== Bugs fixed
+
+* [merb-core]    #1040 Allow using <%== %> escaped version of <%= %>
+* [merb-core]    #1068 Correctly handle HEAD requests (This requires manual
+  alteration of rack.rb)
+* [merb-core]    #1174 Merb::Config[:use_mutex] issue
+  'sel' to string before comparing to string
+* [merb-core]    #1258 Sessions could be overwritten under certain (rare)
+  situations.
+* [merb-core]    #1288 Fix for run_later in clusters
+* [merb-core]    #1298 Fix potential timing attack on cookie sessions.
+* [merb-core]    #1304 Multipart input parsing produces wrong checkbox input
+* [merb-core]    #1310 Prevent mongrel bloat when streaming files
+* [merb-core]    #1317 Merb now returns correct cookie headers
+* [merb-core]    Improvements to handling of conditional validators
 
 == 0.9.8 "Time Machine" 2008-06-10
 
