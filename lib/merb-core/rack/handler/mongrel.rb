@@ -86,7 +86,7 @@ module Merb
             response.send_status(nil)
 
             headers.each { |k, vs|
-              Array(vs).each { |v|
+              vs.split(Merb::Const::NEWLINE).each { |v|
                 response.header[k] = v
               }
             }
