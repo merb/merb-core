@@ -84,9 +84,8 @@ namespace :doc do
     rdoc.rdoc_files.add(files)
     rdoc.main = "README"
     rdoc.title = "Merb Docs"
-    rdoc.template = File.expand_path("../tools/allison-2.0.2/lib/allison.rb", __FILE__)
     rdoc.rdoc_dir = "doc/rdoc"
-    rdoc.options << "--line-numbers" << "--inline-source"
+    rdoc.options << "--line-numbers"
   end
 
   desc "run webgen"
