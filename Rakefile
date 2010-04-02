@@ -43,7 +43,6 @@ begin
     ]
 
     # Runtime dependencies
-    gemspec.add_dependency 'bundler',    '>= 0.9.3'
     gemspec.add_dependency 'extlib',     '>= 0.9.13'
     gemspec.add_dependency 'erubis',     '>= 2.6.2'
     gemspec.add_dependency 'rake'
@@ -58,6 +57,18 @@ begin
     # Executable files
     gemspec.executables  = 'merb'
 
+    gemspec.post_install_message = %q{
+(::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::)
+
+                     (::)   U P G R A D I N G    (::)
+
+Thank you for installing merb-core 1.2
+Please be sure to read http://wiki.github.com/merb/merb/release-12
+for important information about this release.
+
+(::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::)
+    }
+    
   end
 
   Jeweler::GemcutterTasks.new
