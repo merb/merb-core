@@ -62,8 +62,8 @@ begin
 
                      (::)   U P G R A D I N G    (::)
 
-Thank you for installing merb-core 1.2
-Please be sure to read http://wiki.github.com/merb/merb/release-12
+Thank you for installing merb-core 1.2.0
+Please be sure to read http://wiki.github.com/merb/merb/release-120
 for important information about this release.
 
 (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::)
