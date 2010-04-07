@@ -1,4 +1,5 @@
 require 'erubis'
+require 'yaml'
 module Erubis
   # This adds support for embedding the return value of a block call:
   #   <%= foo do %>...<% end =%>
