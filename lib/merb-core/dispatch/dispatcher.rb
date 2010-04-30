@@ -57,7 +57,6 @@ module Merb
       return rack_response if handled?
       
       klass = controller
-      Merb.logger.debug { "Routed to: #{klass::_filter_params(params).inspect}" }
       
       unless klass < Controller
         raise NotFound, 
@@ -66,7 +65,9 @@ module Merb
           "you may need to check your Rackup file, see the Problems " \
           "section at: http://wiki.merbivore.com/pages/rack-middleware"
       end
-      
+
+      Merb.logger.debug { "Routed to: #{klass::_filter_params(params).inspect}" }
+
       if klass.abstract?
         raise NotFound, "The '#{klass}' controller has no public actions"
       end
