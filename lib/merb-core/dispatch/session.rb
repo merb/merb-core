@@ -1,6 +1,12 @@
 require 'merb-core/dispatch/session/container'
 require 'merb-core/dispatch/session/store_container'
 
+# Try to require SecureRandom from the Ruby 1.9.x
+begin
+  require 'securerandom'
+rescue LoadError
+end
+
 module Merb
   class Config
     # Returns stores list constructed from
@@ -74,16 +80,20 @@ module Merb
     #
     # :api: private
     def rand_uuid
-      values = [
-        rand(0x0010000),
-        rand(0x0010000),
-        rand(0x0010000),
-        rand(0x0010000),
-        rand(0x0010000),
-        rand(0x1000000),
-        rand(0x1000000),
-      ]
-      "%04x%04x%04x%04x%04x%06x%06x" % values
+      if defined?(SecureRandom)
+        SecureRandom.hex(16)
+      else
+        values = [
+          rand(0x0010000),
+          rand(0x0010000),
+          rand(0x0010000),
+          rand(0x0010000),
+          rand(0x0010000),
+          rand(0x1000000),
+          rand(0x1000000),
+        ]
+        "%04x%04x%04x%04x%04x%06x%06x" % values
+      end
     end
     
     # Marks this session as needing a new cookie.
