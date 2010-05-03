@@ -5,6 +5,7 @@ describe Merb::BootLoader::RackUpApplication do
   it "should default to rack config (rack.rb)" do
     options = {:merb_root => File.dirname(__FILE__) / 'fixture'}
     Merb::Config.setup(options)
+    Merb::BootLoader::default_framework
     Merb::BootLoader::RackUpApplication.run
     app = Merb::Config[:app]
     app.class.should == Merb::Rack::Static

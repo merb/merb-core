@@ -12,7 +12,7 @@ describe "rack application", :shared => true do
   end
 
   it 'returns hash of headers as the second tuple element' do
-    @result[1].should be_an_instance_of(Hash)
+    @result[1].should be_kind_of(Hash)
   end
 
   it 'returns response body as third tuple element' do
