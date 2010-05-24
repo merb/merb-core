@@ -8,75 +8,7 @@ require "fileutils"
 # Load code annotation support library
 require File.expand_path("../tools/annotation_extract", __FILE__)
 
-# Load this library's version information
-require File.expand_path('../lib/merb-core/version', __FILE__)
-
 include FileUtils
-
-begin
-
-  gem 'jeweler', '~> 1.4'
-  require 'jeweler'
-
-  Jeweler::Tasks.new do |gemspec|
-
-    gemspec.version     = Merb::VERSION.dup
-
-    gemspec.name        = "merb-core"
-    gemspec.description = "Merb. Pocket rocket web framework."
-    gemspec.summary     = "Merb plugin that provides caching (page, action, fragment, object)"
-
-    gemspec.authors     = [ "Ezra Zygmuntowicz" ]
-    gemspec.email       = "ez@engineyard.com"
-    gemspec.homepage    = "http://merbivore.com/"
-
-    gemspec.extra_rdoc_files.include [ 'CHANGELOG' ]
-
-    gemspec.files = Dir["{bin,lib,spec,spec10}/**/*"] + [
-      'LICENSE',
-      'README',
-      'Rakefile',
-      'TODO',
-      'CHANGELOG',
-      'PUBLIC_CHANGELOG',
-      'CONTRIBUTORS'
-    ]
-
-    # Runtime dependencies
-    gemspec.add_dependency 'extlib',     '>= 0.9.13'
-    gemspec.add_dependency 'erubis',     '>= 2.6.2'
-    gemspec.add_dependency 'rake'
-    gemspec.add_dependency 'rspec'
-    gemspec.add_dependency 'rack'
-    gemspec.add_dependency 'mime-types', '>= 1.16' # supports ruby-1.9
-
-    # Development dependencies
-    gemspec.add_development_dependency 'rspec',  '>= 1.2.9'
-    gemspec.add_development_dependency 'webrat', '>= 0.3.1'
-
-    # Executable files
-    gemspec.executables  = 'merb'
-
-    gemspec.post_install_message = %q{
-(::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::)
-
-                     (::)   U P G R A D I N G    (::)
-
-Thank you for installing merb-core 1.2.0
-Please be sure to read http://wiki.github.com/merb/merb/release-120
-for important information about this release.
-
-(::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::)
-    }
-    
-  end
-
-  Jeweler::GemcutterTasks.new
-
-rescue LoadError
-  puts "Jeweler (or a dependency) not available. Install it with: gem install jeweler"
-end
-
 
 desc "Run the specs."
 task :default => :specs
