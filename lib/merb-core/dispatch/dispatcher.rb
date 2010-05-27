@@ -5,31 +5,26 @@ module Merb
     class << self
       include Merb::ControllerExceptions
 
-      # :api: private
+      # @api private
       attr_accessor :use_mutex
 
       @@work_queue = Queue.new
 
-      # ==== Returns
-      # Queue:: the current queue of dispatch jobs.
+      # @return [Queue] the current queue of dispatch jobs.
       #
-      # :api: private
+      # @api private
       def work_queue
         @@work_queue
       end
 
-      # Dispatch the rack environment. ControllerExceptions are rescued here
-      # and redispatched.
+      # Dispatch the rack environment.
       #
-      # ==== Parameters
-      # rack_env<Rack::Environment>::
-      #   The rack environment, which is used to instantiate a Merb::Request
+      # ControllerExceptions are rescued here and redispatched.
       #
-      # ==== Returns
-      # Merb::Controller::
-      #   The Merb::Controller that was dispatched to
+      # @param rack_env [Rack::Environment] The rack environment, which is used to instantiate a Merb::Request
+      # @return [Merb::Controller] The Merb::Controller that was dispatched to
       #
-      # :api: private
+      # @api private
       def handle(request)
         request.handle
       end
@@ -43,12 +38,11 @@ module Merb
 
     attr_reader :start
 
-    # Handles request routing and action dispatch.
+    # Handles request routing and action dispatch
     #
-    # ==== Returns
-    # Array[Integer, Hash, #each]:: A Rack response
+    # @return [Array[Integer, Hash, #each]] A Rack response
     #
-    # :api: private
+    # @api private
     def handle
       @start = env["merb.request_start"] = Time.now
       Merb.logger.info { "Started request handling: #{start.to_s}" }
@@ -80,15 +74,13 @@ module Merb
     private
     # Setup the controller and call the chosen action
     #
-    # ==== Parameters
-    # klass<Merb::Controller>:: The controller class to dispatch to.
-    # action<Symbol>:: The action to dispatch.
-    # status<Integer>:: The status code to respond with.
+    # @param klass [Merb::Controller] The controller class to dispatch to.
+    # @param action [Symbol] The action to dispatch.
+    # @param status [Integer] The status code to respond with.
     #
-    # ==== Returns
-    # Array[Integer, Hash, #each]:: A Rack response
+    # @return [Array[Integer, Hash, #each]] A Rack response
     #
-    # :api: private
+    # @api private
     def dispatch_action(klass, action_name, status=200)
       @env["merb.status"] = status
       @env["merb.action_name"] = action_name
@@ -100,8 +92,7 @@ module Merb
       end
     end
 
-    # Re-route the current request to the Exception controller if it is
-    # available, and try to render the exception nicely.
+    # Re-route the request to the Exception controller if it is available
     #
     # You can handle exceptions by implementing actions for specific
     # exceptions such as not_found or for entire classes of exceptions
@@ -109,15 +100,12 @@ module Merb
     # exceptions outside the Merb exception hierarchy (e.g.
     # StandardError is caught in standard_error).
     #
-    # ==== Parameters
-    # exception<Object>::
-    #   The exception object that was created when trying to dispatch the
-    #   original controller.
+    # @param exception [Object] The exception object that was created when
+    #                           trying to dispatch the original controller.
     #
-    # ==== Returns
-    # Array[Integer, Hash, #each]:: A Rack response
+    # @return [Array[Integer, Hash, #each]] A Rack response
     #
-    # :api: private
+    # @api private
     def dispatch_exception(exception)
       if(exception.is_a?(Merb::ControllerExceptions::Base) &&
          !exception.is_a?(Merb::ControllerExceptions::ServerError))
