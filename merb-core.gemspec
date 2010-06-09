@@ -34,7 +34,6 @@ Gem::Specification.new do |gem|
     gem.add_dependency 'extlib',     '>= 0.9.13'
     gem.add_dependency 'erubis',     '>= 2.6.2'
     gem.add_dependency 'rake'
-    gem.add_dependency 'rspec'
     gem.add_dependency 'rack'
     gem.add_dependency 'mime-types', '>= 1.16' # supports ruby-1.9
 
