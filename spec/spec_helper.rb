@@ -113,6 +113,7 @@ Spec::Runner.configure do |config|
   config.include ::Webrat::HaveTagMatcher
   config.include Merb::Test::RequestHelper
   config.include Merb::Test::RouteHelper
+  config.include Merb::Test::WebratHelper
 
   def reset_dependency(name, const = nil)
     Object.send(:remove_const, const) if const && Object.const_defined?(const)

@@ -5,7 +5,7 @@ module Merb
 
       def call(env)
         if env["PATH_INFO"] =~ /^\/dummy/
-          [200, "", "This is a dummy content"]
+          [200, {}, ['This is a dummy content']]
         else
           @app.call(env)
         end
