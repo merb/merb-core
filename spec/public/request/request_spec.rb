@@ -1,8 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 startup_merb
 
-require "mongrel"
-
 describe Merb::Request, "#method" do
   
   [:get, :head, :put, :delete].each do |method|
