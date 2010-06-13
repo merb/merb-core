@@ -21,6 +21,7 @@ module Merb
     autoload :Tracer,              'merb-core/rack/middleware/tracer'
     autoload :ContentLength,       'merb-core/rack/middleware/content_length'
     autoload :ConditionalGet,      'merb-core/rack/middleware/conditional_get'
+    autoload :Head,                'merb-core/rack/middleware/head'
     autoload :StreamWrapper,       'merb-core/rack/stream_wrapper'
     autoload :Helpers,             'merb-core/rack/helpers'
   end # Rack

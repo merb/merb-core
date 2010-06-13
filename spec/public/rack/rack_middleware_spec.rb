@@ -99,3 +99,18 @@ describe Merb::Rack::ContentLength do
     @result[1]['Content-Length'].should == @body.size.to_s
   end
 end
+
+describe Merb::Rack::Head do
+  before(:each) do
+    @app = Merb::Rack::Application.new
+    @middleware = Merb::Rack::Head.new(@app)
+    @env        = Rack::MockRequest.env_for('/heavy/lifting', :method => 'HEAD')
+    
+    @result = @middleware.call(@env)
+    @body   = [] # Head should return empty body
+  end
+
+  it_should_behave_like "rack application"
+
+  it_should_behave_like "transparent middleware"
+end

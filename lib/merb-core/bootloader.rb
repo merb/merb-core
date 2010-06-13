@@ -1307,8 +1307,8 @@ class Merb::BootLoader::RackUpApplication < Merb::BootLoader
       Merb::Config[:app] = eval("::Rack::Builder.new {( #{rackup_code}\n )}.to_app", TOPLEVEL_BINDING, Merb::Config[:rackup])
     else
       Merb::Config[:app] = ::Rack::Builder.new {
-         use Rack::Head # handle head requests
-         use Rack::ContentLength # report content length
+         use Merb::Rack::Head # handle head requests
+         use Merb::Rack::ContentLength # report content length
          if prefix = ::Merb::Config[:path_prefix]
            use Merb::Rack::PathPrefix, prefix
          end

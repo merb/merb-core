@@ -1,13 +1,13 @@
-require 'rack/content_length'
+require 'rack/head'
 require 'merb-core/rack/middleware'
 
 module Merb
   module Rack
 
-    # Merbified Rack::ContentLength
+    # Merbified Rack::Head
     #
     # @see Merb::Rack::DeferrableMiddleware
-    class ContentLength < ::Rack::ContentLength
+    class Head < ::Rack::Head
       include Merb::Rack::DeferrableMiddleware
     end
   end
