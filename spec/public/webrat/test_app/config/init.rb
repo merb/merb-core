@@ -3,7 +3,8 @@
 ::Gem.clear_paths; ::Gem.path.unshift(File.dirname(__FILE__) + "/../gems/")
 
 Merb::BootLoader.before_app_loads do
-  require Merb.framework_root / ".." / ".." / "merb-helpers" / "lib" / "merb-helpers.rb"
+  $:.push(Merb.framework_root / ".." / ".." / "merb-helpers" / "lib")
+  require 'merb-helpers'
 end
  
 use_test :rspec
