@@ -378,6 +378,7 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
       load_env_config
     end
     expand_ruby_path
+    enable_json_gem unless Merb::disabled?(:json)
     update_logger
     nil
   end
@@ -404,6 +405,21 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
     nil
   end
   
+  # Requires json or json_pure.
+  #
+  # ==== Returns
+  # nil
+  #
+  # :api: private
+  def self.enable_json_gem
+    require "json"
+    rescue LoadError
+        Merb.logger.error! "You have enabled JSON but don't have json " \
+                           "installed or don't have dependency in the Gemfile. " \
+                           "Add \"gem 'json', '>= 1.1.7'\" or " \
+                           "\"gem 'json_pure', '>= 1.1.7'\" to your Gemfile."
+  end
+
   # Resets the logger and sets the log_stream to Merb::Config[:log_file]
   # if one is specified, falling back to STDOUT.
   #
