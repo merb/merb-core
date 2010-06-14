@@ -6,6 +6,7 @@ root_key = %w[-m --merb-root].detect { |o| ARGV.index(o) }
 root = ARGV[ARGV.index(root_key) + 1] if root_key
 root = root.to_a.empty? ? Dir.getwd : root
 
+require "bundler"
 require "thread"
 require "set"
 require "fileutils"
@@ -579,9 +580,8 @@ module Merb
     # :log_level<Symbol>::        logger level, default is :info
     #
     # :disabled_components<Array[Symbol]>::
-    #   array of disabled component names,
-    #   for instance, to disable json gem,
-    #   specify :json. Default is empty array.
+    #   array of disabled component names
+    #   Default is empty array.
     #
     # :deferred_actions<Array(Symbol, String)]>::
     #   names of actions that should be deferred
