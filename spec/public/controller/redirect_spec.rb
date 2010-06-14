@@ -61,8 +61,7 @@ describe Merb::Controller, " redirects" do
 
   it "consumes redirects with messages" do
     Merb::Router.prepare do
-      match('/consumes_message')
-      .to(:controller => 'merb/test/fixtures/controllers/consumes_message', :action => 'index')
+      match('/consumes_message').to(:controller => 'merb/test/fixtures/controllers/consumes_message', :action => 'index')
     end
     expected_url = Merb::Parse.escape([Marshal.dump(:notice => '<b>1 > 2 + 100</b>')].pack('m'))
     response = visit("/consumes_message?_message=#{expected_url}")
