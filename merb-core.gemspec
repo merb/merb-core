@@ -46,16 +46,4 @@ Gem::Specification.new do |gem|
 
     # Requirements
     gem.requirements << 'Install the json gem to get faster json parsing.'
-
-    gem.post_install_message = %q{
-(::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::)
-
-                     (::)   U P G R A D I N G    (::)
-
-Thank you for installing merb-core 1.2.0
-Please be sure to read http://wiki.github.com/merb/merb/release-120
-for important information about this release.
-
-(::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::)
-}
 end
