@@ -16,6 +16,12 @@ rescue LoadError => e
 end
 
 if Merb.test_framework.to_s == "rspec"
-  require 'merb-core/test/test_ext/rspec'
-  require 'merb-core/test/matchers'
+  begin
+    require 'merb-core/test/test_ext/rspec'
+    require 'merb-core/test/matchers'
+  rescue LoadError
+    Merb.logger.warn! "You're using RSpec as a testing framework but you don't have " \
+                      "the gem installed. To provide full functionality of the test " \
+                      "helpers you should install it."
+  end
 end
