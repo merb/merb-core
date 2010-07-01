@@ -5,7 +5,7 @@ namespace :audit do
     seen = []
     unless Merb::Router.named_routes.empty?
       puts "Named Routes"
-      Merb::Router.named_routes.each do |name,route|
+      Merb::Router.named_routes.sort_by {|k,v| k}.each do |name,route|
         puts "  #{name}: #{route}"
         seen << route
       end
