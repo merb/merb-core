@@ -52,7 +52,7 @@ Gem::Specification.new do |gem|
 
                      (::)   U P G R A D I N G    (::)
 
-Thank you for installing merb-core 1.1.1
+Thank you for installing merb-core 1.1.3
 
 The planned route for upgrading from merb 1.1.x to 1.2 will involve
 changes which may break existing merb apps.  Fear not, fixes for
