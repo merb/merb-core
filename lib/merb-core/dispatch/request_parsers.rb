@@ -84,7 +84,7 @@ module Merb
             name         = head[NAME_REGEX, 1]
 
             if filename && !filename.empty?
-              body = Tempfile.new(:Merb)
+              body = Tempfile.new('Merb')
               body.binmode if defined? body.binmode
             end
             next
