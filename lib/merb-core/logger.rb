@@ -13,42 +13,58 @@ class Merb::Logger < Extlib::Logger
 end
 
 # require "time" # httpdate
-# ==== Public Merb Logger API
-#
-# To replace an existing logger with a new one:
-#  Merb.logger.set_log(log{String, IO},level{Symbol, String})
-#  for example:
-#  Merb.logger.set_log($stdout, Merb::Logger::Levels[:fatal])
-#
-# Available logging levels are
-#   Merb::Logger::{ Fatal, Error, Warn, Info, Debug }
-#
-# Logging via:
-#   Merb.logger.fatal(message<String>,&block)
-#   Merb.logger.error(message<String>,&block)
-#   Merb.logger.warn(message<String>,&block)
-#   Merb.logger.info(message<String>,&block)
-#   Merb.logger.debug(message<String>,&block)
-#
-# Logging with autoflush:
-#   Merb.logger.fatal!(message<String>,&block)
-#   Merb.logger.error!(message<String>,&block)
-#   Merb.logger.warn!(message<String>,&block)
-#   Merb.logger.info!(message<String>,&block)
-#   Merb.logger.debug!(message<String>,&block)
-#
-# Flush the buffer to
-#   Merb.logger.flush
-#
-# Remove the current log object
-#   Merb.logger.close
-#
-# ==== Private Merb Logger API
-#
-# To initialize the logger you create a new object, proxies to set_log.
-#   Merb::Logger.new(log{String, IO},level{Symbol, String})
 module Merb
 
+  # #### Public Merb Logger API
+  #
+  # To replace an existing logger with a new one:
+  #     Merb.logger.set_log(log{String, IO},level{Symbol, String})
+  # for example:
+  #     Merb.logger.set_log($stdout, Merb::Logger::Levels[:fatal])
+  #
+  # Available logging levels are
+  #     Merb::Logger::{ Fatal, Error, Warn, Info, Debug }
+  #
+  # Logging via:
+  #     Merb.logger.fatal(message<String>,&block)
+  #     Merb.logger.error(message<String>,&block)
+  #     Merb.logger.warn(message<String>,&block)
+  #     Merb.logger.info(message<String>,&block)
+  #     Merb.logger.debug(message<String>,&block)
+  #
+  # Logging with autoflush:
+  #     Merb.logger.fatal!(message<String>,&block)
+  #     Merb.logger.error!(message<String>,&block)
+  #     Merb.logger.warn!(message<String>,&block)
+  #     Merb.logger.info!(message<String>,&block)
+  #     Merb.logger.debug!(message<String>,&block)
+  #
+  # Flush the buffer to
+  #     Merb.logger.flush
+  #
+  # Remove the current log object
+  #     Merb.logger.close
+  #
+  # #### Private Merb Logger API
+  #
+  # To initialize the logger you create a new object, proxies to {set_log}.
+  #     Merb::Logger.new(log{String, IO},level{Symbol, String})
+  #
+  # #### Ruby (standard) logger levels:
+  #     :fatal  # An unhandleable error that results in a program crash
+  #     :error  # A handleable error condition
+  #     :warn   # A warning
+  #     :info   # generic (useful) information about system operation
+  #     :debug  # low-level information for developers
+  #
+  # Each key in the Levels mash is used to generate the following methods:
+  #
+  # * **`#key(message = nil):`** Normal logging to log-level `key`.
+  # * **`#key!(message = nil):`** Logging to level `key` with auto-flush.
+  # * **`#key?:`** Returns a boolean, true if logging for level `key`
+  #   is enabled.
+  #
+  # The generated logging methods both return `self` to enable chaining.
   class Logger
 
     attr_accessor :level
@@ -58,13 +74,7 @@ module Merb
     attr_reader   :log
     attr_reader   :init_args
 
-    # ==== Notes
-    # Ruby (standard) logger levels:
-    # :fatal:: An unhandleable error that results in a program crash
-    # :error:: A handleable error condition
-    # :warn:: A warning
-    # :info:: generic (useful) information about system operation
-    # :debug:: low-level information for developers
+    # Levels for which logging methods are defined.
     Levels = Mash.new({
       :fatal => 7,
       :error => 6,
@@ -77,26 +87,25 @@ module Merb
 
     public
 
-    # To initialize the logger you create a new object, proxies to set_log.
+    # To initialize the logger you create a new object, proxies to {#set_log}.
     #
-    # ==== Parameters
-    # *args:: Arguments to create the log from. See set_logs for specifics.
+    # @param *args Arguments to create the log from. See {#set_log} for specifics.
+    # @see Merb::Logger#set_log
     def initialize(*args)
       set_log(*args)
     end
 
     # Replaces an existing logger with a new one.
     #
-    # ==== Parameters
-    # stream<IO, String>:: Either an IO object or a name of a logfile.
-    # log_level<~to_sym>::
-    #   The log level from, e.g. :fatal or :info. Defaults to :error in the
-    #   production environment and :debug otherwise.
-    # delimiter<String>::
-    #   Delimiter to use between message sections. Defaults to " ~ ".
-    # auto_flush<Boolean>::
+    # @param [IO, String] stream Either an IO object or a name of a logfile.
+    # @param [#to_sym] log_level
+    #   The log level from, e.g. `:fatal` or `:info`. Defaults to `:error` in the
+    #   production environment and `:debug` otherwise.
+    # @param [String] delimiter
+    #   Delimiter to use between message sections.
+    # @param [Boolean] auto_flush
     #   Whether the log should automatically flush after new messages are
-    #   added. Defaults to false.
+    #   added.
     def set_log(stream = Merb::Config[:log_stream],
       log_level = Merb::Config[:log_level],
       delimiter = Merb::Config[:log_delimiter],
@@ -135,11 +144,9 @@ module Merb
     # Appends a message to the log. The methods yield to an optional block and
     # the output of this block will be appended to the message.
     #
-    # ==== Parameters
-    # string<String>:: The message to be logged. Defaults to nil.
+    # @param [String] string The message to be logged.
     #
-    # ==== Returns
-    # String:: The resulting message added to the log file.
+    # @return [String] The resulting message added to the log file.
     def <<(string = nil)
       message = ""
       message << delimiter
@@ -159,11 +166,10 @@ module Merb
       # Appends a message to the log if the log level is at least as high as
       # the log level of the logger.
       #
-      # ==== Parameters
-      # string<String>:: The message to be logged. Defaults to nil.
+      # Parameters
+      # @param [String] string The message to be logged.
       #
-      # ==== Returns
-      # self:: The logger object for chaining.
+      # @return self The logger object for chaining.
       def #{name}(message = nil)
         if #{number} >= level
           message = block_given? ? yield : message
@@ -173,14 +179,12 @@ module Merb
       end
 
       # Appends a message to the log if the log level is at least as high as
-      # the log level of the logger. The bang! version of the method also auto
+      # the log level of the logger. The `bang!` version of the method also auto
       # flushes the log buffer to disk.
       #
-      # ==== Parameters
-      # string<String>:: The message to be logged. Defaults to nil.
+      # @param [String] string The message to be logged.
       #
-      # ==== Returns
-      # self:: The logger object for chaining.
+      # @return self The logger object for chaining.
       def #{name}!(message = nil)
         if #{number} >= level
           message = block_given? ? yield : message
@@ -190,8 +194,7 @@ module Merb
         self
       end
 
-      # ==== Returns
-      # Boolean:: True if this level will be logged by this logger.
+      # @return [Boolean] `true` if this level will be logged by this logger.
       def #{name}?
         #{number} >= level
       end

@@ -61,9 +61,9 @@ module Erubis
       rest = pos == 0 ? input : input[pos..-1]   # ruby1.9
       add_text(src, rest)
     end
-    
+
   end
-  
+
   class MEruby < Erubis::Eruby
     include PercentLineEnhancer
     include StringBufferEnhancer
@@ -71,11 +71,9 @@ module Erubis
 
   # Loads a file, runs it through Erubis and parses it as YAML.
   #
-  # ===== Parameters
-  # file<String>:: The name of the file to load.
-  # binding<Binding>::
-  #   The binding to use when evaluating the ERB tags. Defaults to the current
-  #   binding.
+  # @param [String] file The name of the file to load.
+  # @param [Binding] binding
+  #   The binding to use when evaluating the ERB tags.
   #
   # @api private
   def self.load_yaml_file(file, binding = binding)
