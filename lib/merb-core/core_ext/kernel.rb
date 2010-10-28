@@ -172,7 +172,7 @@ module Kernel
   # code block will be run 30 times in the example above.
   #
   # @param [#to_s] name The file name. The result will be written out to
-  #   Merb.root/"log/#{name}.html".
+  #   `Merb.root/"log/#{name}.html"`.
   # @param [Fixnum] min Minimum percentage of the total time a method must
   #   take for it to be included in the result.
   #

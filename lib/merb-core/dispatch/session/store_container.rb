@@ -1,60 +1,59 @@
 module Merb
   
+  # The class attribute :store holds a reference to an object that
+  # implements the following interface:
+  #
+  #     retrieve_session(session_id)    # returns a Hash
+  #     store_session(session_id, data) # expects data to be Hash
+  #     delete_session(session_id)
+  #
+  # You can use session store classes directly by assigning to `:store`
+  # in your `config/init.rb` `after_app_loads` step, for example:
+  #
+  #     Merb::BootLoader.after_app_loads do
+  #       SessionStoreContainer.store = MemorySession.new
+  #     end
+  #
+  # Or you can inherit from SessionStoreContainer to create a
+  # {SessionContainer} that delegates to aggregated store.
+  #
+  #     class MemorySession < SessionStoreContainer
+  #       self.session_store_type = :memory
+  #     end
+  #
+  #     class MemoryContainer
+  #
+  #       def self.retrieve_session(session_id)
+  #         # ...
+  #       end
+  #
+  #       def self.store_session(session_id, data)
+  #         # ...
+  #       end
+  #
+  #       def self.delete_session(session_id)
+  #         # ...
+  #       end
+  #
+  #     end
+  # When used directly, report as `:store` store
   class SessionStoreContainer < SessionContainer
     
     class_inheritable_accessor :store
     # @api private
     attr_accessor  :_fingerprint
-    
+
     # Determines how many times to try generating a unique session key before we give up
     GENERATE_MAX_TRIES = 100
 
-    # The class attribute :store holds a reference to an object that implements 
-    # the following interface:
-    #
-    # - retrieve_session(session_id) # returns a Hash
-    # - store_session(session_id, data) # expects data to be Hash
-    # - delete_session(session_id)
-    #
-    # You can use session store classes directly by assigning to :store in your
-    # config/init.rb after_app_loads step, for example:
-    #
-    #   Merb::BootLoader.after_app_loads do
-    #     SessionStoreContainer.store = MemorySession.new
-    #   end
-    #
-    # Or you can inherit from SessionStoreContainer to create a SessionContainer
-    # that delegates to aggregated store.
-    #
-    #   class MemorySession < SessionStoreContainer
-    #     self.session_store_type = :memory
-    #   end
-    #
-    #   class MemoryContainer
-    #   
-    #     def self.retrieve_session(session_id)
-    #       ...
-    #     end
-    #   
-    #     def self.store_session(session_id, data)
-    #       ...
-    #     end
-    #   
-    #     def self.delete_session(session_id)
-    #       ...
-    #     end
-    #   
-    #   end    
-    # When used directly, report as :store store
     self.session_store_type = :store
     
     class << self
-      
+
       # Generates a new session ID and creates a new session.
-      # 
-      # ==== Returns
-      # SessionStoreContainer:: The new session.
-      # 
+      #
+      # @return [SessionStoreContainer] The new session.
+      #
       # @api private
       def generate
         
@@ -71,18 +70,15 @@ module Merb
         session.needs_new_cookie = true
         session
       end
-      
+
       # Setup a new session or retreive an existing session.
-      # 
-      # ==== Parameters
-      # request<Merb::Request>:: The Merb::Request that came in from Rack.
-      # 
-      # ==== Notes
-      # If no sessions were found, a new SessionContainer will be generated.
-      # 
-      # ==== Returns
-      # SessionContainer:: a SessionContainer.
-      # 
+      #
+      # @param [Merb::Request] request The request that came in from Rack.
+      #
+      # @note If no sessions were found, a new SessionContainer will be generated.
+      #
+      # @return [SessionContainer] A SessionContainer.
+      #
       # @api private
       def setup(request)
         session = retrieve(request.session_id)
@@ -93,18 +89,17 @@ module Merb
       end
             
       private
-      
-      # ==== Parameters
-      # session_id<String:: The ID of the session to retrieve.
+
+      # @param [String] session_id The ID of the session to retrieve.
       #
-      # ==== Returns
-      # SessionStoreContainer:: SessionStoreContainer instance with the session data. If no
-      #   sessions matched session_id, a new SessionStoreContainer will be generated.
+      # @return [SessionStoreContainer] SessionStoreContainer instance
+      #   with the session data. If no sessions matched session_id, a
+      #   new SessionStoreContainer will be generated.
       #
-      # ==== Notes
-      # If there are persisted exceptions callbacks to execute, they all get executed
-      # when Memcache library raises an exception.
-      # 
+      # @note
+      #   If there are persisted exceptions callbacks to execute, they
+      #   all get executed when Memcache library raises an exception.
+      #
       # @api private
       def retrieve(session_id)
         unless session_id.blank?
@@ -130,20 +125,19 @@ module Merb
       end
 
     end
-    
+
     # Teardown and/or persist the current session.
     #
     # If @_destroy is true, clear out the session completely, including
     # removal of the session cookie itself.
     #
-    # ==== Parameters
-    # request<Merb::Request>:: The Merb::Request that came in from Rack.
+    # @param [Merb::Request] request The Merb::Request that came in from Rack.
     #
-    # ==== Notes
-    # The data (self) is converted to a Hash first, since a container might 
-    # choose to do a full Marshal on the data, which would make it persist 
-    # attributes like 'needs_new_cookie', which it shouldn't.
-    # 
+    # @note
+    #   The data (self) is converted to a Hash first, since a container might
+    #   choose to do a full Marshal on the data, which would make it persist
+    #   attributes like 'needs_new_cookie', which it shouldn't.
+    #
     # @api private
     def finalize(request)
       if @_destroy
@@ -162,9 +156,9 @@ module Merb
         end
       end
     end
-    
+
     # Regenerate the session ID.
-    # 
+    #
     # @api private
     def regenerate
       store.delete_session(self.session_id)

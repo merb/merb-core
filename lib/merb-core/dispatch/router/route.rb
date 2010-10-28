@@ -2,7 +2,7 @@ module Merb
 
   class Router
     # This entire class is private and should never be accessed outside of
-    # Merb::Router and Behavior
+    # {Merb::Router} and {Behavior}
     class Route #:nodoc:
       SEGMENT_REGEXP               = /(:([a-z](_?[a-z0-9])*))/
       OPTIONAL_SEGMENT_REGEX       = /^.*?([\(\)])/i
@@ -63,38 +63,37 @@ module Merb
       
       alias_method :inspect, :to_s
 
-      # Appends self to Merb::Router.routes
-
+      # Appends self to {Merb::Router.routes}
       # @api private
       def register
         @index = Merb::Router.routes.size
         Merb::Router.routes << self
         self
       end
-      
-      # Inserts self to Merb::Router.routes at the specified index.
-      # @api private      
+
+      # Inserts self to {Merb::Router.routes} at the specified index.
+      # @api private
       def register_at(index)
         @index = index
         Merb::Router.routes.insert(index, self)
         self
       end
-      
+
       # Sets the route as a resource route with the given key as the 
       # lookup key.
-      # @api private      
+      # @api private
       def resource=(key)
         Router.resource_routes[key] = self
         key
       end
-      
+
       # @api private
       def name=(name)
         @name = name.to_sym
         Router.named_routes[@name] = self
         @name
       end
-      
+
       # Generates the URL for the route given the passed arguments. The
       # method will first match the anonymous parameters to route params
       # and will convert all the parameters according to the specifed
@@ -102,19 +101,18 @@ module Merb
       #
       # Then the named parameters are passed to a compiled generation proc.
       #
-      # ==== Parameters
-      # args<Array>::
-      #   The arguments passed to the public #url method with the name
-      #   of the route removed. This is an array of the anonymous parameters
-      #   followed by a hash containing the named parameters.
+      # @param [Array] args
+      #   The arguments passed to the public {Merb::Router.url #url} method
+      #   with the name of the route removed. This is an array of the
+      #   anonymous parameters followed by a hash containing the named
+      #   parameters.
       #
-      # defaults<Hash>::
+      # @param [Hash] defaults
       #   A hash of parameters to use to generate the route if there are
       #   any missing required parameters. This is usually the parameters
       #   for the current request
       #
-      # ==== Returns
-      # String:: The generated URL.
+      # @return [String] The generated URL.
       #
       # @api private
       def generate(args = [], defaults = {}, resource = false)
@@ -151,7 +149,7 @@ module Merb
         uri = Merb::Config[:path_prefix] + uri if Merb::Config[:path_prefix]
         uri
       end
-      
+
       # Identifies the object according to the identifiers set while building
       # the routes. Identifying an object means picking an instance method to
       # call on the object that will return a string representation of the
@@ -159,7 +157,7 @@ module Merb
       # then a param_key must be present and match one of the elements of the
       # identifier array.
       #
-      # param_keys that end in _id are treated slightly differently in order
+      # param_keys that end in `_id` are treated slightly differently in order
       # to get nested resources to work correctly.
       #
       # @api private
@@ -176,9 +174,9 @@ module Merb
           identifier ? obj.send(identifier) : obj
         end
       end
-      
+
       # Returns the identifier for the passed object. Built in core ruby classes are
-      # always identified with to_s. The method will return nil in that case (since
+      # always identified with `to_s`. The method will return nil in that case (since
       # to_s is the default for objects that do not have identifiers.)
       #
       # @api private
@@ -220,6 +218,7 @@ module Merb
       
     # === Compilation ===
 
+
       # @api private
       def compile
         compile_conditions
@@ -240,8 +239,7 @@ module Merb
           @opt_segment_count = 0
           @opt_segment_stack = [[]]
         end
-        
-        #
+
         # @api private
         def compiled
           ruby  = ""
@@ -266,7 +264,7 @@ module Merb
         end
         
       private
-      
+
         # Cleans up methods a bunch. We don't need to pass the current segment
         # level around everywhere anymore. It's kept track for us in the stack.
         #
@@ -277,7 +275,7 @@ module Merb
           @stack.pop
           retval
         end
-  
+
         # @api private  
         def segments
           @stack.last || []
@@ -317,7 +315,7 @@ module Merb
         end
 
         # --- Not so pretty ---
-        # @api private        
+        # @api private
         def segment_level_matches_conditions
           conditions = current_segments.map do |segment|
             condition = "(cached_#{segment} = params[#{segment.inspect}] || include_defaults && defaults[#{segment.inspect}])"
@@ -378,6 +376,7 @@ module Merb
       end
 
     # === Conditions ===
+
 
       # @api private
       def compile_conditions
@@ -485,7 +484,7 @@ module Merb
         segments
       end
 
-      # --- Yeah, this could probably be refactored
+      # @todo This could probably be refactored
       # @api private
       def compile_path_segments(compiled, segments)
         segments.each do |segment|
@@ -622,9 +621,9 @@ module Merb
 
         statements
       end
-      
-      # (request.matched? || ((block_result = process(proc.call))))
-      # @api private      
+
+      # `(request.matched? || ((block_result = process(proc.call))))`
+      # @api private
       def deferred_condition_statement(deferred)
         if current = deferred.first
           html  = " && (request.matched? || ("
@@ -647,8 +646,9 @@ module Merb
       end
 
     # ---------- Utilities ----------
-      
-      # @api private      
+
+
+      # @api private
       def arrays_to_regexps(condition)
         return condition unless condition.is_a?(Array)
         
@@ -663,8 +663,8 @@ module Merb
         
         Regexp.compile(source.join('|'))
       end
-    
-      # @api private    
+
+      # @api private
       def segment_level_to_s(segments)
         (segments || []).inject('') do |str, seg|
           str << case seg

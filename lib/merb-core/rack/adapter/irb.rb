@@ -1,92 +1,15 @@
 module Merb
   module Rack
     class Console
-      # There are three possible ways to use this method.  First, if you have a named route, 
-      # you can specify the route as the first parameter as a symbol and any paramters in a 
-      # hash.  Second, you can generate the default route by just passing the params hash, 
-      # just passing the params hash.  Finally, you can use the anonymous parameters.  This 
-      # allows you to specify the parameters to a named route in the order they appear in the 
-      # router.  
-      #
-      # ==== Parameters(Named Route)
-      # name<Symbol>:: 
-      #   The name of the route. 
-      # args<Hash>:: 
-      #   Parameters for the route generation.
-      #
-      # ==== Parameters(Default Route)
-      # args<Hash>:: 
-      #   Parameters for the route generation.  This route will use the default route. 
-      #
-      # ==== Parameters(Anonymous Parameters)
-      # name<Symbol>::
-      #   The name of the route.  
-      # args<Array>:: 
-      #   An array of anonymous parameters to generate the route
-      #   with. These parameters are assigned to the route parameters
-      #   in the order that they are passed.
-      #
-      # ==== Returns
-      # String:: The generated URL.
-      #
-      # ==== Examples
-      # Named Route
-      #
-      # Merb::Router.prepare do
-      #   match("/articles/:title").to(:controller => :articles, :action => :show).name("articles")
-      # end
-      #
-      # url(:articles, :title => "new_article")
-      #
-      # Default Route
-      #
-      # Merb::Router.prepare do
-      #   default_routes
-      # end
-      #
-      # url(:controller => "articles", :action => "new")
-      #
-      # Anonymous Paramters
-      #
-      # Merb::Router.prepare do
-      #   match("/articles/:year/:month/:title").to(:controller => :articles, :action => :show).name("articles")
-      # end
-      #
-      # url(:articles, 2008, 10, "test_article")
+      # @param (see Merb::Router#url)
       #
       # @api public
       def url(name, *args)
         args << {}
         Merb::Router.url(name, *args)
       end
-      
-      # Generates a URL for a single or nested resource.
-      #
-      # ==== Parameters
-      # resources<Symbol,Object>:: The resources for which the URL
-      #   should be generated. These resources should be specified
-      #   in the router.rb file using #resources and #resource.
-      #
-      # options<Hash>:: Any extra parameters that are needed to
-      #   generate the URL.
-      #
-      # ==== Returns
-      # String:: The generated URL.
-      #
-      # ==== Examples
-      #
-      # Merb::Router.prepare do
-      #   resources :users do
-      #     resources :comments
-      #   end
-      # end
-      #
-      # resource(:users)            # => /users
-      # resource(@user)             # => /users/10
-      # resource(@user, :comments)  # => /users/10/comments
-      # resource(@user, @comment)   # => /users/10/comments/15
-      # resource(:users, :new)      # => /users/new
-      # resource(:@user, :edit)     # => /users/10/edit
+
+      # @param (see Merb::Router#resource)
       #
       # @api public
       def resource(*args)
@@ -94,7 +17,7 @@ module Merb
         Merb::Router.resource(*args)
       end
 
-      # Reloads classes using Merb::BootLoader::ReloadClasses.
+      # Reloads classes using `Merb::BootLoader::ReloadClasses`.
       # @api public
       def reload!
         Merb::BootLoader::ReloadClasses.reload!
@@ -136,9 +59,9 @@ module Merb
         nil
       end
 
-      # Starts a sandboxed session (delegates to any Merb::Orms::* modules).
+      # Starts a sandboxed session (delegates to any `Merb::Orms::*` modules).
       #
-      # An ORM should implement Merb::Orms::MyOrm#open_sandbox! to support this.
+      # An ORM should implement `Merb::Orms::MyOrm#open_sandbox!` to support this.
       # Usually this involves starting a transaction.
       # @api public
       def open_sandbox!
@@ -147,9 +70,9 @@ module Merb
         orm_modules.each { |orm| orm.open_sandbox! if orm.respond_to?(:open_sandbox!) }
       end
 
-      # Ends a sandboxed session (delegates to any Merb::Orms::* modules).
+      # Ends a sandboxed session (delegates to any `Merb::Orms::*` modules).
       #
-      # An ORM should implement Merb::Orms::MyOrm#close_sandbox! to support this.
+      # An ORM should implement `Merb::Orms::MyOrm#close_sandbox!` to support this.
       # Usually this involves rolling back a transaction.
       # @api public
       def close_sandbox!
@@ -157,7 +80,7 @@ module Merb
         puts "Modifications have been rolled back"
       end
 
-      # Explictly show logger output during IRB session
+      # Explicitly show logger output during IRB session
       # @api public
       def trace_log!
         Merb.logger.auto_flush = true
@@ -165,8 +88,7 @@ module Merb
 
       private
 
-      # ==== Returns
-      # Array:: All Merb::Orms::* modules.
+      # @return [Array] All `Merb::Orms::*` modules.
       # @api private
       def orm_modules
         if Merb.const_defined?('Orms')
@@ -179,13 +101,11 @@ module Merb
     end
 
     class Irb
-      # ==== Parameters
-      # opts<Hash>:
+      # @param [Hash] opts
       #   Options for IRB. Currently this is not used by the IRB adapter.
       #
-      # ==== Notes
-      # If the +.irbrc+ file exists, it will be loaded into the IRBRC
-      # environment variable.
+      # @note If the `.irbrc` file exists, it will be loaded into the IRBRC
+      #   environment variable.
       #
       # @api plugin
       def self.start(opts={})

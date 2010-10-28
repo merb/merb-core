@@ -8,31 +8,31 @@ module Merb
       def memory
         ps_int('rss')
       end
-      
+
       # Percentage memory usage
       def percent_memory
         ps_float('%mem')
       end
-      
+
       # Percentage CPU usage
       def percent_cpu
         ps_float('%cpu')
       end
-      
+
       private
-      
+
       def ps_int(keyword)
         `ps -o #{keyword}= -p #{@pid}`.to_i
       end
-      
+
       def ps_float(keyword)
         `ps -o #{keyword}= -p #{@pid}`.to_f
       end
-      
+
       def ps_string(keyword)
         `ps -o #{keyword}= -p #{@pid}`.strip
       end
-      
+
       def time_string_to_seconds(text)
         _, minutes, seconds, useconds = *text.match(/(\d+):(\d{2}).(\d{2})/)
         (minutes.to_i * 60) + seconds.to_i
@@ -45,38 +45,35 @@ module Merb
   module Rack
     class AbstractAdapter
 
-      # This method is designed to be overridden in a rack adapter.  It 
-      # will be called to start a server created with the new_server method.
-      # This is called from the AbstractAdapter start method.
+      # This method is designed to be overridden in a rack adapter.  It
+      # will be called to start a server created with the {.new_server} method.
+      # This is called from the `AbstractAdapter` start method.
       #
       # @api plugin
       # @overridable
       def self.start_server
         raise NotImplemented
       end
-      
+
       # This method is designed to be overridden in a rack adapter.  It will
-      # be called to create a new instance of the server for the adapter to 
-      # start.  The adapter should attempt to bind to a port at this point. 
-      # This is called from the AbstractAdapter start method.
+      # be called to create a new instance of the server for the adapter to
+      # start.  The adapter should attempt to bind to a port at this point.
+      # This is called from the {.start} method.
       #
-      # ==== Parameters
-      # port<Integer>:: The port the server should listen on
+      # @param [Integer] port The port the server should listen on
       #
       # @api plugin
       # @overridable
       def self.new_server(port)
         raise NotImplemented
       end
-            
+
       # This method is designed to be overridden in a rack adapter.  It will
-      # be called to stop the adapter server.  
+      # be called to stop the adapter server.
       #
-      # ==== Parameters
-      # status<Integer>:: The exit status the adapter should exit with. 
+      # @param [Integer] status The exit status the adapter should exit with.
       #
-      # ==== Returns
-      # Boolean:: True if the server was properly stopped.  
+      # @return [Boolean] True if the server was properly stopped.
       #
       # @api plugin
       # @overridable
@@ -86,8 +83,7 @@ module Merb
 
       # Spawn a new worker process at a port.
       #
-      # ==== Parameters
-      # port<Integer>:: The port to start the worker process on. 
+      # @param [Integer] port The port to start the worker process on.
       #
       # @api private
       def self.spawn_worker(port)
@@ -112,15 +108,14 @@ module Merb
       end
 
       # The main start method for bootloaders that support forking.
-      # This method launches the adapters which inherit using the 
-      # new_server and start_server methods.  This method should not
-      # be overridden in adapters which want to fork.  
+      # This method launches the adapters which inherit using the
+      # {new_server} and {start_server} methods.  This method should not
+      # be overridden in adapters which want to fork.
       #
-      # ==== Parameters
-      # opts<Hash>:: A hash of options
-      #   socket: the socket to bind to
-      #   port: the port to bind to
-      #   cluster: the number 
+      # @param [Hash] opts A hash of options
+      # @option opts [#to_i]    :socket  the socket to bind to
+      # @option opts [#to_i]    :port    the port to bind to
+      # @option opts [Numeric]  :cluster the number
       #
       # @api private
       def self.start(opts={})
@@ -163,11 +158,11 @@ module Merb
                 poller = Merb::System::PortablePoller.new(pid)
                 begin
                   i = 0
-                  loop do                    
+                  loop do
                     # Watch for the pid to exit.
                     _, status = Process.wait2(pid, Process::WNOHANG)
                     break if status
-                    
+
                     if (i % 120 == 0) && Merb::Config[:max_memory] && poller.memory > Merb::Config[:max_memory]
                       Process.kill("INT", pid)
                       if (Process.kill(0, pid) rescue false)
@@ -175,7 +170,7 @@ module Merb
                         Process.kill(9, pid)
                         Process.wait2(pid) if (Process.kill(0, pid) rescue false)
                       end
-                      
+
                       status = Struct.new(:exitstatus).new(nil)
                       break
                     end
@@ -188,13 +183,13 @@ module Merb
                 rescue SystemCallError => e
                 ensure
                   # If there was no worker with that PID, the status was non-0
-                  # (we send back a status of 128 when ABRT is called on a 
+                  # (we send back a status of 128 when ABRT is called on a
                   # worker, and Merb.fatal! exits with a status of 1), or if
                   # Merb is in the process of exiting, *then* don't respawn.
                   # Note that processes killed with kill -9 will return no
                   # exitstatus, and we respawn them.
-                  if !status || 
-                    (status.exitstatus && status.exitstatus != 0) || 
+                  if !status ||
+                    (status.exitstatus && status.exitstatus != 0) ||
                     Merb.exiting then
                     Thread.exit
                   end
@@ -207,7 +202,7 @@ module Merb
           end
         end
 
-        # The spawner process will make it here, and when it does, it should just 
+        # The spawner process will make it here, and when it does, it should just
         # sleep so it can pick up ctrl-c if it's in console mode.
         sleep
 
@@ -215,10 +210,8 @@ module Merb
 
       # Fork a server on the specified port and start the app.
       #
-      # ==== Parameters
-      # port<Integer>:: The port to start the server on
-      # opts<Hash>:: The hash of options, defaults to the @opts 
-      #   instance variable.  
+      # @param [Integer]  port The port to start the server on
+      # @param [Hash]     opts The hash of options.
       #
       # @api private
       def self.start_at_port(port, opts = @opts)
@@ -284,7 +277,7 @@ module Merb
             if Merb::Config[:bind_fail_fatal]
               Merb.fatal! "Could not bind to #{port}. It was already in use", e
             end
-            
+
             unless printed_warning
               Merb.logger.warn! "Port #{port} is in use, " \
                 "Waiting for it to become available."
@@ -305,11 +298,10 @@ module Merb
         start_server
       end
 
-      # Exit the process with the specified status.  
+      # Exit the process with the specified status.
       #
-      # ==== Parameters
-      # status<Integer>:: The exit code of the process.
-      # 
+      # @param [Integer] status The exit code of the process.
+      #
       # @api private
       def self.exit_process(status = 0)
         exit(status)
@@ -317,10 +309,9 @@ module Merb
 
       # Set the process title.
       #
-      # ==== Parameters
-      # whoami<Symbol>:: Either :spawner for the master process or :worker for any of the worker
-      #   processes. 
-      # port<Integer>:: The base port that the app is running on. 
+      # @param [Symbol] whoami Either `:spawner` for the master process or
+      #   `:worker` for any of the worker processes.
+      # @param [Integer] port The base port that the app is running on.
       #
       # @api private
       def self.process_title(whoami, port)
@@ -329,7 +320,7 @@ module Merb
         max_port  = Merb::Config[:cluster] ? (Merb::Config[:cluster] - 1) : 0
         numbers   = ((whoami != :worker) && (max_port > 0)) ? "#{port}..#{port + max_port}" : port
         file      = Merb::Config[:socket_file] % port if Merb::Config[:socket_file]
-        
+
         listening_on = if Merb::Config[:socket]
           "socket#{'s' if max_port > 0 && whoami != :worker} #{numbers} "\
           "#{file ? file : "#{Merb.log_path}/#{name}.#{port}.sock"}"

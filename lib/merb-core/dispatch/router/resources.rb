@@ -1,70 +1,99 @@
 module Merb
   class Router
 
+    # Route helpers for defining RESTful routes.
+    # @example Single resources:
+    #     r.resource :account # will result in the typical RESTful CRUD
+    #       # shows new resource form
+    #       # GET     /account/new                :action => "new"
+    #
+    #       # creates resource
+    #       # POST    /account/?(\.:format)?,     :action => "create"
+    #
+    #       # shows resource
+    #       # GET     /account/(\.:format)?       :action => "show"
+    #
+    #       # shows edit form
+    #       # GET     /account//edit           :action => "edit"
+    #
+    #       # updates resource
+    #       # PUT     /account/(\.:format)?       :action => "update"
+    #
+    #       # shows deletion confirmation page
+    #       # GET     /account//delete         :action => "delete"
+    #
+    #       # destroys resources
+    #       # DELETE  /account/(\.:format)?       :action => "destroy"
+    #
+    # @example Resource collections:
+    #    r.resources :posts # will result in the typical RESTful CRUD
+    #      # lists resources
+    #      # GET     /posts/?(\.:format)?      :action => "index"
+    #      # GET     /posts/index(\.:format)?  :action => "index"
+    #
+    #      # shows new resource form
+    #      # GET     /posts/new                :action => "new"
+    #
+    #      # creates resource
+    #      # POST    /posts/?(\.:format)?,     :action => "create"
+    #
+    #      # shows resource
+    #      # GET     /posts/:id(\.:format)?    :action => "show"
+    #
+    #      # shows edit form
+    #      # GET     /posts/:id/edit        :action => "edit"
+    #
+    #      # updates resource
+    #      # PUT     /posts/:id(\.:format)?    :action => "update"
+    #
+    #      # shows deletion confirmation page
+    #      # GET     /posts/:id/delete      :action => "delete"
+    #
+    #      # destroys resources
+    #      # DELETE  /posts/:id(\.:format)?    :action => "destroy"
+    #
+    # @example Nesting resources:
+    #     r.resources :posts do |posts|
+    #       posts.resources :comments
+    #     end
+    #
+    # @example Passing a block, and using the `:namespace` and `controller` options:
+    #     r.resource :account, :namespace => "admin" do |account|
+    #       account.resources :preferences, :controller => "settings"
+    #     end
     module Resources
-      # Behavior#+resources+ is a route helper for defining a collection of
-      # RESTful resources. It yields to a block for child routes.
+      # Define a collection of RESTful resources. It yields to a block
+      # for child routes.
       #
-      # ==== Parameters
-      # name<String, Symbol>:: The name of the resources
-      # options<Hash>::
-      #   Ovverides and parameters to be associated with the route
-      #
-      # ==== Options (options)
-      # :namespace<~to_s>: The namespace for this route.
-      # :name_prefix<~to_s>:
+      # @param [String, Symbol] name The name of the resources.
+      # @param [Hash] options<Hash> Overrides and parameters to be
+      #   associated with the route.
+      # @option options [#to_s] :namespace
+      #   The namespace for this route.
+      # @option options [#to_s] :name_prefix
       #   A prefix for the named routes. If a namespace is passed and there
       #   isn't a name prefix, the namespace will become the prefix.
-      # :controller<~to_s>: The controller for this route
-      # :collection<~to_s>: Special settings for the collections routes
-      # :member<Hash>:
-      #   Special settings and resources related to a specific member of this
-      #   resource.
-      # :identify<Symbol|Array>: The method(s) that should be called on the object
-      #   before inserting it into an URL.
-      # :keys<Array>:
-      #   A list of the keys to be used instead of :id with the resource in the order of the url.
-      # :singular<Symbol>
+      # @option options [#to:s] :controller
+      #   The controller for this route
+      # @option options [#to_s] :collection
+      #   Special settings for the collections routes
+      # @option options [Hash] :member
+      #   Special settings and resources related to a specific member of
+      #   this resource.
+      # @option options [Symbol, Array] :identify
+      #   The method(s) that should be called on the object before inserting
+      #   it into an URL.
+      # @option options [Array] :keys
+      #   A list of the keys to be used instead of :id with the resource
+      #   in the order of the url.
+      # @option options [Symbol] :singular
+      #   The given name is assumed to be the plural form. If the inflector
+      #   fails to produce a suitable singular, specify one here.
       #
-      # ==== Block parameters
-      # next_level<Behavior>:: The child behavior.
+      # @yieldparam [Behavior] next_level The child behavior.
       #
-      # ==== Returns
-      # Array::
-      #   Routes which will define the specified RESTful collection of resources
-      #
-      # ==== Examples
-      #
-      #  r.resources :posts # will result in the typical RESTful CRUD
-      #    # lists resources
-      #    # GET     /posts/?(\.:format)?      :action => "index"
-      #    # GET     /posts/index(\.:format)?  :action => "index"
-      #
-      #    # shows new resource form
-      #    # GET     /posts/new                :action => "new"
-      #
-      #    # creates resource
-      #    # POST    /posts/?(\.:format)?,     :action => "create"
-      #
-      #    # shows resource
-      #    # GET     /posts/:id(\.:format)?    :action => "show"
-      #
-      #    # shows edit form
-      #    # GET     /posts/:id/edit        :action => "edit"
-      #
-      #    # updates resource
-      #    # PUT     /posts/:id(\.:format)?    :action => "update"
-      #
-      #    # shows deletion confirmation page
-      #    # GET     /posts/:id/delete      :action => "delete"
-      #
-      #    # destroys resources
-      #    # DELETE  /posts/:id(\.:format)?    :action => "destroy"
-      #
-      #  # Nesting resources
-      #  r.resources :posts do |posts|
-      #    posts.resources :comments
-      #  end
+      # @return [Array] Routes which will define the specified RESTful
+      #   collection of resources
       #
       # @api public
       def resources(name, *args, &block)
@@ -171,57 +200,23 @@ module Merb
         end # namespace
       end # resources
 
-      # Behavior#+resource+ is a route helper for defining a singular RESTful
-      # resource. It yields to a block for child routes.
+      # Define a singular RESTful resource. It yields to a block for child
+      # routes.
       #
-      # ==== Parameters
-      # name<String, Symbol>:: The name of the resource.
-      # options<Hash>::
-      #   Overides and parameters to be associated with the route.
-      #
-      # ==== Options (options)
-      # :namespace<~to_s>: The namespace for this route.
-      # :name_prefix<~to_s>:
+      # @param [String, Symbol] name The name of the resource.
+      # @param [Hash] options Overrides and parameters to be
+      #   associated with the route.
+      # @option options [#to_s] :namespace
+      #   The namespace for this route.
+      # @option options [#to_s] :name_prefix
       #   A prefix for the named routes. If a namespace is passed and there
       #   isn't a name prefix, the namespace will become the prefix.
-      # :controller<~to_s>: The controller for this route
+      # @option options [#to_s] :controller
+      #   The controller for this route
       #
-      # ==== Block parameters
-      # next_level<Behavior>:: The child behavior.
+      # @yieldparam [Behavior] next_level The child behavior.
       #
-      # ==== Returns
-      # Array:: Routes which define a RESTful single resource.
-      #
-      # ==== Examples
-      #
-      #  r.resource :account # will result in the typical RESTful CRUD
-      #    # shows new resource form      
-      #    # GET     /account/new                :action => "new"
-      #
-      #    # creates resource      
-      #    # POST    /account/?(\.:format)?,     :action => "create"
-      #
-      #    # shows resource      
-      #    # GET     /account/(\.:format)?       :action => "show"
-      #
-      #    # shows edit form      
-      #    # GET     /account//edit           :action => "edit"
-      #
-      #    # updates resource      
-      #    # PUT     /account/(\.:format)?       :action => "update"
-      #
-      #    # shows deletion confirmation page      
-      #    # GET     /account//delete         :action => "delete"
-      #
-      #    # destroys resources      
-      #    # DELETE  /account/(\.:format)?       :action => "destroy"
-      #
-      # You can optionally pass :namespace and :controller to refine the routing
-      # or pass a block to nest resources.
-      #
-      #   r.resource :account, :namespace => "admin" do |account|
-      #     account.resources :preferences, :controller => "settings"
-      #   end
+      # @return [Array] Routes which define a RESTful single resource.
       #
       # @api public
       def resource(name, *args, &block)

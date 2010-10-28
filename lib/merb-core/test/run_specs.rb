@@ -24,11 +24,11 @@ module Merb
       @err = ""
       @mutex = Mutex.new
     end
-  
+
     def failed?
       @failures > 0
     end
-  
+
     def add(spec, out, err)
       @mutex.synchronize do
         puts
@@ -56,7 +56,7 @@ module Merb
       @err.gsub!(/^\d*\)\s*/) do
         "#{i += 1})\n"
       end
-      
+
       puts @err
       puts
       if @failures != 0 || @errors != 0
@@ -68,8 +68,8 @@ module Merb
       end
       puts "#{@examples} examples, #{@failures} failures, #{@errors} errors, #{@pending} pending, #{sprintf("suite run in %3.3f seconds", @time.real)}"
       # TODO: we need to report pending examples all together
-       puts "\e[0m"    
-    end  
+       puts "\e[0m"
+    end
   end
 end
 
@@ -77,20 +77,20 @@ require File.dirname(__FILE__) / "run_spec"
 
 # Runs specs in all files matching the file pattern.
 #
-# ==== Parameters
-# globs<String, Array[String]>:: File patterns to look for.
-# spec_cmd<~to_s>:: The spec command. Defaults to "spec".
-# run_opts<String>:: Options to pass to spec commands, for instance,
-#                    if you want to use profiling formatter.
-# except<Array[String]>:: File paths to skip.
+# @param [String, Array<String>] globs File patterns to look for.
+# @param [#to_s]  spec_cmd The spec command.
+# @param [String] run_opts
+#   Options to pass to spec commands, for instance, if you want to use profiling
+#   formatter.
+# @param [Array<String>] except File paths to skip.
 def run_specs(globs, spec_cmd='spec', run_opts = "-c", except = [])
   require "optparse"
   require "spec"
   globs = globs.is_a?(Array) ? globs : [globs]
-  
+
   forking = (ENV["FORK"] ? ENV["FORK"] == "1" : Merb.forking_environment?)
   base_dir = File.expand_path(File.dirname(__FILE__) / ".." / ".." / "..")
-  
+
   counter = Merb::Counter.new
   forks   = 0
   failure = false
@@ -113,18 +113,18 @@ def run_specs(globs, spec_cmd='spec', run_opts = "-c", except = [])
         begin
           out = File.read(base_dir / "results" / "#{File.basename(spec)}_out")
           err = File.read(base_dir / "results" / "#{File.basename(spec)}_err")
-          counter.add(spec, out, err)        
+          counter.add(spec, out, err)
         rescue Errno::ENOENT => e
           STDOUT.puts e.message
         end
       end
     end
   end
-  
+
   Process.waitall
-  
+
   counter.time = time
   counter.report
-  FileUtils.rm_rf(base_dir / "results")  
+  FileUtils.rm_rf(base_dir / "results")
   exit!(counter.failed? ? -1 : 0)
 end

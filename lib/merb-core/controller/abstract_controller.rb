@@ -457,57 +457,7 @@ module Merb
 
     # Generate URLs.
     #
-    # There are three possible ways to use this method:
-    #
-    # 1. If you have a named route, you can specify the route as the first
-    #    parameter as a symbol and any paramters in a hash.
-    # 2. You can generate the default route by just passing the params hash.
-    # 3. You can use the anonymous parameters. This allows you to specify
-    #    the parameters to a named route in the order they appear in the
-    #    router.
-    #
-    # @overload url(name, params)
-    #   Named Route
-    #   @param [Symbol] name The name of the route.
-    #   @param [Hash] params Parameters for route generation.
-    #
-    # @overload url(*args)
-    #   Default Route
-    #   @param [Hash] args Parameters for route generation. This route will
-    #     use the default route.
-    #
-    # @overload url(name, anon_params)
-    #   Anonymous Parameters
-    #   @param [Symbol] name The name of the route.
-    #   @param [Array] anon_params An array of anonymous parameters to generate
-    #     the route with. These parameters are assigned to the route
-    #     parameters in the order that they are passed.
-    #
-    # @return [String] The generated URL.
-    #
-    # @example Named Route
-    #
-    #     Merb::Router.prepare do
-    #       match("/articles/:title").to(:controller => :articles, :action => :show).name("articles")
-    #     end
-    #
-    #     url(:articles, :title => "new_article")
-    #
-    # @example Default Route
-    #
-    #     Merb::Router.prepare do
-    #       default_routes
-    #     end
-    #
-    #     url(:controller => "articles", :action => "new")
-    #
-    # @example Anonymous Paramters
-    #
-    #     Merb::Router.prepare do
-    #       match("/articles/:year/:month/:title").to(:controller => :articles, :action => :show).name("articles")
-    #     end
-    #
-    #     url(:articles, 2008, 10, "test_article")
+    # @see Merb::Router.url
     #
     # @api public
     def url(name, *args)
@@ -540,26 +490,7 @@ module Merb
   
     # Generates a URL for a single or nested resource.
     #
-    #     Merb::Router.prepare do
-    #       resources :users do
-    #         resources :comments
-    #       end
-    #     end
-    #
-    #     resource(:users)            # => /users
-    #     resource(@user)             # => /users/10
-    #     resource(@user, :comments)  # => /users/10/comments
-    #     resource(@user, @comment)   # => /users/10/comments/15
-    #     resource(:users, :new)      # => /users/new
-    #     resource(:@user, :edit)     # => /users/10/edit
-    #
-    # @param [Symbol,Object] resources The resources for which the URL
-    #   should be generated. These resources should be specified in the
-    #   router.rb file using #resources and #resource.
-    # @param [Hash] options Any extra parameters that are needed to generate
-    #   the URL.
-    #
-    # @return [String] The generated URL.
+    # @see Merb::Router.resource
     #
     # @api public
     def resource(*args)

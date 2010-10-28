@@ -10,21 +10,19 @@ module Merb::Template
   
   class << self
     # Get the template's method name from a full path. This replaces
-    # non-alphanumeric characters with __ and "." with "_"
+    # non-alphanumeric characters with `__` and `"."` with `"_"`
     #
     # Collisions are potentially possible with something like:
-    # ~foo.bar and __foo.bar or !foo.bar.
+    # `~foo.bar` and `__foo.bar` or `!foo.bar`.
     #
-    # ==== Parameters
-    # path<String>:: A full path to convert to a valid Ruby method name
+    # @param [String] path A full path to convert to a valid Ruby method name
     #
-    # ==== Returns
-    # String:: The template name.
+    # @return [String] The template name.
     #
-    #
-    # We might want to replace this with something that varies the
-    # character replaced based on the non-alphanumeric character
-    # to avoid edge-case collisions.
+    # @todo
+    #   We might want to replace this with something that varies the
+    #   character replaced based on the non-alphanumeric character
+    #   to avoid edge-case collisions.
     #
     # @api private
     def template_name(path)
@@ -33,21 +31,20 @@ module Merb::Template
     end
 
     chainable do
-      # For a given path, get an IO object that responds to #path.
+      # For a given path, get an IO object that responds to `#path`.
       #
       # This is so that plugins can override this if they provide
       # mechanisms for specifying templates that are not just simple
       # files. The plugin is responsible for ensuring that the fake
-      # path provided will work with #template_for, and thus the
-      # RenderMixin in general.
+      # path provided will work with {#template_for}, and thus the
+      # {RenderMixin} in general.
       #
-      # ==== Parameters
-      # path<String>:: A full path to find a template for. This is the
-      #   path that the RenderMixin assumes it should find the template
-      #   in.
+      # @param [String] path A full path to find a template for. This
+      #   is the path that the {RenderMixin} assumes it should find the
+      #   template in.
       # 
-      # ==== Returns
-      # IO#path:: An IO object that responds to path (File or VirtualFile).
+      # @return [IO#path] An IO object that responds to path (File or
+      #   VirtualFile).
       #
       # @api plugin
       # @overridable
@@ -59,13 +56,11 @@ module Merb::Template
 
     # Get the name of the template method for a particular path.
     #
-    # ==== Parameters
-    # path<String>:: A full path to find a template method for.
-    # template_stack<Array>:: The template stack. Not used.
-    # locals<Array[Symbol]>:: The names of local variables
+    # @param [String] path A full path to find a template method for.
+    # @param [Array] template_stack The template stack. Not used.
+    # @param [Array<Symbol>] locals The names of local variables
     #
-    # ==== Returns
-    # <String>:: name of the method that inlines the template.
+    # @return [String] Name of the method that inlines the template.
     #
     # @api private
     def template_for(path, template_stack = [], locals=[])
@@ -78,15 +73,16 @@ module Merb::Template
       
       METHOD_LIST[path]
     end
-    
+
     # Decide if a template needs to be re/compiled.
     #
-    # ==== Parameters
-    # path<String>:: The full path of the template to check support for.
-    # locals<Array[Symbol]>:: The list of locals that need to be supported
+    # @param [String] path The full path of the template to check
+    #   support for.
+    # @param [Array<Symbol>] locals The list of locals that need to be
+    #   supported
     #
-    # ==== Returns
-    # Boolean:: Whether or not the template for the provided path needs to be recompiled
+    # @return [Boolean] Whether or not the template for the provided
+    #   path needs to be recompiled
     #
     # @api private
     def needs_compilation?(path, locals)
@@ -96,36 +92,31 @@ module Merb::Template
       current_locals != locals &&
         !(locals - current_locals).empty?
     end
-    
+
     # Get all known template extensions
     #
-    # ==== Returns
-    #   Array:: Extension strings.
+    # @return [Array<String>] Extension strings.
     #
     # @api plugin
     def template_extensions
       EXTENSIONS.keys
     end
-    
+
     # Takes a template at a particular path and inlines it into a module and
-    # adds it to the METHOD_LIST table to speed lookup later.
-    # 
-    # ==== Parameters
-    # io<#path>::
-    #   An IO that responds to #path (File or VirtualFile)
-    # locals<Array[Symbol]>::
-    #   A list of local names that should be assigned in the template method
-    #   from the arguments hash. Defaults to [].
-    # mod<Module>::
-    #   The module to put the compiled method into. Defaults to
-    #   Merb::InlineTemplates
+    # adds it to the `METHOD_LIST` table to speed lookup later.
     #
-    # ==== Returns
-    # Symbol:: The name of the method that the template was compiled into.
+    # @param [#path] io An IO that responds to #path (File or VirtualFile)
+    # @param [Array<Symbol>] locals A list of local names that should be
+    #   assigned in the template method from the arguments hash.
+    # @param [Module] mod The module to put the compiled method into.
     #
-    # ==== Notes
-    # Even though this method supports inlining into any module, the method
-    # must be available to instances of AbstractController that will use it.
+    # @return [Symbol] The name of the method that the template was compiled
+    #   into.
+    #
+    # @note
+    #   Even though this method supports inlining into any module, the
+    #   method must be available to instances of {AbstractController}
+    #   that will use it.
     #
     # @api private
     def inline_template(io, locals=[], mod = Merb::InlineTemplates)
@@ -140,37 +131,31 @@ module Merb::Template
       io.close
       ret
     end
-    
+
     # Finds the engine for a particular path.
-    # 
-    # ==== Parameters
-    # path<String>:: The path of the file to find an engine for.
     #
-    # ==== Returns
-    # Class:: The engine.
+    # @param [String] path The path of the file to find an engine for.
+    #
+    # @return [Class] The engine.
     #
     # @api private
     def engine_for(path)
       path = File.expand_path(path)      
       EXTENSIONS[path.match(/\.([^\.]*)$/)[1]]
     end
-    
+
     # Registers the extensions that will trigger a particular templating
     # engine.
-    # 
-    # ==== Parameters
-    # engine<Class>:: The class of the engine that is being registered
-    # extensions<Array[String]>:: 
-    #   The list of extensions that will be registered with this templating
-    #   language
     #
-    # ==== Raises
-    # ArgumentError:: engine does not have a compile_template method.
+    # @param [Class] engine The class of the engine that is being registered
+    # @param [Array<String>] extensions The list of extensions that will be
+    #   registered with this templating language
     #
-    # ==== Returns
-    # nil
+    # @raise [ArgumentError] Engine does not have a compile_template method.
     #
-    # ==== Example
+    # @return [nil]
+    #
+    # @example
     #   Merb::Template.register_extensions(Merb::Template::Erubis, ["erb"])
     #
     # @api plugin
@@ -191,11 +176,12 @@ module Merb::Template
     # http://rubyforge.org/tracker/index.php?func=detail&aid=21825&group_id=1320&atid=5201
     XmlHelper = ::Erubis::XmlHelper
 
-    # ==== Parameters
-    # io<#path>:: An IO containing the full path of the template.
-    # name<String>:: The name of the method that will be created.
-    # locals<Array[Symbol]>:: A list of locals to assign from the args passed into the compiled template.
-    # mod<Module>:: The module that the compiled method will be placed into.
+    # @param [#path] io An IO containing the full path of the template.
+    # @param [String] name The name of the method that will be created.
+    # @param [Array<Symbol>] locals A list of locals to assign from the
+    #   args passed into the compiled template.
+    # @param [Module] mod The module that the compiled method will be
+    #   placed into.
     #
     # @api private
     def self.compile_template(io, name, locals, mod)
@@ -213,17 +199,14 @@ module Merb::Template
     end
 
     module Mixin
-      
-      # ==== Parameters
-      # *args:: Arguments to pass to the block.
-      # &block:: The template block to call.
+
+      # @param *args Arguments to pass to the block.
       #
-      # ==== Returns
-      # String:: The output of the block.
+      # @yield The template block to call.
       #
-      # ==== Examples
-      # Capture being used in a .html.erb page:
-      # 
+      # @return [String] The output of the block.
+      #
+      # @example Capture being used in a .html.erb page:
       #   <% @foo = capture do %>
       #     <p>Some Foo content!</p> 
       #   <% end %>
@@ -272,14 +255,14 @@ module Erubis
     def add_expr_escaped(src, code)
       src << ' @_erb_buf.concat(' << escaped_expr(code) << ');'
     end
-    
+
     # @api private
     def add_stmt2(src, code, tailch)
       src << code
       src << ") ).to_s; " if tailch == "="
       src << ';' unless code[-1] == ?\n
     end
-    
+
     # @api private
     def add_expr_literal(src, code)
       if code =~ /(do|\{)(\s*\|[^|]*\|)?\s*\Z/

@@ -6,19 +6,19 @@ require 'merb-core/dispatch/router/route'
 module Merb
   # Router stores route definitions and finds the first
   # route that matches the incoming request URL.
-  # 
+  #
   # Then information from route is used by dispatcher to
   # call action on the controller.
-  # 
-  # ==== Routes compilation.
-  # 
+  #
+  # #### Routes compilation.
+  #
   # The most interesting method of Router (and heart of
   # route matching machinery) is match method generated
   # on the fly from routes definitions. It is called routes
   # compilation. Generated match method body contains
   # one if/elsif statement that picks the first matching route
   # definition and sets values to named parameters of the route.
-  # 
+  #
   # Compilation is synchronized by mutex.
   class Router
     @routes          = []
@@ -40,65 +40,60 @@ module Merb
       # 
       # @api private
       attr_accessor :routes
-      
+
       # A hash containing all the named application routes. The names
       # are absolute (as in, all routes named in a namespace will
       # contain the name of the namespace).
-      # 
+      #
       # @api private
       attr_accessor :named_routes
-      
+
       # A hash of all the application resource routes. The key of the hash
       # is an array with each element containing the "path" for the resource
       # for example, given the following resource routes:
       #
-      # resources :users do
-      #   resources :comments
-      # end
+      #     resources :users do
+      #       resources :comments
+      #     end
       #
       # The show comment route will have a key of ["User", "Comment"]
-      # 
+      #
       # @api private
       attr_accessor :resource_routes
-      
+
       # The starting point for route definition. Any route defined in a
-      # Merb::Router.prepare block will defined in context of this 
+      # {Merb::Router.prepare} block will defined in context of this
       # behavior.
       #
-      # ==== Examples
+      #     Merb::Router.root_behavior = Merb::Router.root_bavior.match("/hello")
       #
-      # Merb::Router.root_behavior = Merb::Router.root_bavior.match("/hello")
+      # In the previous example, all routes will have the path prefix
+      # `/hello`. It is important to note that this attribute must be set
+      # before any routes are defined in order for the behavior to be
+      # applied to the routes.
       #
-      # In the previous example, all routes will have the path prefix /hello.
-      # It is important to note that this attribute must be set before any
-      # routes are defined in order for the behavior to be applied to the
-      # routes.
-      # 
       # @api plugin
       attr_accessor :root_behavior
-      
+
       # A block that will be run around route matching. This block must yield
       # in order for the actual matching to happen.
-      # 
+      #
       # @api plugin
       attr_accessor :around_match
-      
+
       # Creates a route building context and evaluates the block in it. A
-      # copy of +root_behavior+ (and instance of Behavior) is copied as
+      # copy of `root_behavior` (and instance of {Behavior}) is copied as
       # the context.
-      # 
-      # ==== Parameters
-      # first<Array>::
+      #
+      # @param [Array] first
       #   An array containing routes that should be prepended to the routes
       #   defined in the block.
-      # last<Array>::
+      # @param [Array] last
       #   An array containing routes that should be appended to the routes
       #   defined in the block.
       # 
-      # ==== Returns
-      # Merb::Router::
-      #   Returns self to allow chaining of methods.
-      # 
+      # @return [Merb::Router] Returns self to allow chaining of methods.
+      #
       # @api public
       def prepare(first = [], last = [], &block)
         @routes = []
@@ -107,10 +102,10 @@ module Merb
         compile
         self
       end
-      
+
       # Clears the routing table. Route generation and request matching
       # won't work anymore until a new routing table is built.
-      # 
+      #
       # @api private
       def reset!
         class << self
@@ -118,19 +113,17 @@ module Merb
         end
         self.routes, self.named_routes, self.resource_routes = [], {}, {}
       end
-      
+
       # Finds route matching URI of the request and returns a tuple of
-      # [route index, route params]. This method is called by the
+      # `[route index, route params]`. This method is called by the
       # dispatcher and isn't as useful in applications.
+      #
+      # @param [Merb::Request] request Request to match.
       # 
-      # ==== Parameters
-      # request<Merb::Request>:: request to match.
-      # 
-      # ==== Returns
-      # Array[Integer, Hash]::
-      #   Two-tuple: route index and route parameters. Route parameters
-      #   are :controller, :action and all the named segments of the route.
-      # 
+      # @return [Array<Integer, Hash>] Two-tuple: route index and route
+      #   parameters. Route parameters are `:controller`, `:action` and
+      #   all the named segments of the route.
+      #
       # @api private
       def route_for(request)
         index, params = if @around_match
@@ -145,78 +138,77 @@ module Merb
         end
         [route, params]
       end
-      
+
       # A placeholder for the compiled match method.
-      # 
-      # ==== Notes
-      # This method is aliased as +match+ but this method gets overridden with
-      # the actual +match+ method (generated from the routes definitions) after
-      # being compiled. This method is only ever called before routes are
-      # compiled.
-      # 
-      # ==== Raises
-      # NotCompiledError:: routes have not been compiled yet.
-      # 
+      #
+      # @note This method is aliased as `match` but this method gets
+      #   overridden with the actual `match` method (generated from the
+      #   routes definitions) after being compiled. This method is only
+      #   ever called before routes are compiled.
+      #
+      # @raise [NotCompiledError] Routes have not been compiled yet.
+      #
       # @api private
       def match_before_compilation(request) #:nodoc:
         raise NotCompiledError, "The routes have not been compiled yet"
       end
       
       alias_method :match, :match_before_compilation
-      
-      # There are three possible ways to use this method.  First, if you have a named route, 
-      # you can specify the route as the first parameter as a symbol and any paramters in a 
-      # hash.  Second, you can generate the default route by just passing the params hash, 
-      # just passing the params hash.  Finally, you can use the anonymous parameters.  This 
-      # allows you to specify the parameters to a named route in the order they appear in the 
-      # router.  
+
+      # Generate URLs.
       #
-      # ==== Parameters(Named Route)
-      # name<Symbol>:: 
-      #   The name of the route. 
-      # args<Hash>:: 
-      #   Parameters for the route generation.
+      # There are three possible ways to use this method:
       #
-      # ==== Parameters(Default Route)
-      # args<Hash>:: 
-      #   Parameters for the route generation.  This route will use the default route. 
+      # 1. If you have a named route, you can specify the route as the first
+      #    parameter as a symbol and any paramters in a hash.
+      # 2. You can generate the default route by just passing the params hash.
+      # 3. You can use the anonymous parameters. This allows you to specify
+      #    the parameters to a named route in the order they appear in the
+      #    router.
       #
-      # ==== Parameters(Anonymous Parameters)
-      # name<Symbol>::
-      #   The name of the route.  
-      # args<Array>:: 
-      #   An array of anonymous parameters to generate the route
-      #   with. These parameters are assigned to the route parameters
-      #   in the order that they are passed.
+      # @overload url(name, params)
+      #   Named Route
+      #   @param [Symbol] name The name of the route.
+      #   @param [Hash] params Parameters for route generation.
       #
-      # ==== Returns
-      # String:: The generated URL.
+      # @overload url(*args)
+      #   Default Route
+      #   @param [Hash] args Parameters for route generation. This route will
+      #     use the default route.
       #
-      # ==== Examples
-      # Named Route
+      # @overload url(name, anon_params)
+      #   Anonymous Parameters
+      #   @param [Symbol] name The name of the route.
+      #   @param [Array] anon_params An array of anonymous parameters to generate
+      #     the route with. These parameters are assigned to the route
+      #     parameters in the order that they are passed.
       #
-      # Merb::Router.prepare do
-      #   match("/articles/:title").to(:controller => :articles, :action => :show).name("articles")
-      # end
+      # @return [String] The generated URL.
       #
-      # url(:articles, :title => "new_article")
+      # @example Named Route
       #
-      # Default Route
+      #     Merb::Router.prepare do
+      #       match("/articles/:title").to(:controller => :articles, :action => :show).name("articles")
+      #     end
       #
-      # Merb::Router.prepare do
-      #   default_routes
-      # end
+      #     url(:articles, :title => "new_article")
       #
-      # url(:controller => "articles", :action => "new")
+      # @example Default Route
       #
-      # Anonymous Paramters
+      #     Merb::Router.prepare do
+      #       default_routes
+      #     end
       #
-      # Merb::Router.prepare do
-      #   match("/articles/:year/:month/:title").to(:controller => :articles, :action => :show).name("articles")
-      # end
+      #     url(:controller => "articles", :action => "new")
       #
-      # url(:articles, 2008, 10, "test_article")
-      # 
+      # @example Anonymous Paramters
+      #
+      #     Merb::Router.prepare do
+      #       match("/articles/:year/:month/:title").to(:controller => :articles, :action => :show).name("articles")
+      #     end
+      #
+      #     url(:articles, 2008, 10, "test_article")
+      #
       # @api plugin
       def url(name, *args)
         if name.is_a?(Route)
@@ -236,21 +228,30 @@ module Merb
         
         route.generate(args, defaults)
       end
-      
+
       # Generates a URL from the resource(s)
-      # 
-      # ==== Parameters
-      # resources<Symbol,Object>::
-      #   The identifiers for the resource route to generate. These
-      #   can either be symbols or objects. Symbols denote resource
-      #   collection routes and objects denote the members.
-      # 
-      # params<Hash>::
-      #   Any extra parameters needed to generate the route.
       #
-      # ==== Returns
-      # String:: The generated URL
-      # 
+      #     Merb::Router.prepare do
+      #       resources :users do
+      #         resources :comments
+      #       end
+      #     end
+      #
+      #     resource(:users)            # => /users
+      #     resource(@user)             # => /users/10
+      #     resource(@user, :comments)  # => /users/10/comments
+      #     resource(@user, @comment)   # => /users/10/comments/15
+      #     resource(:users, :new)      # => /users/new
+      #     resource(:@user, :edit)     # => /users/10/edit
+      #
+      # @param [Symbol,Object] resources The resources for which the URL
+      #   should be generated. These resources should be specified in the
+      #   router.rb file using #resources and #resource.
+      # @param [Hash] options Any extra parameters that are needed to generate
+      #   the URL.
+      #
+      # @return [String] The generated URL.
+      #
       # @api plugin
       def resource(*args)
         defaults = args.pop
@@ -279,32 +280,29 @@ module Merb
       # Add functionality to the router. This can be in the form of
       # including a new module or directly defining new methods.
       #
-      # ==== Parameters
-      # &block<Block>::
-      #   A block of code used to extend the route builder with. This
-      #   can be including a module or directly defining some new methods
-      #   that should be available to building routes.
-      #
-      # ==== Returns
-      # nil
-      #
-      # ==== Example
-      #   Merb::Router.extensions do
-      #     def domain(name, domain, options={}, &block)
-      #       match(:domain => domain).namespace(name, :path => nil, &block)
+      #     Merb::Router.extensions do
+      #       def domain(name, domain, options={}, &block)
+      #         match(:domain => domain).namespace(name, :path => nil, &block)
+      #       end
       #     end
-      #   end
       #
       # In this case, a method 'domain' will be available to the route builder
       # which will create namespaces around domains instead of path prefixes.
       #
       # This can then be used as follows.
       #
-      #   Merb::Router.prepare do
-      #     domain(:admin, "my-admin.com") do
-      #       # ... routes come here ...
+      #     Merb::Router.prepare do
+      #       domain(:admin, "my-admin.com") do
+      #         # ... routes come here ...
+      #       end
       #     end
-      #   end
+      #
+      # @yield
+      #   A block of code used to extend the route builder with. This
+      #   can be including a module or directly defining some new methods
+      #   that should be available to building routes.
+      #
+      # @return [nil]
       #
       # @api public
       def extensions(&block)
@@ -312,9 +310,9 @@ module Merb
       end
 
     private
-    
-      # Compiles the routes and creates the +match+ method.
-      # 
+
+      # Compiles the routes and creates the `match` method.
+      #
       # @api private
       def compile
         if routes.any?
@@ -328,10 +326,10 @@ module Merb
           reset!
         end
       end
-      
-      # Generates the method for evaluation defining a +match+ method to match
+
+      # Generates the method for evaluation defining a `match` method to match
       # a request with the defined routes.
-      # 
+      #
       # @api private
       def compiled_statement
         @compiler_mutex.synchronize do

@@ -3,7 +3,7 @@ Merb::BootLoader.after_app_loads do
     class Dispatcher
       # @api private
       module DefaultExceptionHelper
-      
+
         # @api private
         def humanize_exception(e)
           e.class.name.split("::").last.gsub(/([a-z])([A-Z])/, '\1 \2')
@@ -67,12 +67,12 @@ Merb::BootLoader.after_app_loads do
         def jar?(filename)
           filename.match(/jar\!/)
         end
-      
+
         # @api private
         def textmate_url(filename, line)
           "<a href='txmt://open?url=file://#{filename}&amp;line=#{line}'>#{line}</a>"
         end
-      
+
         # @api private
         def render_source(filename, line)
           line = line.to_i
@@ -98,16 +98,16 @@ Merb::BootLoader.after_app_loads do
           filename.match(/jar\!/)
         end
       end
-    
+
       # @api private
       class DefaultException < Merb::Controller
         self._template_root = File.dirname(__FILE__) / "views"
-      
+
         # @api private
         def _template_location(context, type = nil, controller = controller_name)
           "#{context}.#{type}"
         end
-      
+
         # @api private
         def index
           @exceptions = request.exceptions

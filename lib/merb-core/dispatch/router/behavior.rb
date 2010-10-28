@@ -71,7 +71,7 @@ module Merb
 
         # Generate URLs
         #
-        # @see Merb::AbstractController#url
+        # @see Merb::Router.url
         #
         # @api public
         def url(name, *args)

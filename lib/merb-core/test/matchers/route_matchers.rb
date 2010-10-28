@@ -2,20 +2,17 @@ module Merb::Test::Rspec::RouteMatchers
 
   class RouteToMatcher
 
-    # ==== Parameters
-    # klass_or_name<Class, String>::
+    # @param [Class, String] klass_or_name
     #   The controller class or class name to match routes for.
-    # action<~to_s>:: The name of the action to match routes for.
+    # @param [#to_s] action The name of the action to match routes for.
     def initialize(klass_or_name, action)
       @expected_controller = Class === klass_or_name ? klass_or_name.name : klass_or_name
       @expected_action = action.to_s
     end
 
-    # ==== Parameters
-    # target<Hash>:: The route parameters to match.
+    # @param [Hash] target The route parameters to match.
     #
-    # ==== Returns
-    # Boolean:: True if the controller action and parameters match.
+    # @return [Boolean] True if the controller action and parameters match.
     def matches?(target)
       @target_env = target.dup
       @target_controller, @target_action = @target_env.delete(:controller).to_s, @target_env.delete(:action).to_s
@@ -25,42 +22,36 @@ module Merb::Test::Rspec::RouteMatchers
       @expected_controller.snake_case == @target_controller.snake_case && @expected_action == @target_action && match_parameters(@target_env)
     end
 
-    # ==== Parameters
-    # target<Hash>:: The route parameters to match.
+    # @param [Hash] target The route parameters to match.
     #
-    # ==== Returns
-    # Boolean::
+    # @return [Boolean]
     #   True if the parameter matcher created with #with matches or if no
     #   parameter matcher exists.
     def match_parameters(target)
       @parameter_matcher.nil? ? true : @parameter_matcher.matches?(target)
     end
 
-    # Creates a new paramter matcher.
+    # Creates a new parameter matcher.
     #
-    # ==== Parameters
-    # parameters<Hash, ~to_param>:: The parameters to match.
+    # #### Alternatives
+    # If `parameters` is an object, then a new expected hash will be constructed
+    # with the key `:id` set to `parameters.to_param`.
     #
-    # ==== Returns
-    # RouteToMatcher:: This matcher.
+    # @param [Hash, #to_param] parameters The parameters to match.
     #
-    # ==== Alternatives
-    # If parameters is an object, then a new expected hash will be constructed
-    # with the key :id set to parameters.to_param.
+    # @return [RouteToMatcher] This matcher.
     def with(parameters)
       @parameter_matcher = ParameterMatcher.new(parameters)
 
       self
     end
 
-    # ==== Returns
-    # String:: The failure message.
+    # @return [String] The failure message.
     def failure_message
       "expected the request to route to #{@expected_controller.to_const_string}##{@expected_action}#{expected_parameters_message}, but was #{@target_controller.to_const_string}##{@target_action}#{actual_parameters_message}"
     end
 
-    # ==== Returns
-    # String:: The failure message to be displayed in negative matches.
+    # @return [String] The failure message to be displayed in negative matches.
     def negative_failure_message
       "expected the request not to route to #{@expected_controller.camel_case}##{@expected_action}#{expected_parameters_message}, but it did"
     end
@@ -77,12 +68,13 @@ module Merb::Test::Rspec::RouteMatchers
   class ParameterMatcher
     attr_accessor :expected, :actual
 
-    # ==== Parameters
-    # hash_or_object<Hash, ~to_param>:: The parameters to match.
+    # A new instance of `ParameterMatcher`
     #
-    # ==== Alternatives
-    # If hash_or_object is an object, then a new expected hash will be
-    # constructed with the key :id set to hash_or_object.to_param.
+    # #### Alternatives
+    # If `hash_or_object` is an object, then a new expected hash will be
+    # constructed with the key `:id` set to `hash_or_object.to_param`.
+    #
+    # @param [Hash, #to_param] hash_or_object The parameters to match.
     def initialize(hash_or_object)
       @expected = {}
       case hash_or_object
@@ -91,11 +83,9 @@ module Merb::Test::Rspec::RouteMatchers
       end
     end
 
-    # ==== Parameters
-    # parameter_hash<Hash>:: The route parameters to match.
+    # @param [Hash] parameter_hash The route parameters to match.
     #
-    # ==== Returns
-    # Boolean:: True if the route parameters match the expected ones.
+    # @return [Boolean] True if the route parameters match the expected ones.
     def matches?(parameter_hash)
       @actual = parameter_hash.dup.except(:controller, :action)
 
@@ -103,28 +93,26 @@ module Merb::Test::Rspec::RouteMatchers
       @expected.all? {|(k, v)| @actual.has_key?(k) && @actual[k] == v}
     end
 
-    # ==== Returns
-    # String:: The failure message.
+    # @return [String] The failure message.
     def failure_message
       "expected the route to contain parameters #{@expected.inspect}, but instead contained #{@actual.inspect}"
     end
 
-    # ==== Returns
-    # String:: The failure message to be displayed in negative matches.
+    # @return [String] The failure message to be displayed in negative matches.
     def negative_failure_message
       "expected the route not to contain parameters #{@expected.inspect}, but it did"
     end
   end
 
   # Passes when the actual route parameters match the expected controller class
-  # and controller action. Exposes a +with+ method for specifying parameters.
+  # and controller action. Exposes a {Merb::Test::Rspec::RouteMatchers::RouteToMatcher#with with}
+  # method for specifying parameters.
   #
-  # ==== Parameters
-  # klass_or_name<Class, String>::
+  # @param [Class, String] klass_or_name
   #   The controller class or class name to match routes for.
-  # action<~to_s>:: The name of the action to match routes for.
+  # @param [#to_s] action The name of the action to match routes for.
   #
-  # ==== Example
+  # @example
   #   # Passes if a GET request to "/" is routed to the Widgets controller's
   #   # index action.
   #   request_to("/", :get).should route_to(Widgets, :index)

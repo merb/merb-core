@@ -1,12 +1,9 @@
 module Merb
   module Rack
-    
+
     class FastCGI
-      # ==== Parameters
-      # opts<Hash>:: Options for FastCGI (see below).
-      #
-      # ==== Options (opts)
-      # :app<String>>:: The application name.
+      # @param [Hash] opts Options for FastCGI.
+      # @option opts [String] :app The application name.
       #
       # @api plugin
       def self.start(opts={})

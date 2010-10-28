@@ -307,11 +307,11 @@ class Merb::Controller < Merb::AbstractController
 
   # Generate URLs.
   #
-  # Same as {AbstractController#url}, but allows to pass `:this` as a name
+  # Same as {Merb::Router.url}, but allows to pass `:this` as a name
   # to use the name of the current {Request}. All parameters of the current
   # request are also added to the arguments.
   #
-  # @see AbstractController#url
+  # @see Merb::Router.url
   #
   # @api public
   def url(name, *args)
@@ -322,10 +322,10 @@ class Merb::Controller < Merb::AbstractController
 
   # Generates a URL for a single or nested resource.
   #
-  # Same as {AbstractController#resource}, but all parameters of the current
+  # Same as {Merb::Router.resource}, but all parameters of the current
   # request are also added to the arguments.
   #
-  # @see AbstractController#resource
+  # @see Merb::Router.resource
   #
   # @api public
   def resource(*args)
