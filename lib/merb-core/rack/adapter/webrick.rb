@@ -34,7 +34,7 @@ module Merb
         @server.start
         exit(@status)
       end
-      
+
       # @api plugin
       def self.stop(status = 0)
         @status = status

@@ -3,7 +3,7 @@ module Merb
   module Plugins
 
     # Returns the configuration settings hash for plugins. This is prepopulated from
-    # Merb.root, or "config/plugins.yml" if it is present.
+    # Merb.root, or `"config/plugins.yml"` if it is present.
     #
     # @return [Hash] The configuration loaded from Merb.root, "config/plugins.yml",
     #   or, if the load fails, an empty hash whose default value is another Hash.
@@ -28,7 +28,7 @@ module Merb
 
     # Get all Rakefile load paths Merb uses for plugins.
     #
-    # @return [Array(String)] All Rakefile load paths Merb uses for plugins.
+    # @return [Array<String>] All Rakefile load paths Merb uses for plugins.
     #
     # @api plugin
     def self.rakefiles
@@ -37,7 +37,7 @@ module Merb
 
     # Get all Generator load paths Merb uses for plugins.
     #
-    # @return [Array(String)] All Generator load paths Merb uses for plugins.
+    # @return [Array<String>] All Generator load paths Merb uses for plugins.
     #
     # @api plugin
     def self.generators
@@ -49,10 +49,10 @@ module Merb
     # This is a recommended way to register your plugin's Raketasks
     # in Merb.
     #
-    # @param [String, ...] rakefiles Rakefiles to add to the list of plugin
+    # @param [String, ...] *rakefiles Rakefiles to add to the list of plugin
     #   Rakefiles.
     #
-    # @example From merb_sequel plugin:
+    # @example From the merb_sequel plugin:
     #     if defined(Merb::Plugins)
     #       Merb::Plugins.add_rakefiles "merb_sequel" / "merbtasks"
     #     end
@@ -67,7 +67,7 @@ module Merb
     # This is the recommended way to register your plugin's generators
     # in Merb.
     #
-    # @param [String, ...] generators Generator paths to add to the list of
+    # @param [String, ...] *generators Generator paths to add to the list of
     #   plugin generators.
     #
     # @api plugin

@@ -6,7 +6,7 @@ module Merb
       def initialize(body)
          @body = body
       end
-      
+
       # @api private
       def each(&callback)
         if Proc === @body
@@ -22,18 +22,18 @@ module Merb
           @body.each(&callback)
         end
       end
-      
+
       # @api private
       def write(str)
         @writer.call str.to_s
         str
       end
-      
+
       # @api private
       def to_s
         @body.to_s
       end
-            
+
       # @api private
       def ==(other)
         @body == other

@@ -7,13 +7,13 @@ module Merb
         super(app)
         @path_prefix = /^#{Regexp.escape(path_prefix)}/
       end
-      
+
       # @api plugin
       def deferred?(env)
         strip_path_prefix(env) 
         @app.deferred?(env)
       end
-      
+
       # @api plugin
       def call(env)
         strip_path_prefix(env) 

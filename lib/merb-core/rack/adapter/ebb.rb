@@ -11,12 +11,12 @@ module Merb
         opts = @opts.merge(:port => port)
         @th = Thread.new { Thread.current[:server] = ::Ebb.start_server(opts[:app], opts) }
       end
-      
+
       # @api plugin
       def self.start_server
         @th.join
       end
-      
+
       # @api plugin
       def self.stop(status = 0)
         ::Ebb.stop_server
