@@ -13,43 +13,25 @@ include FileUtils
 desc "Run the specs."
 task :default => :specs
 
-task :merb => [:clean, :rdoc, :package]
+task :merb => [:clean, :doc, :package]
 
 
 ##############################################################################
 # Documentation
 ##############################################################################
-task :doc => [:rdoc]
-namespace :doc do
+task :doc => [:yard]
+begin
+  require 'yard'
 
-  Rake::RDocTask.new do |rdoc|
-    files = ["README", "LICENSE", "CHANGELOG", "lib/**/*.rb"]
-    rdoc.rdoc_files.add(files)
-    rdoc.main = "README"
-    rdoc.title = "Merb Docs"
-    rdoc.rdoc_dir = "doc/rdoc"
-    rdoc.options << "--line-numbers"
+  YARD::Rake::YardocTask.new do |t|
+    t.files   = [File.join('lib', '**', '*.rb'), '-', File.join('docs', '*.mkd')]
+    t.options = [
+      '--output-dir', 'doc/yard',
+      '--tag', 'overridable:Overridable',
+      '--markup', 'markdown',
+    ]
   end
-
-  begin
-    require 'yard'
-
-    YARD::Rake::YardocTask.new do |t|
-      t.files   = ['lib/**/*.rb']
-      t.options = [
-        '--output-dir', 'doc/yard',
-        '--tag', 'overridable:Overridable',
-        '--markup', 'markdown',
-      ]
-    end
-  rescue
-  end
-
-  desc "run webgen"
-  task :webgen do
-    sh %{cd doc/site; webgen}
-  end
-
+rescue
 end
 
 ##############################################################################

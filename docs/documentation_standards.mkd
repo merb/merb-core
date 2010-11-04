@@ -112,3 +112,10 @@ An example for a well-documented method:
     def render(thing = nil, opts = {})
       # <snip>
     end
+
+## Additional information
+
+If you want to document things outside the source files, put
+markdown-formatted files named like `readable_filename.mkd` inside a
+"`docs`" subdirectory of the gem you are documenting. Those files will
+be picked up during generation.

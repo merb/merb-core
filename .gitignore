@@ -15,6 +15,3 @@ TAGS
 *.rbc
 *.tmproj
 .#*
-doc/*
-.yardoc
-.yardoc/*
