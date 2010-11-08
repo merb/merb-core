@@ -7,7 +7,7 @@ require 'merb-core/test/helpers'
 
 begin
   require 'webrat'
-  require 'webrat/merb'
+  require 'webrat/adapters/merb'
 rescue LoadError => e
   if Merb.testing?
     Merb.logger.warn! "Couldn't load Webrat, so some features, like `visit' will not " \
@@ -24,4 +24,8 @@ if Merb.test_framework.to_s == "rspec"
                       "the gem installed. To provide full functionality of the test " \
                       "helpers you should install it."
   end
+end
+
+Webrat.configure do |config|
+  config.mode = :merb
 end

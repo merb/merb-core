@@ -23,13 +23,13 @@ end
 
 describe "Kernel#dependencies" do
   it "should warn that dependency() is deprecated" do
-    warning = 'DEPRECATED: Use bundler to setup and load dependency hpricot.'
+    warning = 'DEPRECATED: Use bundler to setup and load dependency rational.'
     Kernel.should_receive(:warn).with(warning)
-    Kernel.dependency("hpricot")
+    Kernel.dependency("rational")
   end
 
   it "should warn that dependencies() is deprecated" do
     Kernel.should_receive(:warn).twice
-    Kernel.dependencies("hpricot", "extlib")
+    Kernel.dependencies("rational", "base64")
   end
 end

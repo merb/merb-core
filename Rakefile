@@ -124,22 +124,6 @@ task :rcov do
   end
 end
 
-desc "Run a specific spec with TASK=xxxx"
-Spec::Rake::SpecTask.new("spec") do |t|
-  t.spec_opts = ["--colour"]
-  t.libs = ["lib", "server/lib" ]
-  t.spec_files = (ENV["TASK"] || '').split(',').map do |task|
-    "spec/**/#{task}_spec.rb"
-  end
-end
-
-desc "Run all specs output html"
-Spec::Rake::SpecTask.new("specs_html") do |t|
-  t.spec_opts = ["--format", "html"]
-  t.libs = ["lib", "server/lib" ]
-  t.spec_files = Dir["spec/**/*_spec.rb"].sort
-end
-
 ##############################################################################
 # CODE STATISTICS
 ##############################################################################
