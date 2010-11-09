@@ -16,9 +16,8 @@ Gem::Specification.new do |gem|
   gem.description = 'Merb. Pocket rocket web framework.'
   gem.summary     = 'Merb plugin that provides caching (page, action, fragment, object)'
 
-  gem.has_rdoc = true 
+  gem.has_rdoc = 'yard'
   gem.require_paths = ['lib']
-  gem.extra_rdoc_files = ['README', 'LICENSE', 'TODO', 'CHANGELOG']
   gem.files = Dir[
     'CHANGELOG',
     'CONTRIBUTORS',
@@ -27,7 +26,7 @@ Gem::Specification.new do |gem|
     'README*',
     'Rakefile',
     'TODO*',
-    '{bin,lib,spec,spec10}/**/*',
+    '{bin,lib,spec,spec10,docs}/**/*',
   ] & `git ls-files -z`.split("\0")
 
     # Runtime dependencies
