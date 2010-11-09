@@ -175,32 +175,21 @@ module Merb
         end
       end
 
-      # Returns the identifier for the passed object.
-      #
-      # @return [Symbol, nil] Built in core ruby classes are always
-      #   identified with `to_s`. The method will return nil in that
-      #   case since to_s is the default for objects that do not have
-      #   identifiers.
+      # Returns the identifier for the passed object. Built in core ruby classes are
+      # always identified with `to_s`. The method will return nil in that case (since
+      # to_s is the default for objects that do not have identifiers.)
       #
       # @api private
       def identifier_for(obj)
         return if obj.is_a?(String)    || obj.is_a?(Symbol)     || obj.is_a?(Numeric)  ||
                   obj.is_a?(TrueClass) || obj.is_a?(FalseClass) || obj.is_a?(NilClass) ||
                   obj.is_a?(Array)     || obj.instance_of?(Hash)
-
-        # find the most specific match
-        fit_id = nil
-        fit_class = Object
+        
         @identifiers.each do |klass, identifier|
-          if obj.is_a?(klass) and klass.kind_of? fit_class
-            fit_id = identifier
-            fit_class = klass
-          end
+          return identifier if obj.is_a?(klass)
         end
-
-        # STDERR.puts "Identifier #{fit_id.nil? ? '(nil)' : fit_id} for #{obj.class} : #{@identifiers.inspect}"
-
-        return fit_id
+        
+        return nil
       end
 
       # Returns the if statement and return value for for the main
