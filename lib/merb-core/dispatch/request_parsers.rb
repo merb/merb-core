@@ -5,7 +5,7 @@ module Merb
     # @param [String] delimiter The query string divider.
     # @param [Boolean] preserve_order Preserve order of args.
     #
-    # @return [Mash] The parsed query string (Dictionary if
+    # @return [Mash] The parsed query string (ActiveSupport::Dictionary if
     #   `preserve_order` is set).
     #
     # @example
@@ -14,7 +14,7 @@ module Merb
     #
     # @api plugin
     def self.query(query_string, delimiter = '&;', preserve_order = false)
-      query = preserve_order ? Dictionary.new : {}
+      query = preserve_order ? ActiveSupport::OrderHash.new : {}
       for pair in (query_string || '').split(/[#{delimiter}] */n)
         key, value = unescape(pair).split('=',2)
         next if key.nil?
@@ -138,7 +138,7 @@ module Merb
       paramhsh
     end
 
-    # @param [Array, Hash, Dictionary #to_s] value The value for the
+    # @param [Array, Hash, ActiveSupport::OrderedHash #to_s] value The value for the
     #   query string. If this is a string, the `prefix` will be used as
     #   the key.
     # @param [#to_s] prefix The prefix to add to the query string keys.
@@ -162,7 +162,7 @@ module Merb
         value.map { |v|
           params_to_query_string(v, "#{prefix}[]")
         } * "&"
-      when Hash, Dictionary
+      when Hash, ActiveSupport::OrderedHash
         value.map { |k, v|
           params_to_query_string(v, prefix ? "#{prefix}[#{escape(k)}]" : escape(k))
         } * "&"

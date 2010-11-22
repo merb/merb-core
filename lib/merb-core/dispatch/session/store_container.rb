@@ -39,7 +39,7 @@ module Merb
   # When used directly, report as `:store` store
   class SessionStoreContainer < SessionContainer
     
-    class_inheritable_accessor :store
+    class_attribute :store
     # @api private
     attr_accessor  :_fingerprint
 

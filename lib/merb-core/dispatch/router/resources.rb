@@ -101,7 +101,7 @@ module Merb
         options    = extract_options_from_args!(args) || {}
         match_opts = options.except(*resource_options)
         options    = options.only(*resource_options)
-        singular   = options[:singular] ? options[:singular].to_s : Extlib::Inflection.singularize(name)
+        singular   = options[:singular] ? options[:singular].to_s : ActiveSupport::Inflector.singularize(name)
         klass_name = args.first ? args.first.to_s : singular.to_const_string
         keys       = options.delete(:keys) || options.delete(:key)
         params     = { :controller => options.delete(:controller) || name }

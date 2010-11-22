@@ -1,7 +1,7 @@
 module Merb
   class SessionContainer < Mash
     
-    class_inheritable_accessor :session_store_type
+    class_attribute :session_store_type
     cattr_accessor :subclasses 
     self.subclasses = []
 

@@ -92,7 +92,7 @@ module Merb
     
     def self.included(base)
       # Allow per-controller default cookie domains (see callback below)
-      base.class_inheritable_accessor :_default_cookie_domain
+      base.class_attribute :_default_cookie_domain
       base._default_cookie_domain = Merb::Config[:default_cookie_domain]
       
       # Add a callback to enable Set-Cookie headers

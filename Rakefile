@@ -5,6 +5,8 @@ require "rake/testtask"
 require "spec/rake/spectask"
 require "fileutils"
 
+$:.unshift(File.dirname(__FILE__))
+
 # Load code annotation support library
 require File.expand_path("../tools/annotation_extract", __FILE__)
 

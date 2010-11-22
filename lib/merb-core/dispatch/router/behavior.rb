@@ -15,6 +15,10 @@ module Merb
 
         # Undefine as many methods as possible so that everything can be proxied
         # along to the behavior
+        #
+        # FIXME: Shouldn't we use BasicObject? Won't ActiveSupport add 
+        # more methods to remove? Definitely the assert_kind_of goes away with
+        # the Extlib.
         instance_methods.each { |m| undef_method m unless %w[ object_id __id__ __send__ class kind_of? respond_to? assert_kind_of should should_not instance_variable_set instance_variable_get instance_eval].include?(m.to_s) }
 
         # @api private

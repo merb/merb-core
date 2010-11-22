@@ -11,8 +11,32 @@ require "set"
 require "fileutils"
 require "socket"
 require "pathname"
-require "extlib"
-require "extlib/dictionary"
+
+require 'active_support/core_ext/kernel/singleton_class'
+require 'active_support/core_ext/class/inheritable_attributes'
+require 'active_support/core_ext/object/blank'
+require 'active_support/core_ext/hash/except'
+require 'active_support/core_ext/hash/slice'
+require 'active_support/ordered_hash'
+
+require 'active_support/hash_with_indifferent_access'
+Mash = ActiveSupport::HashWithIndifferentAccess
+
+# Inflector stuff
+require 'active_support/inflector/inflections'
+require 'active_support/inflector/methods'
+require 'active_support/inflections'
+#require 'active_support/core_ext/string/inflections' # This shit loads i18n
+
+# Those are brought from extlib
+require 'merb-core/core_ext/string'
+require 'merb-core/core_ext/object'
+require 'merb-core/core_ext/object_space'
+require 'merb-core/core_ext/hash'
+require 'merb-core/core_ext/pooling'
+require 'merb-core/core_ext/simple_set'
+require 'merb-core/core_ext/virtual_file'
+require 'merb-core/core_ext/logger'
 
 Thread.abort_on_exception = true
 
@@ -192,7 +216,7 @@ module Merb
     # @api public
     alias :started? :started
 
-    Merb.load_paths = Dictionary.new { [Merb.root] } unless Merb.load_paths.is_a?(Dictionary)
+    Merb.load_paths = ActiveSupport::OrderedHash.new { [Merb.root] } unless Merb.load_paths.is_a?(ActiveSupport::OrderedHash)
 
     # Set up your application layout.
     #

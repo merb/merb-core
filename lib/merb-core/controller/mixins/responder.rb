@@ -97,7 +97,7 @@ module Merb
   # and none of the provides methods can be used.
   module ResponderMixin
     
-    TYPES = Dictionary.new
+    TYPES = ActiveSupport::OrderedHash.new
     MIMES = {}
     MIME_MUTEX = Mutex.new
     ACCEPT_RESULTS = {}
@@ -110,7 +110,7 @@ module Merb
     def self.included(base)
       base.extend(ClassMethods)
       base.class_eval do
-        class_inheritable_accessor :class_provided_formats
+        class_attribute :class_provided_formats
         self.class_provided_formats = []
       end
       base.reset_provides

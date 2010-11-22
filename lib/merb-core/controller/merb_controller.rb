@@ -1,7 +1,7 @@
 class Merb::Controller < Merb::AbstractController
 
-  class_inheritable_accessor :_hidden_actions, :_shown_actions, 
-                             :_overridable, :_override_bang
+  class_attribute :_hidden_actions, :_shown_actions, :_overridable,
+                  :_override_bang
 
   self._hidden_actions ||= []
   self._shown_actions  ||= []
@@ -127,6 +127,7 @@ class Merb::Controller < Merb::AbstractController
   # @return [SimpleSet<String>] Actions that should be callable.
   #
   # @api public
+  # FIXME: How does the SimpleSet differes from the Set?
   def self.callable_actions
     @callable_actions ||= Extlib::SimpleSet.new(_callable_methods)
   end
