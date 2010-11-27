@@ -37,6 +37,12 @@ end
 ##############################################################################
 # rSpec & rcov
 ##############################################################################
+
+# Ruby 1.9.2 requires this to run specs
+task :setup_local_path do
+  $:.unshift(File.dirname(__FILE__)) unless $:.include? File.dirname(__FILE__)
+end
+
 desc "Run :specs, :rcov"
 task :aok => [:specs, :rcov]
 
@@ -51,46 +57,46 @@ def setup_specs(name, spec_cmd='spec', run_opts = "-c")
   private_globs = Dir["#{Dir.pwd}/spec/private/**/*_spec.rb"]
 
   desc "Run all specs (#{name})"
-  task "specs:#{name}" do
+  task "specs:#{name}" => [:setup_local_path] do
     require "lib/merb-core/test/run_specs"
     globs = public_globs + private_globs
     run_specs(globs, spec_cmd, ENV['RSPEC_OPTS'] || run_opts, except)
   end
-  
+
   desc "Run 1.0 frozen specs"
-  task "specs:oneoh" do
+  task "specs:oneoh" => [:setup_local_path] do
     require "lib/merb-core/test/run_specs"
     globs = public_globs_10
     run_specs(globs, spec_cmd, ENV['RSPEC_OPTS'] || run_opts, except)
   end
-  
+
   desc "Run private specs (#{name})"
-  task "specs:#{name}:private" do
+  task "specs:#{name}:private" => [:setup_local_path] do
     require "lib/merb-core/test/run_specs"
     run_specs(private_globs, spec_cmd, ENV['RSPEC_OPTS'] || run_opts)
   end
 
   desc "Run public specs (#{name})"
-  task "specs:#{name}:public" do
+  task "specs:#{name}:public" => [:setup_local_path] do
     require "lib/merb-core/test/run_specs"
     run_specs(public_globs, spec_cmd, ENV['RSPEC_OPTS'] || run_opts)
   end
-  
+
   # With profiling formatter
   desc "Run all specs (#{name}) with profiling formatter"
-  task "specs:#{name}_profiled" do
+  task "specs:#{name}_profiled" => [:setup_local_path] do
     require "lib/merb-core/test/run_specs"
     run_specs("spec/**/*_spec.rb", spec_cmd, "-c -f o")
   end
 
   desc "Run private specs (#{name}) with profiling formatter"
-  task "specs:#{name}_profiled:private" do
+  task "specs:#{name}_profiled:private" => [:setup_local_path] do
     require "lib/merb-core/test/run_specs"
     run_specs("spec/private/**/*_spec.rb", spec_cmd, "-c -f o")
   end
 
   desc "Run public specs (#{name}) with profiling formatter"
-  task "specs:#{name}_profiled:public" do
+  task "specs:#{name}_profiled:public" => [:setup_local_path] do
     require "lib/merb-core/test/run_specs"
     run_specs("spec/public/**/*_spec.rb", spec_cmd, "-c -f o")
   end  
@@ -99,7 +105,7 @@ end
 setup_specs("mri", "spec")
 setup_specs("jruby", "jruby -S spec")
 
-task "specs:core_ext" do
+task "specs:core_ext" => [:setup_local_path] do
   require "lib/merb-core/test/run_specs"
   run_specs("spec/public/core_ext/*_spec.rb", "spec", "-c -f o")
 end
