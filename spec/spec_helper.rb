@@ -14,16 +14,6 @@ end
 
 # -- Global custom matchers --
 
-# A better +be_kind_of+ with more informative error messages.
-#
-# The default +be_kind_of+ just says
-#
-#   "expected to return true but got false"
-#
-# This one says
-#
-#   "expected File but got Tempfile"
-
 module Merb
   module Test
     module RspecMatchers
@@ -31,55 +21,28 @@ module Merb
         def initialize(expected)
           @expected = expected
         end
-        
+
         def matches?(target)
           target.rewind
           @text = target.read
           @text =~ (String === @expected ? /#{Regexp.escape @expected}/ : @expected)
         end
-        
+
         def failure_message
           "expected to find `#{@expected}' in the log but got:\n" <<
           @text.split("\n").map {|s| "  #{s}" }.join
         end
-        
+
         def negative_failure_message
           "exected not to find `#{@expected}' in the log but got:\n" <<
           @text.split("\n").map {|s| "  #{s}" }.join
         end
-        
+
         def description
           "include #{@text} in the log"
         end
       end
-      
-      class BeKindOf
-        def initialize(expected) # + args
-          @expected = expected
-        end
 
-        def matches?(target)
-          @target = target
-          @target.kind_of?(@expected)
-        end
-
-        def failure_message
-          "expected #{@expected} but got #{@target.class}"
-        end
-
-        def negative_failure_message
-          "expected #{@expected} to not be #{@target.class}"
-        end
-
-        def description
-          "be_kind_of #{@target}"
-        end
-      end
-
-      def be_kind_of(expected) # + args
-        BeKindOf.new(expected)
-      end
-      
       def include_log(expected)
         IncludeLog.new(expected)
       end

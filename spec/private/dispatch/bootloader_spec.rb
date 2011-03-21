@@ -7,7 +7,8 @@ describe Merb::BootLoader::RackUpApplication do
     Merb::Config.setup(options)
     Merb::BootLoader::default_framework
     Merb::BootLoader::RackUpApplication.run
-    app = Merb::Config[:app].should be_kind_of(Merb::Rack::Static)
+
+    Merb::Config[:app].should be_kind_of(Merb::Rack::Static)
   end
 
   it "should use rackup config that we specified", :rack => true, :core => true do

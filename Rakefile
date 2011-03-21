@@ -63,8 +63,12 @@ end
 
 desc "Run all specs; set RAKE_TAG to filter specs (see rspec --tag parameter)"
 RSpec::Core::RakeTask.new(:spec) do |t|
+  options = ""
+  options += "--tag #{ENV['RAKE_TAG']}" unless ENV['RAKE_TAG'].nil?
+
   t.pattern = "spec/**/*_spec.rb"
-  t.rspec_opts = "--tag #{ENV['RAKE_TAG']}" unless ENV['RAKE_TAG'].nil?
+  t.rspec_opts = options
+  t.fail_on_error = false
 end
 
 ##############################################################################

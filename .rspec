@@ -1,4 +1,4 @@
 --color
 --format progress
 --format html
---out docs/rspec-report.html
+--out rspec_results.html
