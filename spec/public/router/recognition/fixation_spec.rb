@@ -9,7 +9,8 @@ describe "When recognizing requests," do
         match("/hello/:action/:id").to(:controller => "foo", :action => "fixoid").fixatable
       end
 
-      matched_route_for("/hello/goodbye/tagging").should allow_fixation
+      #TODO: ugly syntax
+      matched_route_for("/hello/goodbye/tagging").should be_allow_fixation
     end
 
     it "should be able to disallow fixation" do
@@ -17,7 +18,8 @@ describe "When recognizing requests," do
         match("/hello/:action/:id").to(:controller => "foo", :action => "fixoid")
       end
 
-      matched_route_for("/hello/goodbye/tagging").should_not allow_fixation
+      # TODO: ugly syntax
+      matched_route_for("/hello/goodbye/tagging").should_not be_allow_fixation
     end
 
   end
