@@ -40,7 +40,7 @@ describe "When recognizing requests," do
     
   end
   
-  describe "a customized singular resource route" do
+  shared_examples_for "a customized singular resource route" do
     
     it "should be able to change the controller that the resource points to" do
       Merb::Router.prepare do
@@ -73,7 +73,7 @@ describe "When recognizing requests," do
   
   member_routes = { :five => :get, :six => :post, :seven => :put, :eight => :delete }
   
-  describe "a singular resource route with extra actions", :shared => true do
+  shared_examples_for "a singular resource route with extra actions" do
     
     member_routes.each_pair do |action, method|
       

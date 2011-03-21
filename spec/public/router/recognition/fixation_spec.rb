@@ -1,10 +1,8 @@
 require File.join(File.dirname(__FILE__), "..", "spec_helper")
 
 describe "When recognizing requests," do
-  
+
   describe "a route with fixation configured" do
-    
-    predicate_matchers[:allow_fixation] = :allow_fixation?
 
     it "should be able to allow fixation" do
       Merb::Router.prepare do
@@ -21,7 +19,7 @@ describe "When recognizing requests," do
 
       matched_route_for("/hello/goodbye/tagging").should_not allow_fixation
     end
-    
+
   end
-  
+
 end

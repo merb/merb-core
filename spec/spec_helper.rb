@@ -1,4 +1,4 @@
-require "spec"
+require "rspec"
 require File.join(File.dirname(__FILE__), "..", "lib", "merb-core")
 
 def startup_merb(opts = {})
@@ -106,7 +106,9 @@ module Merb::Test::CookiesHelper
   end
 end
 
-Spec::Runner.configure do |config|
+RSpec.configure do |config|
+  config.filter_run_excluding :meta => true
+
   config.include Merb::Test::Helper
   config.include Merb::Test::RspecMatchers
   config.include ::Webrat::Matchers

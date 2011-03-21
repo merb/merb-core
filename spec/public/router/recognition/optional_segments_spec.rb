@@ -2,7 +2,7 @@ require File.join(File.dirname(__FILE__), "..", "spec_helper")
 
 describe "Recognizing requests for the routes with" do
   
-  describe "a route with optional segments", :shared => true do
+  shared_examples_for "a route with optional segments" do
     
     it "should match when the required segment matches" do
       route_for("/hello").should have_route(:first => 'hello', :second => nil, :third => nil)

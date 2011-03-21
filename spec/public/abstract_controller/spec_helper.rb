@@ -24,6 +24,6 @@ module Merb::Test::Behaviors
   end
 end
 
-Spec::Runner.configure do |config|
+RSpec.configure do |config|
   config.include Merb::Test::Behaviors
 end

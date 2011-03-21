@@ -1,10 +1,9 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 require 'ostruct'
 require 'rubygems'
-gem "rspec"
-require "spec"
+require "rspec"
 
-module Spec
+module RSpec
   module Matchers
     class HaveRoute
       def initialize(expected, exact = false)
@@ -274,9 +273,9 @@ def it_should_be_a_resource_object_route(name, *args)
   end
 end
 
-Spec::Runner.configure do |config|
-  config.include(Spec::Helpers)
-  config.include(Spec::Matchers)
+RSpec.configure do |config|
+  config.include(RSpec::Helpers)
+  config.include(RSpec::Matchers)
   config.before(:each) do
     @_root_behavior = Merb::Router.root_behavior
   end

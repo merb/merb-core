@@ -14,7 +14,7 @@ module WithPathPrefixHelper
   end
 end
 
-describe Merb::Test::RequestHelper do
+describe Merb::Test::RequestHelper, :meta => true do
   include WithPathPrefixHelper
 
   before(:each) do

@@ -2,7 +2,7 @@ require 'rubygems'
 require 'rake'
 require "rake/rdoctask"
 require "rake/testtask"
-require "spec/rake/spectask"
+require "rspec/core/rake_task"
 require "fileutils"
 
 # Load code annotation support library
@@ -43,77 +43,8 @@ task :setup_local_path do
   $:.unshift(File.dirname(__FILE__)) unless $:.include? File.dirname(__FILE__)
 end
 
-desc "Run :specs, :rcov"
-task :aok => [:specs, :rcov]
-
-def setup_specs(name, spec_cmd='spec', run_opts = "-c")
-  except = []
-  except += Dir["spec/**/memcache*_spec.rb"] if ENV['MEMCACHED'] == 'no'
-
-  public_globs = Dir["#{Dir.pwd}/spec/public/**/*_spec.rb"].reject{|file| file.include?('/gems/')}
-  public_globs_10 = 
-    Dir["#{Dir.pwd}/spec10/public/**/*_spec.rb"].reject{|file| file.include?('/gems/')}
-
-  private_globs = Dir["#{Dir.pwd}/spec/private/**/*_spec.rb"]
-
-  desc "Run all specs (#{name})"
-  task "specs:#{name}" => [:setup_local_path] do
-    require "lib/merb-core/test/run_specs"
-    globs = public_globs + private_globs
-    run_specs(globs, spec_cmd, ENV['RSPEC_OPTS'] || run_opts, except)
-  end
-
-  desc "Run 1.0 frozen specs"
-  task "specs:oneoh" => [:setup_local_path] do
-    require "lib/merb-core/test/run_specs"
-    globs = public_globs_10
-    run_specs(globs, spec_cmd, ENV['RSPEC_OPTS'] || run_opts, except)
-  end
-
-  desc "Run private specs (#{name})"
-  task "specs:#{name}:private" => [:setup_local_path] do
-    require "lib/merb-core/test/run_specs"
-    run_specs(private_globs, spec_cmd, ENV['RSPEC_OPTS'] || run_opts)
-  end
-
-  desc "Run public specs (#{name})"
-  task "specs:#{name}:public" => [:setup_local_path] do
-    require "lib/merb-core/test/run_specs"
-    run_specs(public_globs, spec_cmd, ENV['RSPEC_OPTS'] || run_opts)
-  end
-
-  # With profiling formatter
-  desc "Run all specs (#{name}) with profiling formatter"
-  task "specs:#{name}_profiled" => [:setup_local_path] do
-    require "lib/merb-core/test/run_specs"
-    run_specs("spec/**/*_spec.rb", spec_cmd, "-c -f o")
-  end
-
-  desc "Run private specs (#{name}) with profiling formatter"
-  task "specs:#{name}_profiled:private" => [:setup_local_path] do
-    require "lib/merb-core/test/run_specs"
-    run_specs("spec/private/**/*_spec.rb", spec_cmd, "-c -f o")
-  end
-
-  desc "Run public specs (#{name}) with profiling formatter"
-  task "specs:#{name}_profiled:public" => [:setup_local_path] do
-    require "lib/merb-core/test/run_specs"
-    run_specs("spec/public/**/*_spec.rb", spec_cmd, "-c -f o")
-  end  
-end
-
-setup_specs("mri", "spec")
-setup_specs("jruby", "jruby -S spec")
-
-task "specs:core_ext" => [:setup_local_path] do
-  require "lib/merb-core/test/run_specs"
-  run_specs("spec/public/core_ext/*_spec.rb", "spec", "-c -f o")
-end
-
-task "spec"           => ["specs:mri"]
-task "specs"          => ["specs:mri"]
-task "specs:private"  => ["specs:mri:private"]
-task "specs:public"   => ["specs:mri:public"]
+desc "Run :spec, :rcov"
+task :aok => [:spec, :rcov]
 
 desc "Run coverage suite"
 task :rcov do
@@ -130,20 +61,10 @@ task :rcov do
   end
 end
 
-desc "Run a specific spec with TASK=xxxx"
-Spec::Rake::SpecTask.new("spec") do |t|
-  t.spec_opts = ["--colour"]
-  t.libs = ["lib", "server/lib" ]
-  t.spec_files = (ENV["TASK"] || '').split(',').map do |task|
-    "spec/**/#{task}_spec.rb"
-  end
-end
-
-desc "Run all specs output html"
-Spec::Rake::SpecTask.new("specs_html") do |t|
-  t.spec_opts = ["--format", "html"]
-  t.libs = ["lib", "server/lib" ]
-  t.spec_files = Dir["spec/**/*_spec.rb"].sort
+desc "Run all specs; set RAKE_TAG to filter specs (see rspec --tag parameter)"
+RSpec::Core::RakeTask.new(:spec) do |t|
+  t.pattern = "spec/**/*_spec.rb"
+  t.rspec_opts = "--tag #{ENV['RAKE_TAG']}" unless ENV['RAKE_TAG'].nil?
 end
 
 ##############################################################################
