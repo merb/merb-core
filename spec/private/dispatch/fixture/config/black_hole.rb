@@ -3,7 +3,7 @@ module Rack
   module Adapter
     class BlackHole
       def call(env)
-        [ 200, { "Content-Type" => "text/plain" }, "" ]
+        [ 200, { "Content-Type" => "text/plain" }, Merb::Rack::StreamWrapper.new("") ]
       end
     end
   end

@@ -14,7 +14,11 @@ module Merb
         begin
           rack_response = ::Merb::Dispatcher.handle(Merb::Request.new(env))
         rescue Object => e
-          return [500, {Merb::Const::CONTENT_TYPE => Merb::Const::TEXT_SLASH_HTML}, e.message + Merb::Const::BREAK_TAG + e.backtrace.join(Merb::Const::BREAK_TAG)]
+          return [
+            500,
+            {Merb::Const::CONTENT_TYPE => Merb::Const::TEXT_SLASH_HTML},
+            e.message + Merb::Const::BREAK_TAG + e.backtrace.join(Merb::Const::BREAK_TAG)
+          ]
         end
         Merb.logger.info Merb::Const::DOUBLE_NEWLINE
         Merb.logger.flush
@@ -23,6 +27,12 @@ module Merb
         #   require "time"
         #   controller.headers[Merb::Const::DATE] = Time.now.rfc2822.to_s
         # end
+
+        # Rack requires the body to respond to #each
+        unless rack_response[2].respond_to? :each
+          rack_response[2] = Merb::Rack::StreamWrapper.new(rack_response[2])
+        end
+
         rack_response
       end
 
