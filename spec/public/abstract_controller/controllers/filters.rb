@@ -4,9 +4,9 @@
 # and that other features (or lack thereof), are not causing tests to fail
 # that would otherwise pass.
 module Merb::Test::Fixtures
-  
+
   module Abstract
-    
+
     class Testing < Merb::AbstractController
       self._template_root = File.dirname(__FILE__) / "views"
     end
@@ -17,9 +17,9 @@ module Merb::Test::Fixtures
       def index
         "#{@x}"
       end
-      
+
       private
-      
+
       def foo
         @x = "foo filter"
       end    
@@ -31,9 +31,9 @@ module Merb::Test::Fixtures
       def index
         "index action"
       end
-      
+
       private
-      
+
       def foo
         @body = "foo filter"
       end        
@@ -49,9 +49,9 @@ module Merb::Test::Fixtures
       def index
         "#{@x}"
       end
-    
+
       private
-      
+
       def bar
         @x = "bar filter"
       end
@@ -63,9 +63,9 @@ module Merb::Test::Fixtures
       def index
         "index action"
       end
-    
+
       private
-      
+
       def bar
         @body = "bar filter"
       end
@@ -79,12 +79,12 @@ module Merb::Test::Fixtures
         "#{@x} #{@y}"
       end
     end
-    
+
     class TestProcFilterViaMethod < Testing
       def self.my_before(data)
         before proc { add_string(data) }
       end
-      
+
       my_before("one")
       my_before("two")
 
@@ -92,10 +92,10 @@ module Merb::Test::Fixtures
         @text
       end
       protected
-        def add_string(str)
-          @text ||= ""
-          @text << str
-        end
+      def add_string(str)
+        @text ||= ""
+        @text << str
+      end
     end
 
     class TestExcludeFilter < Testing
@@ -109,9 +109,9 @@ module Merb::Test::Fixtures
       def show
         "#{@x} #{@y}"
       end
-    
+
       private
-      
+
       def foo
         @x = "foo filter"
       end
@@ -132,9 +132,9 @@ module Merb::Test::Fixtures
       def show
         "#{@x} #{@y}"
       end
-    
+
       private
-      
+
       def foo
         @x = "foo filter"
       end
@@ -143,87 +143,87 @@ module Merb::Test::Fixtures
         @y = "bar filter"
       end
     end
-    
+
     class TestConditionalFilterWithMethod < Testing
       before  :foo, :if => :bar
-      
+
       attr_accessor :bar
-      
+
       def index
         "#{@x}"
       end
-      
+
       private
       def foo
         @x = "foo filter"
       end
     end
-    
+
     class TestConditionalFilterWithProc < Testing
       after   :foo, :unless => proc { self.bar == "bar" }
-      
+
       attr_accessor :bar
-      
+
       def index
         "index action"
       end
-      
+
       private
       def foo
         @body = "foo filter"
       end
     end
-    
+
     class TestConditionalFilterWithNoProcOrSymbol < Testing
       after   :foo, :unless => true
-      
+
       def index
         "index action"
       end
     end
-    
+
     class TestBeforeFilterWithArgument < Testing
       before :foo, :with => "bar"
-      
+
       def index
         "index action"
       end
-      
+
       private
       def foo(bar)
         bar == "bar"
       end
     end
-    
+
     class TestBeforeFilterWithArguments < Testing
       before :foo, :with => ["bar", "baz"]
-      
+
       def index
         "index action"
       end
-      
+
       private
       def foo(bar,baz)
         bar == "bar" && baz == "baz"
       end
     end
-    
+
     class BeforeFilterWithThrowHalt < Testing
       before do
         throw :halt, "Halt thrown"
       end
-      
+
       def index
         "Halt not thrown"
       end      
     end
-    
+
     class ActionWithThrowHalt < Testing
       def index
         throw :halt, "Halt thrown"
       end      
     end
-    
+
     class ActionWithHaltInMethod < Testing
       def index
         get_user
@@ -234,44 +234,64 @@ module Merb::Test::Fixtures
         throw :halt, "Halt thrown"
       end
     end
-    
+
     class BeforeFilterWithThrowProc < Testing
       before do
         throw :halt, Proc.new { "Proc thrown" }
       end
-      
+
       def index
         "Proc not thrown"
       end
     end
-    
+
     class ThrowNil < Testing
       before do
         throw :halt, nil
       end
-      
+
       def index
         "Awesome"
       end
     end
-    
+
     class FilterChainError < Testing
       before do
         throw :halt, Merb
       end
-      
+
       def index
         "Awesome"
       end
     end
-    
+
     class Benchmarking < Testing
       before {}
       after {}
-      
+
       def index
         "Awesome"
       end
     end
+
+    # #611 in merb-core tracker
+    class HasFiltersWithSimilarNames < Testing
+      before :befilter
+      before :bef
+
+      def index
+        @before_string.to_s + " Index"
+      end
+
+      protected
+
+      def befilter
+        @before_string = "Befilter"
+      end
+
+      def bef
+        @before_string << " Bef"
+      end
+    end # HasFiltersWithSimilarNames
   end
 end

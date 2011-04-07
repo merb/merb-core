@@ -20,7 +20,7 @@ module Merb::Test::Behaviors
     else
       controller = dispatch_to(klass, action, opts, env, &blk)
     end
-    controller.body.should == body
+    controller.body.should === body
   end
 end
 
