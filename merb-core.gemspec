@@ -40,6 +40,7 @@ Gem::Specification.new do |gem|
     gem.add_development_dependency 'rspec',  '>= 1.2.9'
     gem.add_development_dependency 'webrat', '>= 0.3.1'
     gem.add_development_dependency 'memcache-client', '>= 1.8.5' # for session specs
+    gem.add_development_dependency 'yard', '>= 0.6'
 
     # Executable files
     gem.executables  = 'merb'
