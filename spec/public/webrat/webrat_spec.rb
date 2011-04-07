@@ -11,27 +11,27 @@ Merb.reset_logger!
 describe "an app tested using the webrat proxies" do
   describe("#visit") do
     it "supports visit" do
-      visit("/testing")
+      visit("/testing_webrat")
     end
   
     it "can use the Merb expectations with visit" do
-      visit("/testing").should be_successful
+      visit("/testing_webrat").should be_successful
     end
   
     it "supports visit intermixed with request" do
-      resp = visit("/testing/next")
+      resp = visit("/testing_webrat/next")
       resp.should have_xpath("//p")
     end
   end
   
   describe("#click_link") do
     it "supports click_link" do
-      visit "/testing"
+      visit "/testing_webrat"
       click_link "Next"
     end
     
     it "can use the Merb expectations with click_link" do
-      visit "/testing"
+      visit "/testing_webrat"
       resp = click_link "Next"
       resp.should have_xpath("//p[contains(., 'Got to next')]")
     end
@@ -39,14 +39,14 @@ describe "an app tested using the webrat proxies" do
   
   describe "filling in forms" do
     it "lets you fill in text fields" do
-      visit "/testing/show_form"
+      visit "/testing_webrat/show_form"
       fill_in "Name", :with => "Merby"
       fill_in "Address", :with => "82 South Park"
       click_button "Submit!"
     end
     
     it "returns the response when you fill in text fields" do
-      visit "/testing/show_form"
+      visit "/testing_webrat/show_form"
       fill_in "name", :with => "Merby"
       fill_in "address", :with => "82 South Park"
       resp = click_button "Submit!"
@@ -54,12 +54,12 @@ describe "an app tested using the webrat proxies" do
     end
     
     it "lets you check checkboxes" do
-      visit "/testing/show_form"
+      visit "/testing_webrat/show_form"
       check "Tis truez"
     end
     
     it "returns the response when you check checkboxes" do
-      visit "/testing/show_form"
+      visit "/testing_webrat/show_form"
       check "Tis truez"
       resp = click_button "Submit!"
       resp.should have_xpath("//p[contains(., 'truez: 1')]")
