@@ -171,17 +171,6 @@ module Merb
       start(argv) unless (@started ||= false)
     end
 
-    # Restart the Merb environment explicitly.
-    #
-    # @param [String, Hash] argv The config arguments to restart Merb with.
-    #   Given values are merged over the contents of `Merb::Config`.
-    #
-    # @api public
-    def restart_environment(argv={})
-      @started = false
-      start_environment(Merb::Config.to_hash.merge(argv))
-    end
-
     # @api public
     attr_accessor :environment, :adapter
     # @api private

@@ -7,7 +7,10 @@ require 'merb-core/test/helpers'
 
 begin
   require 'webrat'
-  require 'webrat/merb'
+
+  Webrat.configure do |c|
+    c.mode = :merb
+  end
 rescue LoadError => e
   if Merb.testing?
     Merb.logger.warn! "Couldn't load Webrat, so some features, like `visit' will not " \

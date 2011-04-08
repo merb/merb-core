@@ -1,12 +1,41 @@
 require "rspec"
+require 'rack/test'
+
 require File.join(File.dirname(__FILE__), "..", "lib", "merb-core")
+
+module Merb
+  module SpecUtilityMethods
+    # Determine the filename of the calling spec. Use the topmost
+    # "*_spec.rb" file.
+    def self.calling_spec
+      cs = caller.map {|c| parse_caller(c)}.select {|c| c[0] =~ /_spec\.rb\Z/}.last
+
+      if cs.nil? || cs.empty?
+        "(none)"
+      else
+        "#{File.basename(cs[0])}:#{cs[1]}"
+      end
+    end
+
+    def self.parse_caller(at)
+      if /^(.+?):(\d+)(?::in `(.*)')?/ =~ at
+        file = Regexp.last_match[1]
+        line = Regexp.last_match[2].to_i
+        method = Regexp.last_match[3]
+        [file, line]
+      end
+    end
+  end
+end
 
 def startup_merb(opts = {})
   default_options = {
     :environment => 'test',
     :adapter => 'runner',
     :gemfile => File.join(File.dirname(__FILE__), "Gemfile"),
-    :log_level => :error
+    :log_level => :error,
+    :fork_for_class_load => false,
+    :name => Merb::SpecUtilityMethods.calling_spec
   }
   options = default_options.merge(opts)
   Merb.start_environment(options)
@@ -70,8 +99,6 @@ module Merb::Test::CookiesHelper
 end
 
 RSpec.configure do |config|
-  config.filter_run_excluding :meta => true
-
   config.include Merb::Test::Helper
   config.include Merb::Test::RspecMatchers
   config.include ::Webrat::Matchers
@@ -79,6 +106,7 @@ RSpec.configure do |config|
   config.include Merb::Test::RequestHelper
   config.include Merb::Test::RouteHelper
   config.include Merb::Test::WebratHelper
+  config.include Rack::Test::Methods
 
   def reset_dependency(name, const = nil)
     Object.send(:remove_const, const) if const && Object.const_defined?(const)

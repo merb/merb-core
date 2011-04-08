@@ -105,7 +105,7 @@ module Merb
       # @see Merb::Test::RequestHelper#fake_request
       #
       # @api public
-      # @deprecated
+      # @deprecated Deprecation note questionable.
       def dispatch_to(controller_klass, action, params = {}, env = {}, &blk)
         params = merge_controller_and_action(controller_klass, action, params)
         dispatch_request(build_request(params, env), controller_klass, action.to_s, &blk)
@@ -200,50 +200,6 @@ module Merb
         fake_request(env, { :post_body => post_body, :req => env[:req] })
       end
 
-      # An HTTP GET request that operates through the router.
-      #
-      # @param (see #mock_request)
-      #
-      # @see Merb::Test::RequestHelper #fake_request
-      #
-      # @api public
-      # @deprecated
-      def get(path, params = {}, env = {}, &block)
-        env[:request_method] = "GET"
-        mock_request(path, params, env, &block)
-      end
-
-      # An HTTP POST request that operates through the router.
-      #
-      # @param (see #mock_request)
-      #
-      # @api public
-      # @deprecated
-      def post(path, params = {}, env = {}, &block)
-        env[:request_method] = "POST"
-        mock_request(path, params, env, &block)
-      end
-
-      # An HTTP PUT request that operates through the router.
-      #
-      # @param (see #mock_request)
-      #
-      # @api public
-      def put(path, params = {}, env = {}, &block)
-        env[:request_method] = "PUT"
-        mock_request(path, params, env, &block)
-      end
-
-      # An HTTP DELETE request that operates through the router
-      #
-      # @param (see #mock_request)
-      #
-      # @api public
-      # @deprecated
-      def delete(path, params = {}, env = {}, &block)
-        env[:request_method] = "DELETE"
-        mock_request(path, params, env, &block)
-      end
 
       # A generic request that checks the router for the controller and action.
       # This request goes through the Merb::Router and finishes at the controller.

@@ -240,6 +240,9 @@ describe Merb::Controller, "#url(:this, *args)" do
         match(:method => :get).defer_to { |r, params| params }
       end
     end
+
+    # We expect some failures, so disable console logging
+    Merb.logger.set_log(StringIO.new, :fatal)
   end
   
   it "should use the current route" do

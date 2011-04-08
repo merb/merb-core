@@ -1,6 +1,7 @@
 require File.join(File.dirname(__FILE__), "..", "spec_helper")
 
 describe "When recognizing requests," do
+  Merb.logger.set_log(StringIO.new, :fatal)
 
   # predicate_matchers[:redirects] = :redirect
   

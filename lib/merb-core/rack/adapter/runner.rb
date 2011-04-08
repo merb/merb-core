@@ -4,10 +4,9 @@ module Merb
 
     class Runner
       # @param [Hash] opts Options for the runner.
-      # @option opts [String] :runner_code The code to run.
-      #
-      # @note If `opts[:runner_code]` matches a filename, that file will be read
-      #   and the contents executed. Otherwise the code will be executed directly.
+      # @option opts [String] :runner_code The code to run. If this matches
+      #   a filename, that file will be read and the contents executed.
+      #   Otherwise the code will be executed directly.
       #
       # @api plugin
       def self.start(opts={})

@@ -1,4 +1,4 @@
-require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
+require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 startup_merb(:log_level => :fatal)
 
@@ -14,7 +14,8 @@ class TestController < Merb::Controller
 end
 
 describe Merb::Test::Rspec::ControllerMatchers do
-  include Merb::Test::ControllerHelper
+  # include Merb::Test::ControllerHelper
+
   before(:each) do
     Merb::Router.prepare do
       match("/redirect").to(:controller => "test_controller", :action => "redirect_action")
@@ -41,10 +42,6 @@ describe Merb::Test::Rspec::ControllerMatchers do
     it "should work with the result of a dispatch_to helper call" do
       dispatch_to(TestController, :redirect_action).should redirect_to("/")
       dispatch_to(TestController, :redirect_action){ |controller| controller.redirect_to = "http://example.com/" }.should redirect_to("http://example.com/")
-    end
-    
-    it "should work with the result of a get helper call" do
-      get("/redirect"){|controller| controller.redirect_to = "http://example.com/" }.should redirect_to("http://example.com/")
     end
 
     it 'takes :message option' do
