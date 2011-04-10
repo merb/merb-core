@@ -254,7 +254,7 @@ module Merb
         parms[key] = normalize_params(parms[key], after, val)
       end
       parms
-    end  
-  
+    end
+
   end
 end
