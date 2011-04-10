@@ -200,7 +200,7 @@ module Merb
       s = s.tr('+', ' ').gsub(/((?:%[0-9a-fA-F]{2})+)/n){
         [$1.delete('%')].pack('H*')
       }
-      if RUBY_VERSION >= '1.9'
+      if s.respond_to?(:force_encoding)
         encoding ||= Encoding.default_internal
         s.force_encoding(encoding) if encoding
       end
