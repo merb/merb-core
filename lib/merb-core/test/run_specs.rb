@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 require 'benchmark'
 require 'spec'
 require 'spec/runner/formatter/base_text_formatter'

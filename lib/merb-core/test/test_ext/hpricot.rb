@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 # http://yehudakatz.com/2007/01/27/a-better-assert_select-assert_elements/
 # based on assert_elements
 # Author: Yehuda Katz

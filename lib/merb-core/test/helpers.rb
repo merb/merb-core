@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 # This is a place holder to allow plugins etc a place to include 
 # testing helpers
 module Merb::Test::Helpers; end

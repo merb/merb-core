@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 # Most of this list is simply constants frozen for efficiency
 # and lowered memory consumption. Every time Ruby VM comes
 # across a string or a number or a regexp literal,

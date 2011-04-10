@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 require 'stringio'
 class Mongrel::HttpResponse
   NO_CLOSE_STATUS_FORMAT = "HTTP/1.1 %d %s\r\n".freeze

@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 class Object
   # @param [#to_s] attr The name of the instance variable to get.
   #

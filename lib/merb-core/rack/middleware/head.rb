@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 require 'rack/head'
 require 'merb-core/rack/middleware'
 

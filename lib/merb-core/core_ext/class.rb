@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 class Class
   # Allows the definition of methods on a class that will be available via
   # super.

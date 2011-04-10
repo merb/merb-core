@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 begin
   require "ruby-prof"
 rescue LoadError => e

@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 Merb::BootLoader.after_app_loads do
   module Merb
     class Dispatcher

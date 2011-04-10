@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 require 'merb-core/test/test_ext/object'
 require 'merb-core/test/test_ext/string'
 

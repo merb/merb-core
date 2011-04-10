@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 require Merb.framework_root / "merb-core" / "dispatch" / "default_exception" / "default_exception"
 
 module Merb

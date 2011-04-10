@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 class Exception
   # Returns the action_name that will be invoked on your Exceptions controller when this
   # exception is raised. Override this method to force a different action to be invoked.

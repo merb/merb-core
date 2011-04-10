@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 require 'rspec/core/rake_task'
 
 desc "Run specs, run a specific spec with TASK=spec/path_to_spec.rb"

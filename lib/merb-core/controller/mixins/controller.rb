@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 module Merb
   # Module that is mixed in to all implemented controllers.
   module ControllerMixin

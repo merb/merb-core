@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 module Merb::Test::MultipartRequestHelper
   require 'rubygems'
   require 'mime/types'

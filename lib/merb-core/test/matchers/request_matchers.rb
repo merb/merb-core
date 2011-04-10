@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 Spec::Matchers.create(:be_successful, :respond_successfully) do
   matches do |rack|
     @status = rack.respond_to?(:status) ? rack.status : rack

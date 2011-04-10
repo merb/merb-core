@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 require 'swiftcore/evented_mongrel'
 require 'merb-core/rack/handler/mongrel'
 module Merb

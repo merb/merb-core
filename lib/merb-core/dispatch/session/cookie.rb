@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 require 'base64'        # to convert Marshal.dump to ASCII
 require 'openssl'       # to generate the HMAC message digest
 module Merb

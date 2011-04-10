@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 # require 'merb' must happen after Merb::Config is instantiated
 
 # Add the local gems dir if found within the app root; any dependencies loaded

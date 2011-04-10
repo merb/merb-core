@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 require 'rack/content_length'
 require 'merb-core/rack/middleware'
 

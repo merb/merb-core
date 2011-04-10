@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 # #### Why do we use Underscores?
 # In Merb, views are actually methods on controllers. This provides
 # not-insignificant speed benefits, as well as preventing us from

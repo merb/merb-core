@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 require 'merb-core/dispatch/session/container'
 require 'merb-core/dispatch/session/store_container'
 

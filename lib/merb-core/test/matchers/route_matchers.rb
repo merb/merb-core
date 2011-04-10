@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 module Merb::Test::Rspec::RouteMatchers
 
   class RouteToMatcher

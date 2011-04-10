@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 # Provides conditional get support in Merb core.
 # Conditional get support is intentionally simple and does not do fancy
 # stuff like making ETag value from Ruby objects for you.

@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 require 'active_support/core_ext/hash'
 
 # Extend by some methods not provided by ActiveSupport.

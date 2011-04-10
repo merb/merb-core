@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 # Merb::Logger = Extlib::Logger
 
 class Merb::Logger < Extlib::Logger

@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 module Merb::Test::MultipartRequestHelper
 
   def multipart_request(path, params = {}, env = {})

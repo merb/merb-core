@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 module Kernel
   # Loads the given string as a gem.
   #

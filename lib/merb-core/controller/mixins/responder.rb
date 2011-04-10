@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 require 'enumerator'
 require 'merb-core/controller/mime'
 

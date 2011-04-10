@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 class Merb::Controller < Merb::AbstractController
 
   class_attribute :_hidden_actions, :_shown_actions, :_overridable,

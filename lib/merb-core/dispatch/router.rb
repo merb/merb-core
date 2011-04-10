@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 require 'merb-core/dispatch/router/cached_proc'
 require 'merb-core/dispatch/router/behavior'
 require 'merb-core/dispatch/router/resources'

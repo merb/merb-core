@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 require 'webrick'
 require 'webrick/utils'
 require 'rack/handler/webrick'

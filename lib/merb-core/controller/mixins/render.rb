@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 module Merb::RenderMixin
   # So we can do raise TemplateNotFound
   include Merb::ControllerExceptions

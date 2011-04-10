@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 module Merb
   
   # The class attribute :store holds a reference to an object that

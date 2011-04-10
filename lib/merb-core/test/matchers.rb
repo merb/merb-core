@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 module Merb::Test::Rspec; end
 
 require "merb-core/test/matchers/controller_matchers"

@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 begin
   require 'mongrel'
 rescue LoadError => e

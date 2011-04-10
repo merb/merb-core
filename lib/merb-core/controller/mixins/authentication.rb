@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 module Merb::AuthenticationMixin
   # Attempts to authenticate the user via HTTP Basic authentication. Takes a
   # block with the username and password, if the block yields false the
