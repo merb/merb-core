@@ -233,6 +233,10 @@ module Merb
       key = $1 || ''
       after = $' || ''
 
+      if val.respond_to?(:force_encoding)
+        val.force_encoding(Encoding.default_internal)
+      end
+
       if after == ""
         parms[key] = val
       elsif after == "[]"
