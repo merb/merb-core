@@ -24,5 +24,7 @@ module Merb
     autoload :Head,                'merb-core/rack/middleware/head'
     autoload :StreamWrapper,       'merb-core/rack/stream_wrapper'
     autoload :Helpers,             'merb-core/rack/helpers'
+
+    autoload :MockSession,        'merb-core/rack/mock_session'
   end # Rack
 end # Merb

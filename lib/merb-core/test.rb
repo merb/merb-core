@@ -8,6 +8,21 @@ require 'merb-core/test/helpers'
 begin
   require 'webrat'
 
+  # Monkeypatch Webrat's Merb adapter to use our own session model
+  module Webrat
+    class MerbAdapter < RackAdapter
+      def initialize(context=nil)
+        app = if context.respond_to?(:app)
+                context.app
+              else
+                Merb::Rack::Application.new
+              end
+
+        super(Rack::Test::Session.new(Merb::Rack::MockSession.new(app, 'example.com')))
+      end
+    end
+  end
+
   Webrat.configure do |c|
     c.mode = :merb
   end

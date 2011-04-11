@@ -12,6 +12,29 @@ module WithPathPrefixHelper
   ensure
     Merb::Config[:path_prefix] = old_prefix
   end
+
+  def with_test_settings(opts = {})
+    overwritten = {}
+    Merb::Config[:test_settings] ||= {}
+
+    opts.each do |key, value|
+      if Merb::Config[:test_settings].has_key? :key
+        overwritten[key] = Merb::Config[:test_settings][key]
+      end
+
+      Merb::Config[:test_settings][key] = value
+    end
+
+    yield
+  ensure
+    opts.each do |key, value|
+      if overwritten.has_key?(key)
+        Merb::Config[:test_settings][key] = overwritten[key]
+      else
+        Merb::Config[:test_settings].delete(key)
+      end
+    end
+  end
 end
 
 describe Merb::Test::RequestHelper do
@@ -29,10 +52,8 @@ describe Merb::Test::RequestHelper do
   end
 
   it "should remove the path_prefix configuration option" do
-    pending "Does not work with Rack's MockSession" do
-      with_path_prefix '/foo' do
-        visit("/foo/path").should have_body('1')
-      end
+    with_path_prefix '/foo' do
+      visit("/foo/path").should have_body('1')
     end
   end
 
@@ -70,29 +91,26 @@ describe Merb::Test::RequestHelper do
   end
 
   it "should be able to disable the cookie jar" do
-    pending "Does not work with Rack's MockSession" do
-      visit("/counter", :get, :jar => nil).should have_body("1")
-      visit("/counter", :get, :jar => nil).should have_body("1")
+      with_test_settings(:cookie_jar => nil) do
+        visit("/counter").should have_body("1")
+        visit("/counter").should have_body("1")
+      end
+
       visit("/counter").should have_body("1")
       visit("/counter").should have_body("2")
-    end
   end
 
   it "should be able to specify separate jars" do
-    pending "Does not work with Rack's MockSession" do
-      visit("/counter", :get, :jar => :one).should have_body("1")
-      visit("/counter", :get, :jar => :two).should have_body("1")
-      visit("/counter", :get, :jar => :one).should have_body("2")
-      visit("/counter", :get, :jar => :two).should have_body("2")
-    end
+      with_test_settings(:cookie_jar => :one) { visit("/counter").should have_body("1") }
+      with_test_settings(:cookie_jar => :two) { visit("/counter").should have_body("1") }
+      with_test_settings(:cookie_jar => :one) { visit("/counter").should have_body("2") }
+      with_test_settings(:cookie_jar => :two) { visit("/counter").should have_body("2") }
   end
 
   it 'should allow a cookie to be set' do
-    pending "Does not work with Rack's MockSession" do
       cookie = visit("/counter").headers['Set-Cookie']
       visit("/delete")
-      visit("/counter", :get, :cookie => cookie).should have_body("2")
-    end
+      with_test_settings(:cookie => cookie) { visit("/counter").should have_body("2") }
   end
 
   it "should respect cookie domains when no domain is explicitly set" do
@@ -103,10 +121,10 @@ describe Merb::Test::RequestHelper do
   end
 
   it "should respect the domain set in the cookie" do
-    visit("http://example.org/domain").should     have_body("1")
-    visit("http://foo.example.org/domain").should have_body("1")
-    visit("http://example.org/domain").should     have_body("1")
-    visit("http://foo.example.org/domain").should have_body("2")
+    visit("http://example.com/domain").should     have_body("1")
+    visit("http://foo.example.com/domain").should have_body("1")
+    visit("http://example.com/domain").should     have_body("1")
+    visit("http://foo.example.com/domain").should have_body("2")
   end
 
   it "should respect the path set in the cookie" do
