@@ -28,18 +28,15 @@ module Merb
 
     # Initialize the request object.
     #
-    # @todo Fix docs.
-    # #### Parameters
-    # http_request<~params:~[], ~body:IO>::
-    #   An object like an HTTP Request.
+    # @param [Hash] A Rack-conformant request environment.
     #
     # @api private
-    def initialize(rack_env)      
+    def initialize(rack_env)
       @env  = rack_env
       @body = rack_env[Merb::Const::RACK_INPUT]
       @route_params = {}
     end
-    
+
     # Memoizes the new request object into env["merb.request"] so we
     # can memoize things into ivars in the request
     #
@@ -272,6 +269,8 @@ module Merb
             jobj = Mash.new
           end
           jobj.is_a?(Hash) ? jobj : { :inflated_object => jobj }
+        else
+          {}
         end
       end
     end
@@ -283,6 +282,8 @@ module Merb
       @xml_params ||= begin
         if Merb::Const::XML_MIME_TYPE_REGEXP.match(content_type)
           Hash.from_xml(raw_post) rescue Mash.new
+        else
+          {}
         end
       end
     end
@@ -299,9 +300,9 @@ module Merb
     def params
       @params ||= begin
         h = body_and_query_params.merge(route_params)
-        h.merge!(multipart_params) if self.class.parse_multipart_params && multipart_params
-        h.merge!(json_params) if self.class.parse_json_params && json_params
-        h.merge!(xml_params) if self.class.parse_xml_params && xml_params
+        h.merge!(multipart_params) if self.class.parse_multipart_params
+        h.merge!(json_params) if self.class.parse_json_params
+        h.merge!(xml_params) if self.class.parse_xml_params
         h
       end
     end
