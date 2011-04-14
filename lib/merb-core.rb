@@ -26,7 +26,7 @@ Mash = ActiveSupport::HashWithIndifferentAccess
 require 'active_support/inflector/inflections'
 require 'active_support/inflector/methods'
 require 'active_support/inflections'
-#require 'active_support/core_ext/string/inflections' # This shit loads i18n
+require 'active_support/core_ext/string/inflections' #FIXME: This shit loads i18n
 
 # Those are brought from extlib
 require 'merb-core/core_ext/string'

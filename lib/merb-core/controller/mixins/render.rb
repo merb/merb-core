@@ -9,7 +9,7 @@ module Merb::RenderMixin
   def self.included(base)
     base.extend(ClassMethods)
     base.class_eval do
-      class_attribute :_default_render_options
+      extlib_inheritable_accessor :_default_render_options
     end
   end
 

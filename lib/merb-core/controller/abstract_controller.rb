@@ -99,9 +99,9 @@ module Merb
     include Merb::RenderMixin
     include Merb::InlineTemplates
 
-    class_attribute :_layout, :_template_root, :template_roots
-    class_attribute :_before_filters, :_after_filters
-    class_attribute :_before_dispatch_callbacks, :_after_dispatch_callbacks
+    extlib_inheritable_accessor :_layout, :_template_root, :template_roots
+    extlib_inheritable_accessor :_before_filters, :_after_filters
+    extlib_inheritable_accessor :_before_dispatch_callbacks, :_after_dispatch_callbacks
 
     cattr_accessor :_abstract_subclasses
 

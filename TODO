@@ -1,0 +1,3 @@
+ActiveSupport:
+
+* We depend on AS i18n for the inflector
