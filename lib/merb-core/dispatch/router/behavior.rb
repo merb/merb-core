@@ -150,8 +150,8 @@ module Merb
       # routes that are defined in the block have the conditions applied
       # to them.
       #
-      # *Tip:* When nesting always make sure the most inner sub-match registers
-      # a Route and doesn't just return new Behaviors.
+      # @note When nesting always make sure the most inner sub-match registers
+      #   a Route and does not just return new Behaviors.
       #
       # @example
       #     # registers /foo/bar to controller => "foo", :action => "bar"
@@ -205,11 +205,12 @@ module Merb
       #   value is the string or regexp that matched the returned value.
       #   Conditions are inherited by child routes.
       #
-      # @param &block
-      #   All routes defined in the block will be scoped to the conditions
-      #   defined by the #match method.
-      #
       # @yieldparam [Behavior] r The match behavior object (optional).
+      #   All routes defined in the block will be scoped to the conditions
+      #   defined by the #match method, so those two cases are equivalent:
+      #
+      #       match('/foo') { match('/bar') }
+      #       match('/foo') { |r| r.match('/bar') }
       #
       # @return [Behavior] A new instance of Behavior with the specified path
       #   and conditions.
@@ -217,12 +218,12 @@ module Merb
       # @api public
       def match(path = {}, conditions = {}, &block)
         path, conditions = path[:path], path if path.is_a?(Hash)
-        
+
         raise Error, "The route has already been committed. Further conditions cannot be specified" if @route
-        
+
         conditions.delete_if { |k, v| v.nil? }
         conditions[:path] = merge_paths(path)
-        
+
         behavior = Behavior.new(@proxy, @conditions.merge(conditions), @params, @defaults, @identifiers, @options, @blocks)
         with_behavior_context(behavior, &block)
       end
