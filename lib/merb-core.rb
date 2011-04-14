@@ -383,11 +383,20 @@ module Merb
 
     # Get the path of root directory of the Merb framework.
     #
+    # @param [String] *args A number of path elements to concatenate after
+    #   the root with File.join.
+    #
     # @return [String]
     #
     # @api public
-    def framework_root
+    def framework_root(*args)
       @framework_root ||= File.dirname(__FILE__)
+
+      if args.empty?
+        @framework_root
+      else
+        File.join(@framework_root, *args)
+      end
     end
 
     # Get the regular expression against which deferred actions are
