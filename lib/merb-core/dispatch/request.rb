@@ -73,7 +73,7 @@ module Merb
       controller = path.underscore.camelize
 
       begin
-        Object.full_const_get(controller)
+        controller.constantize
       rescue NameError => e
         msg = "Controller class not found for controller `#{path}'"
         Merb.logger.warn!(msg)

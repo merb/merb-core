@@ -110,7 +110,7 @@ module Merb
         
         # Use the identifier for the class as a default
         begin
-          if klass = Object.full_const_get(klass_name)
+          if klass = klass_name.constantize
             keys ||= options[:identify]
             keys ||= @identifiers[klass]
           elsif options[:identify]

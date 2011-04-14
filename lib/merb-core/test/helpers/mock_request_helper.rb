@@ -233,7 +233,7 @@ module Merb
 
         opts = check_request_for_route(request) # Check that the request will be routed correctly
         controller_name = (opts[:namespace] ? opts.delete(:namespace) + '/' : '') + opts.delete(:controller)
-        klass = Object.full_const_get(controller_name.underscore.camelize)
+        klass = controller_name.underscore.camelize.constantize
 
         action = opts.delete(:action).to_s
         params.merge!(opts)

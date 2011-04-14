@@ -14,7 +14,7 @@ module Merb
         # @api private
         def get(id)
           if @adapters[id.to_s]
-            Object.full_const_get(@adapters[id.to_s])
+            @adapters[id.to_s].constantize
           else
             Merb.fatal! "The adapter #{id} did not exist"
           end

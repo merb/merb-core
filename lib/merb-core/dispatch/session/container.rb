@@ -2,7 +2,7 @@ module Merb
   class SessionContainer < Mash
     
     class_attribute :session_store_type
-    cattr_accessor :subclasses 
+    cattr_accessor :subclasses
     self.subclasses = []
 
     # @api private

@@ -83,7 +83,7 @@ module Merb
           time = Time.now.to_i
           bootloader = subclasses.shift
           Merb.logger.debug!("Loading: #{bootloader}") if Merb.verbose_logging?
-          Object.full_const_get(bootloader).run
+          bootloader.constantize.run
           Merb.logger.debug!("It took: #{Time.now.to_i - time}") if Merb.verbose_logging?
           self.finished << bootloader
         end
@@ -944,7 +944,7 @@ class Merb::BootLoader::LoadClasses < Merb::BootLoader
       end
 
       parts = const.to_s.split("::")
-      base = parts.size == 1 ? Object : Object.full_const_get(parts[0..-2].join("::"))
+      base = parts.size == 1 ? Object : parts[0..-2].join("::").constantize
       object = parts[-1].to_s
       begin
         base.send(:remove_const, object)
@@ -1074,7 +1074,7 @@ class Merb::BootLoader::Templates < Merb::BootLoader
       # path over and over.
       controller_view_paths = []
       Merb::AbstractController._abstract_subclasses.each do |klass|
-        next if (const = Object.full_const_get(klass))._template_root.blank?
+        next if (const = klass.constantize)._template_root.blank?
         controller_view_paths += const._template_roots.map { |pair| pair.first }
       end
       template_paths = controller_view_paths.uniq.compact.map { |path| Dir["#{path}/**/*.#{extension_glob}"] }
@@ -1160,7 +1160,7 @@ class Merb::BootLoader::SetupSession < Merb::BootLoader
     # Register all configured session stores - any loaded session container class
     # (subclassed from Merb::SessionContainer) will be available for registration.
     Merb::SessionContainer.subclasses.each do |class_name|
-      if(store = Object.full_const_get(class_name)) &&
+      if(store = class_name.constantize) &&
         config_stores.include?(store.session_store_type)
           Merb::Request.register_session_type(store.session_store_type, class_name)
       end

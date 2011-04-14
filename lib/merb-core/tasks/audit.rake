@@ -23,7 +23,7 @@ namespace :audit do
     abstract_controller_classes.each do |klass|
       if klass.respond_to?(:subclasses_list)
         puts "#{klass} < #{klass.superclass}"
-        subklasses = klass.subclasses_list.sort.map { |x| Object.full_const_get(x) }
+        subklasses = klass.subclasses_list.sort.map { |x| x.constantize }
         unless subklasses.empty?
           subklasses.each { |subklass| puts "- #{subklass}" }
         else
@@ -39,10 +39,10 @@ namespace :audit do
     puts "\nControllers and their actions:\n\n"
     filter_controllers = ENV['CONTROLLER'] ? ENV['CONTROLLER'].split(',') : nil
     abstract_controllers = abstract_controller_classes
-    classes = Merb::AbstractController.subclasses_list.sort.map { |x| Object.full_const_get(x) }
-    classes = classes.select { |k| k.name.in?(filter_controllers) } if filter_controllers
+    classes = Merb::AbstractController.subclasses_list.sort.map { |x| x.constantize }
+    classes = classes.select { |k| filter_controllers.include? k.name } if filter_controllers
     classes.each do |subklass|
-      next if subklass.in?(abstract_controllers) || !subklass.respond_to?(:callable_actions)
+      next if abstract_controllers.include?(subklass) || !subklass.respond_to?(:callable_actions)
       puts "#{subklass} < #{subklass.superclass}"
       unless subklass.callable_actions.empty?
         subklass.callable_actions.sort.each do |action, null|

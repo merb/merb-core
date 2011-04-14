@@ -12,6 +12,8 @@ require "fileutils"
 require "socket"
 require "pathname"
 
+require 'active_support/core_ext/class/attribute_accessors.rb'
+require 'active_support/core_ext/class/attribute'
 require 'active_support/core_ext/kernel/singleton_class'
 require 'active_support/core_ext/class/inheritable_attributes'
 require 'active_support/core_ext/object/blank'
@@ -28,14 +30,15 @@ require 'active_support/inflector/methods'
 require 'active_support/inflections'
 require 'active_support/core_ext/string/inflections' #FIXME: This shit loads i18n
 
-# Those are brought from extlib
+# Stripped extlib functionality
 require 'merb-core/core_ext/string'
 require 'merb-core/core_ext/object'
 require 'merb-core/core_ext/object_space'
+require 'merb-core/core_ext/class'
+
+# Full extlib functionality
+#TODO: determine what we actually need that AS can't do
 require 'merb-core/core_ext/hash'
-require 'merb-core/core_ext/pooling'
-require 'merb-core/core_ext/simple_set'
-require 'merb-core/core_ext/virtual_file'
 require 'merb-core/core_ext/logger'
 
 Thread.abort_on_exception = true

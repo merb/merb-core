@@ -181,7 +181,7 @@ module Merb
       def session(session_store = nil)
         session_store ||= default_session_store
         if class_name = self.class.registered_session_types[session_store]
-          session_stores[session_store] ||= Object.full_const_get(class_name).setup(self)
+          session_stores[session_store] ||= class_name.constantize.setup(self)
         elsif fallback = self.class.registered_session_types.keys.first
           Merb.logger.warn "Session store '#{session_store}' not found. Check your configuration in init file."
           Merb.logger.warn "Falling back to #{fallback} session store."

@@ -124,12 +124,11 @@ class Merb::Controller < Merb::AbstractController
   # _hidden_actions and _shown_actions into consideration. It is calculated
   # once, the first time an action is dispatched for this controller.
   #
-  # @return [SimpleSet<String>] Actions that should be callable.
+  # @return [Set<String>] Actions that should be callable.
   #
   # @api public
-  # FIXME: How does the SimpleSet differes from the Set?
   def self.callable_actions
-    @callable_actions ||= Extlib::SimpleSet.new(_callable_methods)
+    @callable_actions ||= Set.new(_callable_methods)
   end
 
   # Stub method so plugins can implement param filtering if they want.

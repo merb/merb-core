@@ -229,6 +229,26 @@ module Kernel
     end
   end
 
+  # Define a module from a string name.
+  #
+  # @example
+  #   create_module('Foo::Bar::Baz') #=> Foo::Bar::Baz
+  #
+  # If the module already exists, no exception raised.
+  #
+  # @param [String] name<String> The name of the full module name to make
+  #
+  # @return [Module]
+  def make_module(string)
+    string.split('::').inject(Object) do |mod, part|
+      begin
+        mod.const_get(part)
+      rescue NameError
+        mod.const_set(part, Module.new)
+      end
+    end
+  end
+
   unless Kernel.respond_to?(:debugger)
 
     # Define debugger method so that code even works if debugger was not
@@ -239,5 +259,5 @@ module Kernel
         "to enable *****\n"
     end
   end
-  
+
 end
