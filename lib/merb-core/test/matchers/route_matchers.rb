@@ -19,7 +19,7 @@ module Merb::Test::Rspec::RouteMatchers
 
       @target_controller = "#{target.delete(:namespace)}::#{@target_controller}" if target.has_key?(:namespace)
 
-      @expected_controller.snake_case == @target_controller.snake_case && @expected_action == @target_action && match_parameters(@target_env)
+      @expected_controller.underscore == @target_controller.underscore && @expected_action == @target_action && match_parameters(@target_env)
     end
 
     # @param [Hash] target The route parameters to match.
@@ -48,12 +48,12 @@ module Merb::Test::Rspec::RouteMatchers
 
     # @return [String] The failure message.
     def failure_message
-      "expected the request to route to #{@expected_controller.to_const_string}##{@expected_action}#{expected_parameters_message}, but was #{@target_controller.to_const_string}##{@target_action}#{actual_parameters_message}"
+      "expected the request to route to #{@expected_controller.camelize}##{@expected_action}#{expected_parameters_message}, but was #{@target_controller.camelize}##{@target_action}#{actual_parameters_message}"
     end
 
     # @return [String] The failure message to be displayed in negative matches.
     def negative_failure_message
-      "expected the request not to route to #{@expected_controller.camel_case}##{@expected_action}#{expected_parameters_message}, but it did"
+      "expected the request not to route to #{@expected_controller.camelize}##{@expected_action}#{expected_parameters_message}, but it did"
     end
 
     def expected_parameters_message

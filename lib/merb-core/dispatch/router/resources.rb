@@ -102,7 +102,7 @@ module Merb
         match_opts = options.except(*resource_options)
         options    = options.only(*resource_options)
         singular   = options[:singular] ? options[:singular].to_s : ActiveSupport::Inflector.singularize(name)
-        klass_name = args.first ? args.first.to_s : singular.to_const_string
+        klass_name = args.first ? args.first.to_s : singular.camelize
         keys       = options.delete(:keys) || options.delete(:key)
         params     = { :controller => options.delete(:controller) || name }
         collection = options.delete(:collection) || {}

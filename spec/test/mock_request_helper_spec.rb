@@ -57,7 +57,7 @@ describe Merb::Test::RequestHelper do
     it "merges :controller into params" do
       controller = dispatch_to(@controller_klass, :show, :name => "Fred")
       
-      controller.params[:controller].should == @controller_klass.name.to_const_path
+      controller.params[:controller].should == @controller_klass.name.underscore
     end
     
     it "merges :action into params" do

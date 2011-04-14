@@ -161,7 +161,7 @@ module Merb
 
       # @api private
       def merge_controller_and_action(controller_klass, action, params)
-        params[:controller] = controller_klass.name.to_const_path
+        params[:controller] = controller_klass.name.underscore
         params[:action]     = action.to_s
 
         params
@@ -233,7 +233,7 @@ module Merb
 
         opts = check_request_for_route(request) # Check that the request will be routed correctly
         controller_name = (opts[:namespace] ? opts.delete(:namespace) + '/' : '') + opts.delete(:controller)
-        klass = Object.full_const_get(controller_name.snake_case.to_const_string)
+        klass = Object.full_const_get(controller_name.underscore.camelize)
 
         action = opts.delete(:action).to_s
         params.merge!(opts)

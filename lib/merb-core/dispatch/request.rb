@@ -70,7 +70,7 @@ module Merb
           route.inspect
       end
       path = [params[:namespace], params[:controller]].compact.join(Merb::Const::SLASH)
-      controller = path.snake_case.to_const_string
+      controller = path.underscore.camelize
 
       begin
         Object.full_const_get(controller)

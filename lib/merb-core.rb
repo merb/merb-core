@@ -129,12 +129,12 @@ module Merb
           :db_env => Merb.environment
         }
       end
-      
+
       #Only load if it hasn't been loaded
       unless Merb.environment_info[:merged_envs].member? env
         Merb.environment_info[:merged_envs] << env
-        
-        env_file = Merb.dir_for(:config) / "environments" / ("#{env}.rb")
+
+        env_file = Merb.dir_for(:config, "environments", "#{env}.rb")
         if File.exists?(env_file)
           load(env_file)
         else
@@ -282,12 +282,13 @@ module Merb
     #
     # @param [Symbol] type The type of path to retrieve directory for,
     #   e.g., +:view+.
+    # @param [Array<String>] *args Path fragments to be appended.
     #
     # @return [String] The directory for the requested type.
     #
     # @api public
-    def dir_for(type)
-      Merb.load_paths[type].first
+    def dir_for(type, *args)
+      File.join(Merb.load_paths[type].first, *args)
     end
 
     # Get the path glob for a given type.

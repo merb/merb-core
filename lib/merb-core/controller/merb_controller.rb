@@ -395,7 +395,7 @@ class Merb::Controller < Merb::AbstractController
   #
   # @api private
   def _conditionally_append_extension(template, type)
-    type && !template.match(/\.#{type.to_s.escape_regexp}$/) ? "#{template}.#{type}" : template
+    type && !template.match(/\.#{Regexp.escape(type.to_s)}$/) ? "#{template}.#{type}" : template
   end
   
   # When a method is added to a subclass of Merb::Controller (i.e. an app controller) that

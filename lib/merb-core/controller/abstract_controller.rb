@@ -127,7 +127,7 @@ module Merb
     # @return [String] The controller name in path form, e.g. "admin/items".
     #
     # @api public
-    def self.controller_name() @controller_name ||= self.name.to_const_path end
+    def self.controller_name() @controller_name ||= self.name.underscore end
 
     # @return [String] The controller name in path form, e.g. "admin/items".
     #

@@ -103,7 +103,7 @@ module Merb::Test::Fixtures
       self._template_roots = [[File.dirname(__FILE__) / "alt_views", :_custom_template_location]]
       
       def _custom_template_location(context, type = nil, controller = controller_name)
-        "#{self.class.name.split('::')[-1].to_const_path}/#{context}"
+        "#{self.class.name.split('::')[-1].underscore}/#{context}"
       end
     end
     

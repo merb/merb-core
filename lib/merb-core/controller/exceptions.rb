@@ -32,7 +32,7 @@ class Exception
       return nil unless Object.const_defined?(:Exceptions) && 
         Exceptions.method_defined?(:exception)
     end
-    name = self.to_s.split('::').last.snake_case
+    name = self.to_s.split('::').last.underscore
     Object.const_defined?(:Exceptions) && 
       Exceptions.method_defined?(name) ? name : superclass.action_name
   end
@@ -221,7 +221,7 @@ module Merb
         #
         # @api private
         def register_status_code(klass, code)
-          name = self.to_s.split('::').last.snake_case
+          name = self.to_s.split('::').last.underscore
           STATUS_CODES[name.to_sym] = code.to_i
         end
         

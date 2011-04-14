@@ -11,7 +11,7 @@ Merb::BootLoader.after_app_loads do
 
         # @api private
         def error_codes(exception)
-          if @show_details
+          if true || @show_details
             message, message_details = exception.message.split("\n", 2)
             "<h2>#{escape_html(message)}</h2><p>#{escape_html(message_details)}</p>"
           else
