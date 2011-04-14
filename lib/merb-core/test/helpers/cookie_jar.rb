@@ -84,7 +84,7 @@ module Merb
         return unless raw_cookies
         # Initialize all the the received cookies
         cookies = []
-        raw_cookies.each do |raw|
+        raw_cookies.each_line do |raw|
           c = Cookie.new(raw, uri.host)
           cookies << c if c.valid?(uri)
         end

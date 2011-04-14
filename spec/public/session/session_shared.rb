@@ -13,7 +13,7 @@ module Merb
   end
 end
 
-describe "All session-store backends", :shared => true do
+shared_examples_for "All session-store backends" do
   
   it "should be instanciated using the 'generate' method" do
     @session_class.generate.should be_kind_of(@session_class)
@@ -32,7 +32,7 @@ describe "All session-store backends", :shared => true do
 
 end
 
-describe "All session-stores mixed into Merb::Controller", :shared => true do
+shared_examples_for "All session-stores mixed into Merb::Controller" do
   include Merb::Test::CookiesHelper
   
   before(:all) { @controller_klass = Merb::Test::Fixtures::Controllers::SessionsController }

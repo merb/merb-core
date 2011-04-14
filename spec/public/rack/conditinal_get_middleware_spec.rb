@@ -40,10 +40,7 @@ end
 
 describe Merb::Rack::ConditionalGet do
 
-  describe(
-    "when the client already has an up-to-date document", 
-    :shared => true
-  ) do
+  shared_examples_for "when the client already has an up-to-date document" do
     it 'sets status to "304"' do
       @status.should == 304
     end
@@ -53,10 +50,7 @@ describe Merb::Rack::ConditionalGet do
     end
   end
 
-  describe(
-    "when the client does NOT have an up-to-date document",
-    :shared => true
-  ) do
+  shared_examples_for "when the client does NOT have an up-to-date document" do
     it 'does not modify status' do
       @status.should == 200
     end

@@ -1,24 +1,27 @@
 # merb-core
 
-A new branch of Merb (sometimes referred to as merb-next) which aims to provide 
-a stable, stripped down API for the Merb 1.0 release.
+This is the 1.2 development branch of merb-core, providing core functionality
+for fast, simple, and powerful (web) application development.
 
-This branch was based off the 0.5 release series with *significant* rewrites.
+## Changes in 1.2
+
+Check the [1.2 wiki page](https://github.com/merb/merb/wiki/release-120)
+for changes.
 
 ## Goals of this release
 
-  * Stabilize the @public interface methods to provide for a more consistent application development experience.
-  * Remove features until nothing except a central application API is left
-  * Improve comments on methods using a standard documentation methodology as described in the documentation standards
-  * Separate the tests into two sections... "private" and "public"
-    * Public methods are methods tagged with @public that will be part of the standard, stable Merb API
-    * Private methods are implementation methods that might 
-  * Implement a new render API
-  * Build more extensions to regain selected features when needed
+  * Bring framework and application development up to speed with current
+    versions of supporting frameworks like Rack and RSpec.
+  * User documentation
+  * Integrate "interesting" functionality, e.g., CSRF protection.
+  * Simplify the API further
+
+## Using Merb
 
 To familiarize yourself with how a merb-core application might look, 
-use merb-gen (from merb-more) to generate a few apps:
+use merb-gen to generate a few apps:
 
+    $ gem install merb-gen       # merb-gen is a gem of its own
     $ merb-gen app myapp         # merb stack app, assuming you are using DM and RSpec
 
 The only option you can use with stack is `--template_engine=(erb|haml)`.
@@ -40,7 +43,7 @@ Default is no ORM.
 Default is rspec.
 
     --template_enging=erb
-    --template_enging=haml
+    --template_enging=haml       # requires the "merb-haml" gem
 
 Default is erb.
 

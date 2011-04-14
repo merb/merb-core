@@ -2,16 +2,16 @@ require File.dirname(__FILE__) + '/spec_helper'
 
 describe Merb::BootLoader::RackUpApplication do
 
-  it "should default to rack config (rack.rb)" do
+  it "should default to rack config (rack.rb)", :rack => true, :core => true do
     options = {:merb_root => File.dirname(__FILE__) / 'fixture'}
     Merb::Config.setup(options)
     Merb::BootLoader::default_framework
     Merb::BootLoader::RackUpApplication.run
-    app = Merb::Config[:app]
-    app.class.should == Merb::Rack::Static
+
+    Merb::Config[:app].should be_kind_of(Merb::Rack::Static)
   end
 
-  it "should use rackup config that we specified" do
+  it "should use rackup config that we specified", :rack => true, :core => true do
     options = {:rackup => File.dirname(__FILE__) / 'fixture' / 'config' / 'black_hole.rb'}
     Merb::Config.setup(options)
     Merb::BootLoader::RackUpApplication.run

@@ -1,4 +1,4 @@
-class Testing < Application
+class TestingWebrat < Application
 
   # ...and remember, everything returned from an action
   # goes to the client...

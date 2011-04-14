@@ -1,6 +1,6 @@
 require File.join(File.dirname(__FILE__), "spec_helper")
 
-describe "basic_authentication in general", :shared => true do
+shared_examples_for "basic_authentication in general" do
 
   it "should halt the filter chain and return a 401 status code if no authentication is sent" do
     response = dispatch_to(Merb::Test::Fixtures::Controllers::BasicAuthentication, :index)
@@ -40,7 +40,7 @@ end
 
 describe Merb::Controller do
   MTFC = Merb::Test::Fixtures::Controllers
-  
+
   describe "#basic_authentication with no realm" do
     it_should_behave_like "basic_authentication in general"
 

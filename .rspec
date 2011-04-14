@@ -1,0 +1,4 @@
+--color
+--format progress
+--format html
+--out rspec_results.html

@@ -1,4 +1,4 @@
-describe "rack application", :shared => true do
+shared_examples_for "rack application" do
   it 'is callable' do
     @app.should respond_to(:call)
   end
@@ -20,7 +20,7 @@ describe "rack application", :shared => true do
   end
 end
 
-describe "transparent middleware", :shared => true do
+shared_examples_for "transparent middleware" do
   it "delegates request handling to wrapped Rack application" do
     @result.last.should == @body
   end

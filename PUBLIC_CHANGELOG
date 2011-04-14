@@ -1,3 +1,8 @@
+2011-04-08:
+
+* Remove Merb.restart_environment. The method was breaking when used in
+  the specs.
+
 10/06/2008:
 
 * Use -L option or :log_file or :log_stream in init.rb or env init file

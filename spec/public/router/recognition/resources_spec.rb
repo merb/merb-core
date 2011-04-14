@@ -94,7 +94,7 @@ describe "When recognizing requests," do
   collection_routes = { :one  => :get, :two => :post, :three => :put, :four  => :delete }
   member_routes     = { :five => :get, :six => :post, :seven => :put, :eight => :delete }
   
-  describe "a plural resource route with extra actions", :shared => true do
+  shared_examples_for "a plural resource route with extra actions" do
     
     # Loop through each method declared on the collection and make sure that they
     # are available only when the request is using the specified method

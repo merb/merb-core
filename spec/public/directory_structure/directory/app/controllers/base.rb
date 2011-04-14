@@ -1,6 +1,4 @@
-
-
-class Base < Application
+class DirectoryBase < Application
 
   def string
     "String"

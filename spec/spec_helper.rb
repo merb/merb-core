@@ -1,28 +1,47 @@
-require "spec"
+require "rspec"
+require 'rack/test'
+
 require File.join(File.dirname(__FILE__), "..", "lib", "merb-core")
+
+module Merb
+  module SpecUtilityMethods
+    # Determine the filename of the calling spec. Use the topmost
+    # "*_spec.rb" file.
+    def self.calling_spec
+      cs = caller.map {|c| parse_caller(c)}.select {|c| c[0] =~ /_spec\.rb\Z/}.last
+
+      if cs.nil? || cs.empty?
+        "(none)"
+      else
+        "#{File.basename(cs[0])}:#{cs[1]}"
+      end
+    end
+
+    def self.parse_caller(at)
+      if /^(.+?):(\d+)(?::in `(.*)')?/ =~ at
+        file = Regexp.last_match[1]
+        line = Regexp.last_match[2].to_i
+        method = Regexp.last_match[3]
+        [file, line]
+      end
+    end
+  end
+end
 
 def startup_merb(opts = {})
   default_options = {
     :environment => 'test',
     :adapter => 'runner',
     :gemfile => File.join(File.dirname(__FILE__), "Gemfile"),
-    :log_level => :error
+    :log_level => :error,
+    :fork_for_class_load => false,
+    :name => Merb::SpecUtilityMethods.calling_spec
   }
   options = default_options.merge(opts)
   Merb.start_environment(options)
 end
 
 # -- Global custom matchers --
-
-# A better +be_kind_of+ with more informative error messages.
-#
-# The default +be_kind_of+ just says
-#
-#   "expected to return true but got false"
-#
-# This one says
-#
-#   "expected File but got Tempfile"
 
 module Merb
   module Test
@@ -31,55 +50,28 @@ module Merb
         def initialize(expected)
           @expected = expected
         end
-        
+
         def matches?(target)
           target.rewind
           @text = target.read
           @text =~ (String === @expected ? /#{Regexp.escape @expected}/ : @expected)
         end
-        
+
         def failure_message
           "expected to find `#{@expected}' in the log but got:\n" <<
           @text.split("\n").map {|s| "  #{s}" }.join
         end
-        
+
         def negative_failure_message
           "exected not to find `#{@expected}' in the log but got:\n" <<
           @text.split("\n").map {|s| "  #{s}" }.join
         end
-        
+
         def description
           "include #{@text} in the log"
         end
       end
-      
-      class BeKindOf
-        def initialize(expected) # + args
-          @expected = expected
-        end
 
-        def matches?(target)
-          @target = target
-          @target.kind_of?(@expected)
-        end
-
-        def failure_message
-          "expected #{@expected} but got #{@target.class}"
-        end
-
-        def negative_failure_message
-          "expected #{@expected} to not be #{@target.class}"
-        end
-
-        def description
-          "be_kind_of #{@target}"
-        end
-      end
-
-      def be_kind_of(expected) # + args
-        BeKindOf.new(expected)
-      end
-      
       def include_log(expected)
         IncludeLog.new(expected)
       end
@@ -106,14 +98,15 @@ module Merb::Test::CookiesHelper
   end
 end
 
-Spec::Runner.configure do |config|
+RSpec.configure do |config|
   config.include Merb::Test::Helper
   config.include Merb::Test::RspecMatchers
   config.include ::Webrat::Matchers
   config.include ::Webrat::HaveTagMatcher
-  config.include Merb::Test::RequestHelper
+  #config.include Merb::Test::RequestHelper
   config.include Merb::Test::RouteHelper
   config.include Merb::Test::WebratHelper
+  config.include Rack::Test::Methods
 
   def reset_dependency(name, const = nil)
     Object.send(:remove_const, const) if const && Object.const_defined?(const)

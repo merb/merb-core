@@ -1,6 +1,7 @@
 require File.join(File.dirname(__FILE__), "..", "spec_helper")
 
 describe "Recognizing requests for deferred routes" do
+  Merb.logger.set_log(StringIO.new, :fatal)
 
   describe "that route the request to a controller" do
     before :each do

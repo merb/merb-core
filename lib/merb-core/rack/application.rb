@@ -7,22 +7,34 @@ module Merb
       #
       # @param [Hash] env A rack request of parameters.
       #
-      # @return [Array] A rack response of [status<Integer>, headers<Hash>, body<String, Stream>]
+      # @return [Array] A rack response of `[#to_i, Hash, #each]`
       #
       # @api private
       def call(env)
-        begin
-          rack_response = ::Merb::Dispatcher.handle(Merb::Request.new(env))
-        rescue Object => e
-          return [500, {Merb::Const::CONTENT_TYPE => Merb::Const::TEXT_SLASH_HTML}, e.message + Merb::Const::BREAK_TAG + e.backtrace.join(Merb::Const::BREAK_TAG)]
-        end
-        Merb.logger.info Merb::Const::DOUBLE_NEWLINE
-        Merb.logger.flush
+        rack_response =
+          begin
+            ret = ::Merb::Dispatcher.handle(Merb::Request.new(env))
+            Merb.logger.info Merb::Const::DOUBLE_NEWLINE
+            Merb.logger.flush
+            ret
+          rescue Object => e
+            [
+              500,
+              {Merb::Const::CONTENT_TYPE => Merb::Const::TEXT_SLASH_HTML},
+              e.message + Merb::Const::BREAK_TAG + e.backtrace.join(Merb::Const::BREAK_TAG)
+            ]
+          end
 
         # unless controller.headers[Merb::Const::DATE]
         #   require "time"
         #   controller.headers[Merb::Const::DATE] = Time.now.rfc2822.to_s
         # end
+
+        # Rack requires the body to respond to #each
+        unless rack_response[2].respond_to? :each
+          rack_response[2] = Merb::Rack::StreamWrapper.new(rack_response[2])
+        end
+
         rack_response
       end
 

@@ -179,7 +179,7 @@ module Merb
 
         # Environment variables always win
         options[:environment] = ENV["MERB_ENV"] if ENV["MERB_ENV"]
-        
+
         # Build a parser for the command line arguments
         opts = OptionParser.new do |opts|
           opts.version = Merb::VERSION
@@ -209,7 +209,7 @@ module Merb
                   "background.") do |daemon|
             options[:daemonize] = true
           end
-          
+
           opts.on("-N", "--no-daemonize", "This will allow you to run a " \
                   "cluster in console mode") do |no_daemon|
             options[:daemonize] = false
@@ -309,7 +309,7 @@ module Merb
           end
 
           opts.on("-e", "--environment STRING", "Environment to run Merb " \
-                  "under [development, production, testing] " \
+                  "under [development, production, test] " \
                   "(default is development)") do |env|
             options[:environment] = env
           end
@@ -336,7 +336,7 @@ module Merb
             port = "main" if port == "all"
             options[:port] = port
           end
-          
+
           opts.on("--fast-deploy", "Reload the code, but not your" \
             "init.rb or gems") do
               options[:action] = :fast_deploy

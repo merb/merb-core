@@ -54,7 +54,7 @@ module Merb
   # Create stub module for global controller helpers.
   module GlobalHelpers; end
   class ReservedError < StandardError; end
-  
+
   class << self
     attr_reader :exiting
 
@@ -195,17 +195,6 @@ module Merb
       start(argv) unless (@started ||= false)
     end
 
-    # Restart the Merb environment explicitly.
-    #
-    # @param [String, Hash] argv The config arguments to restart Merb with.
-    #   Given values are merged over the contents of `Merb::Config`.
-    #
-    # @api public
-    def restart_environment(argv={})
-      @started = false
-      start_environment(Merb::Config.to_hash.merge(argv))
-    end
-
     # @api public
     attr_accessor :environment, :adapter
     # @api private
@@ -312,11 +301,31 @@ module Merb
       Merb.load_paths[type][1]
     end
 
-    # Get the Merb root path.
+    # Root path retrieval
+    #
+    # @api private
+    def _root
+      Merb::Config[:merb_root] || File.expand_path(Dir.pwd)
+    end
+
+    # Expand paths relative to merb's root path.
+    #
+    # Given a relative path or a list of path components, returns an
+    # absolute path within the application.
+    #
+    #     Merb.root = "/home/merb/app"
+    #     Merb.root                   # => "/home/merb/app"
+    #     Merb.root("images")         # => "/home/merb/app/images"
+    #     Merb.root("views", "admin") # => "/home/merb/app/views/admin"
+    #
+    # @param [String] *path The relative path (or list of path components)
+    #   to a directory under the root of the application.
+    #
+    # @return [String] The full path including the root.
     #
     # @api public
-    def root
-      @root || Merb::Config[:merb_root] || File.expand_path(Dir.pwd)
+    def root(*path)
+      File.join(_root, *path)
     end
 
     # Set the Merb root path.
@@ -325,26 +334,7 @@ module Merb
     #
     # @api public
     def root=(value)
-      @root = value
-    end
-
-    # Expand a relative path.
-    #
-    # Given a relative path or a list of path components, returns an
-    # absolute path within the application.
-    #
-    #     Merb.root = "/home/merb/app"
-    #     Merb.path("images") # => "/home/merb/app/images"
-    #     Merb.path("views", "admin") # => "/home/merb/app/views/admin"
-    #
-    # @param [String] *path The relative path (or list of path components)
-    #   to a directory under the root of the application.
-    #
-    # @return [String] The full path including the root.
-    #
-    # @api public
-    def root_path(*path)
-      File.join(root, *path)
+      Merb::Config[:merb_root] = value
     end
 
     # Return the Merb Logger object for the current thread.
@@ -387,7 +377,7 @@ module Merb
         else
           log_path / "merb.#{port}.log"
         end
-        
+
         if log.is_a?(IO)
           stream = log
         elsif File.exist?(log)
@@ -411,17 +401,26 @@ module Merb
     def log_path
       case Merb::Config[:log_file]
       when String then File.dirname(Merb::Config[:log_file])
-      else Merb.root_path("log")
+      else Merb.root("log")
       end
     end
 
     # Get the path of root directory of the Merb framework.
     #
+    # @param [String] *args A number of path elements to concatenate after
+    #   the root with File.join.
+    #
     # @return [String]
     #
     # @api public
-    def framework_root
+    def framework_root(*args)
       @framework_root ||= File.dirname(__FILE__)
+
+      if args.empty?
+        @framework_root
+      else
+        File.join(@framework_root, *args)
+      end
     end
 
     # Get the regular expression against which deferred actions are
