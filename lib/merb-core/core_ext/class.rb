@@ -23,6 +23,10 @@ class Class
   #   marked as chainable
   #
   # @return [Module] The anonymous module that was created.
+  #
+  # @note Taken from Extlib
+  # @deprecated
+  # @api private
   def chainable(&blk)
     mod = Module.new(&blk)
     include mod

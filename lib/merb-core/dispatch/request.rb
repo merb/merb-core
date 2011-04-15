@@ -224,7 +224,7 @@ module Merb
       @body_and_query_params ||= begin
         h = query_params
         h.merge!(body_params) if body_params
-        h.to_mash
+        h.with_indifferent_access
       end
     end
 
@@ -264,7 +264,7 @@ module Merb
         if Merb::Const::JSON_MIME_TYPE_REGEXP.match(content_type)
           begin
             jobj = JSON.parse(raw_post)
-            jobj = jobj.to_mash if jobj.is_a?(Hash)
+            jobj = jobj.with_indifferent_access if jobj.is_a?(Hash)
           rescue JSON::ParserError
             jobj = Mash.new
           end
@@ -281,7 +281,10 @@ module Merb
     def xml_params
       @xml_params ||= begin
         if Merb::Const::XML_MIME_TYPE_REGEXP.match(content_type)
-          Hash.from_xml(raw_post) rescue Mash.new
+          begin
+            Hash.from_xml(raw_post) || {}
+          rescue Mash.new
+          end
         else
           {}
         end
@@ -292,9 +295,8 @@ module Merb
 
     # @return [Mash] All request parameters.
     #
-    # #### Notes
-    # The order of precedence for the params is XML, JSON, multipart, body and
-    # request string.
+    # @note The order of precedence for the params is XML, JSON, multipart,
+    #   body and request string.
     #
     # @api public
     def params

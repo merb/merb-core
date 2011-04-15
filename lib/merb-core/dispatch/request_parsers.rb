@@ -24,7 +24,7 @@ module Merb
           query[key] = value
         end
       end
-      preserve_order ? query : query.to_mash
+      preserve_order ? query : query.with_indifferent_access
     end
 
     NAME_REGEX         = /Content-Disposition:.* name="?([^\";]*)"?/ni.freeze

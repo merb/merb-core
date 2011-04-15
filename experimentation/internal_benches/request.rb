@@ -8,7 +8,7 @@ module Merb
         key, value = unescape(p).split('=',2)
         normalize_params(h, key, value)
       }
-      preserve_order ? qh : qh.to_mash
+      preserve_order ? qh : qh.with_indifferent_access
     end
     
     def self.query_parse2(query_string, delimiter = '&;', preserve_order = false)
@@ -17,7 +17,7 @@ module Merb
         key, value = unescape(pair).split('=',2)
         normalize_params(query, key, value)
       end
-      preserve_order ? query : query.to_mash
+      preserve_order ? query : query.with_indifferent_access
     end
 
     def self.query_parse3(query_string, delimiter = '&;', preserve_order = false)
@@ -26,7 +26,7 @@ module Merb
         key, value = unescape(pair).split('=',2)
         normalize_params(query, key, value)
       end
-      preserve_order ? query : query.to_mash
+      preserve_order ? query : query.with_indifferent_access
     end
   end
 end

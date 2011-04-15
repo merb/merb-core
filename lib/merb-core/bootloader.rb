@@ -916,7 +916,7 @@ class Merb::BootLoader::LoadClasses < Merb::BootLoader
         klasses.each { |klass| remove_constant(klass) unless klass.to_s =~ /Router/ }
       end
       yield file if block_given?
-      Merb.klass_hashes.each {|x| x.unprotect_keys!}
+      Merb.klass_hashes.each {|x| x.constantize_keys!}
       nil
     end
 
@@ -995,7 +995,7 @@ class Merb::BootLoader::LoadClasses < Merb::BootLoader
         # Stop processing if nothing loads or if everything has loaded
         if klasses.size == size_at_start && klasses.size != 0
           # Write all remaining failed classes and their exceptions to the log
-          messages = error_map.only(*failed_classes).map do |klass, e|
+          messages = error_map.slice(*failed_classes).map do |klass, e|
             ["Could not load #{klass}:\n\n#{e.message} - (#{e.class})",
               "#{(e.backtrace || []).join("\n")}"]
           end

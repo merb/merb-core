@@ -17,8 +17,6 @@ require 'active_support/core_ext/class/attribute'
 require 'active_support/core_ext/kernel/singleton_class'
 require 'active_support/core_ext/class/inheritable_attributes'
 require 'active_support/core_ext/object/blank'
-require 'active_support/core_ext/hash/except'
-require 'active_support/core_ext/hash/slice'
 require 'active_support/ordered_hash'
 
 require 'active_support/hash_with_indifferent_access'
@@ -30,6 +28,8 @@ require 'active_support/inflector/methods'
 require 'active_support/inflections'
 require 'active_support/core_ext/string/inflections' #FIXME: This shit loads i18n
 
+require 'merb-core/core_ext/hash'
+
 # Stripped extlib functionality
 require 'merb-core/core_ext/string'
 require 'merb-core/core_ext/object'
@@ -38,7 +38,6 @@ require 'merb-core/core_ext/class'
 
 # Full extlib functionality
 #TODO: determine what we actually need that AS can't do
-require 'merb-core/core_ext/hash'
 require 'merb-core/core_ext/logger'
 
 Thread.abort_on_exception = true

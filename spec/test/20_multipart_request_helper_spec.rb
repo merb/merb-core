@@ -78,7 +78,7 @@ describe Merb::Test::MultipartRequestHelper do
       Merb::Test::ControllerAssertionMock.should_receive(:called).with(:update)
       resp = multipart_put("/spec_helper_controller/my_id", :name => "Harry")
 
-      params = JSON(resp.body.to_s).to_mash
+      params = JSON(resp.body.to_s).with_indifferent_access
       params[:name].should == "Harry"
       params[:id].should   == "my_id"
     end
@@ -88,7 +88,7 @@ describe Merb::Test::MultipartRequestHelper do
       file_name = File.join(File.dirname(__FILE__), "multipart_upload_text_file.txt")
       File.open( file_name ) do |file|
         resp = multipart_put("/spec_helper_controller/my_id", :my_file => file)
-        params = JSON(resp.body.to_s).to_mash
+        params = JSON(resp.body.to_s).with_indifferent_access
         params[:id].should == "my_id"
         file_params = params[:my_file]
         file_params[:content_type].should == "text/plain"

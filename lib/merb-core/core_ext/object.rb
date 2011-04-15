@@ -14,6 +14,10 @@ class Object
   #
   # @return [Boolean]
   #   True if the object quacks like duck.
+  #
+  # @note Taken from Extlib
+  # @deprecated
+  # @api private
   def quacks_like?(duck)
     case duck
     when Symbol

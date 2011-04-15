@@ -10,7 +10,9 @@ class String
   #
   # @return [String] Receiver joined with o as a file path.
   #
-  # @api public
+  # @note Taken from Extlib
+  # @deprecated Consider using paths with literal slashes.
+  # @api private
   def /(o)
     File.join(self, o.to_s)
   end
