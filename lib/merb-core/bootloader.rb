@@ -547,6 +547,13 @@ class Merb::BootLoader::BeforeAppLoads < Merb::BootLoader
   #
   # @api plugin
   def self.run
+    orm_module_name = "merb_#{Merb.orm}"
+    begin
+      require orm_module_name
+    rescue => e
+      Merb.logger.warn "Could not load ORM module #{orm_module_name}: #{e} (#{e.class})#{$/}Model loading will probably fail."
+    end
+
     Merb::BootLoader.before_load_callbacks.each { |x| x.call }
     nil
   end

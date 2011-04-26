@@ -1,78 +1,61 @@
+require 'rspec/core/rake_task'
+
 desc "Run specs, run a specific spec with TASK=spec/path_to_spec.rb"
 task :spec => [ "spec:default" ]
 
 namespace :spec do
-  OPTS_FILENAME = "./spec/spec.opts"
-  if File.exist?(OPTS_FILENAME)
-    SPEC_OPTS = ["--options", OPTS_FILENAME]
-  else
-    SPEC_OPTS = ["--color", "--format", "specdoc"]
-  end
-  
-  Spec::Rake::SpecTask.new('default') do |t|
-      t.spec_opts = SPEC_OPTS
-    if(ENV['TASK'])
-      t.spec_files = [ENV['TASK']]
-    else
-      t.spec_files = Dir['spec/**/*_spec.rb'].sort
-    end
+  RSpec::Core::RakeTask.new('default') do |t|
+    t.pattern = ENV['TASK'] || 'spec/**/*_spec.rb'
   end
 
   desc "Run all model specs, run a spec for a specific Model with MODEL=MyModel"
-  Spec::Rake::SpecTask.new('model') do |t|
-    t.spec_opts = SPEC_OPTS
+  RSpec::Core::RakeTask.new('model') do |t|
     if(ENV['MODEL'])
-      t.spec_files = Dir["spec/models/**/#{ENV['MODEL']}_spec.rb"].sort
+      t.pattern = "spec/models/**/#{ENV['MODEL']}_spec.rb"
     else
-      t.spec_files = Dir['spec/models/**/*_spec.rb'].sort
+      t.pattern = 'spec/models/**/*_spec.rb'
     end
   end
 
   desc "Run all request specs, run a spec for a specific Request with REQUEST=MyRequest"
-  Spec::Rake::SpecTask.new('request') do |t|
-    t.spec_opts = SPEC_OPTS
+  RSpec::Core::RakeTask.new('request') do |t|
     if(ENV['REQUEST'])
-      t.spec_files = Dir["spec/requests/**/#{ENV['REQUEST']}_spec.rb"].sort
-    else    
-      t.spec_files = Dir['spec/requests/**/*_spec.rb'].sort
-    end
-  end
-  
-  desc "Run all controller specs, run a spec for a specific Controller with CONTROLLER=MyController"
-  Spec::Rake::SpecTask.new('controller') do |t|
-    t.spec_opts = SPEC_OPTS
-    if(ENV['CONTROLLER'])
-      t.spec_files = Dir["spec/controllers/**/#{ENV['CONTROLLER']}_spec.rb"].sort
-    else    
-      t.spec_files = Dir['spec/controllers/**/*_spec.rb'].sort
-    end
-  end
-  
-  desc "Run all view specs, run specs for a specific controller (and view) with CONTROLLER=MyController (VIEW=MyView)"
-  Spec::Rake::SpecTask.new('view') do |t|
-    t.spec_opts = SPEC_OPTS
-    if(ENV['CONTROLLER'] and ENV['VIEW'])
-      t.spec_files = Dir["spec/views/**/#{ENV['CONTROLLER']}/#{ENV['VIEW']}*_spec.rb"].sort
-    elsif(ENV['CONTROLLER'])
-      t.spec_files = Dir["spec/views/**/#{ENV['CONTROLLER']}/*_spec.rb"].sort
+      t.pattern = "spec/requests/**/#{ENV['REQUEST']}_spec.rb"
     else
-      t.spec_files = Dir['spec/views/**/*_spec.rb'].sort
+      t.pattern = 'spec/requests/**/*_spec.rb'
+    end
+  end
+
+  desc "Run all controller specs, run a spec for a specific Controller with CONTROLLER=MyController"
+  RSpec::Core::RakeTask.new('controller') do |t|
+    if(ENV['CONTROLLER'])
+      t.pattern = "spec/controllers/**/#{ENV['CONTROLLER']}_spec.rb"
+    else
+      t.pattern = 'spec/controllers/**/*_spec.rb'
+    end
+  end
+
+  desc "Run all view specs, run specs for a specific controller (and view) with CONTROLLER=MyController (VIEW=MyView)"
+  RSpec::Core::RakeTask.new('view') do |t|
+    if(ENV['CONTROLLER'] and ENV['VIEW'])
+      t.pattern = "spec/views/**/#{ENV['CONTROLLER']}/#{ENV['VIEW']}*_spec.rb"
+    elsif(ENV['CONTROLLER'])
+      t.pattern = "spec/views/**/#{ENV['CONTROLLER']}/*_spec.rb"
+    else
+      t.pattern = 'spec/views/**/*_spec.rb'
     end
   end
 
   desc "Run all specs and output the result in html"
-  Spec::Rake::SpecTask.new('html') do |t|
-    t.spec_opts = ["--format", "html"]
-    t.libs = ['lib', 'server/lib' ]
-    t.spec_files = Dir['spec/**/*_spec.rb'].sort
+  RSpec::Core::RakeTask.new('html') do |t|
+    t.rspec_opts = ["--format", "html"]
+    t.pattern = 'spec/**/*_spec.rb'
   end
 
   desc "Run specs and check coverage with rcov"
-  Spec::Rake::SpecTask.new('coverage') do |t|
-    t.spec_opts = SPEC_OPTS
-    t.spec_files = Dir['spec/**/*_spec.rb'].sort
-    t.libs = ['lib', 'server/lib' ]
+  RSpec::Core::RakeTask.new('coverage') do |t|
+    t.pattern = 'spec/**/*_spec.rb'
     t.rcov = true
-    t.rcov_opts = ["--exclude 'config,spec,#{Gem::path.join(',')}'"]    
+    t.rcov_opts = ["--exclude 'config,spec,#{Gem::path.join(',')}'"]
   end
 end
