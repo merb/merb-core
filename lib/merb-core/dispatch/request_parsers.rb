@@ -5,37 +5,39 @@ require 'cgi'
 module Merb
   module Parse
 
-    # @param [String] query_string The query string.
-    # @param [String] delimiter The query string divider.
-    # @param [Boolean] preserve_order Preserve order of args.
-    #
-    # @return [Mash] The parsed query string (ActiveSupport::Dictionary if
-    #   `preserve_order` is set).
-    #
-    # @example
-    #   Merb::Parse.query("bar=nik&post[body]=heya")
-    #     # => { :bar => "nik", :post => { :body => "heya" } }
-    #
-    # @api plugin
-    def self.query(query_string, delimiter = '&;', preserve_order = false)
-      query = preserve_order ? ActiveSupport::OrderHash.new : {}
-      for pair in (query_string || '').split(/[#{delimiter}] */n)
-        key, value = unescape(pair).split('=',2)
-        next if key.nil?
-        if key.include?('[')
-          normalize_params(query, key, value)
-        else
-          query[key] = value
-        end
-      end
-      preserve_order ? query : query.with_indifferent_access
-    end
-
     NAME_REGEX         = /Content-Disposition:.* name="?([^\";]*)"?/ni.freeze
     CONTENT_TYPE_REGEX = /Content-Type: (.*)\r\n/ni.freeze
     FILENAME_REGEX     = /Content-Disposition:.* filename="?([^\";]*)"?/ni.freeze
     CRLF               = "\r\n".freeze
     EOL                = CRLF
+
+    # "atom" (RFC 822).
+    # Printable 7-bit clean characters with some exceptions.
+    P_ATOM             = '[^\\x00-\\x20\\x22\\x28\\x29\\x2c\\x2e\\x3a-\\x3c' +
+                         '\\x3e\\x40\\x5b-\\x5d\\x7f-\\xff]+'.freeze
+
+    # "token" (RFC 2616).
+    # Almost like "atom", but for HTTP and with a different set of
+    # forbidden characters.
+    #
+    # @todo Write me
+    P_TOKEN            = '[^\\x00-\\x20]+'.freeze #TODO
+
+    # Parameter separator (RCF 822).
+    # Semicolon with optional surrounding space.
+    PARAM_SEP_REGEX    = /\A\s*(?:;\s*)?/
+
+    P_QTEXT            = '[^\\x0d\\x22\\x5c\\x80-\\xff]'
+    P_QUOTED_PAIR      = '\\x5c[\\x00-\\x7f]'
+
+    # Parameter (RFC 822).
+    PARAM_REGEX        = /\A(#{P_ATOM})=(?:(#{P_ATOM})|\x22((?:#{P_QTEXT}|#{P_QUOTED_PAIR})*)\x22)\x20*/n.freeze
+
+    # Encoded header (RFC 2047).
+    ENCHEADER_REGEX    = /\A=\?(#{P_ATOM})\?(#{P_ATOM})\?([^\x00-\x20\x3f\x7f-\xff]*)\?=\Z/n.freeze
+
+    # Parameter continuation numbering (RFC 2184)
+    PARAMCONT_REGEX    = /(.+)\*(\d+)\Z/.freeze
 
     # @param [IO] request The raw request.
     # @param [String] boundary The boundary string.
@@ -57,7 +59,7 @@ module Merb
       bufsize       = 16384
       content_length -= boundary_size
       key_memo = []
-      # status is boundary delimiter line
+      # status is boundary delimi.ter line
       status = input.read(boundary_size)
       return {} if status == nil || status.empty?
       raise ControllerExceptions::MultiPartParseError, "bad content body:\n'#{status}' should == '#{boundary + EOL}'"  unless status == boundary + EOL
@@ -85,9 +87,12 @@ module Merb
             name         = head[NAME_REGEX, 1]
 
             if filename && !filename.empty?
+              filename = decode_header_text(filename)
               body = Tempfile.new('Merb')
               body.binmode if defined? body.binmode
             end
+
+            name = decode_header_text(name) if (name && !name.empty?)
             next
           end
 
@@ -140,6 +145,32 @@ module Merb
       }
 
       paramhsh
+    end
+
+    # @param [String] query_string The query string.
+    # @param [String] delimiter The query string divider.
+    # @param [Boolean] preserve_order Preserve order of args.
+    #
+    # @return [Mash] The parsed query string (ActiveSupport::Dictionary if
+    #   `preserve_order` is set).
+    #
+    # @example
+    #   Merb::Parse.query("bar=nik&post[body]=heya")
+    #     # => { :bar => "nik", :post => { :body => "heya" } }
+    #
+    # @api plugin
+    def self.query(query_string, delimiter = '&;', preserve_order = false)
+      query = preserve_order ? ActiveSupport::OrderHash.new : {}
+      for pair in (query_string || '').split(/[#{delimiter}] */n)
+        key, value = unescape(pair).split('=',2)
+        next if key.nil?
+        if key.include?('[')
+          normalize_params(query, key, value)
+        else
+          query[key] = value
+        end
+      end
+      preserve_order ? query : query.with_indifferent_access
     end
 
     # @param [Array, Hash, ActiveSupport::OrderedHash #to_s] value The value for the
@@ -262,3 +293,5 @@ module Merb
 
   end
 end
+
+require Pathname.new(File.dirname(__FILE__)).join('request_parsers', 'header')

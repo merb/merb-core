@@ -1,5 +1,193 @@
+# encoding: utf-8
+
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 startup_merb
+describe Merb::Parse do
+  it "should be tested in a sane environment" do
+    "\xC3\xBE".should == "þ"
+  end
+
+  describe 'decode_header_text' do
+    it "should be a no-op on literal text" do
+      Merb::Parse.decode_header_text("This is a test").should == "This is a test"
+    end
+
+    it "should support quoted-printable encoding for parameters" do
+      # straight from RFC 2047, Section 2
+      res = Merb::Parse.decode_header_text("=?iso-8859-1?q?this=20is=20some=20text?=")
+      res.should == "this is some text"
+    end
+
+    it "should handle '+' and '_' in quoted-printable" do
+      Merb::Parse.decode_header_text("=?iso-8859-1?q?a+b_c?=").should == "a+b c"
+    end
+
+    it "should support base64 encoding for parameters" do
+      res = Merb::Parse.decode_header_text("=?iso-8859-1?b?#{Base64.encode64('this is some text').strip}?=")
+      res.should == "this is some text"
+    end
+
+    it "should receive UTF-8 data from other encodings" do
+      # symbol "Thorn" in 8859-1
+      res = Merb::Parse.decode_header_text("=?iso-8859-1?q?=FE?=")
+      res.should == "\xC3\xBE"
+    end
+
+    it "should raise an error for an unknown encoding" do
+      expect {
+        Merb::Parse.decode_header_text("=?iso-8859-1?ZZZ?=FE?=")
+      }.to raise_error(ArgumentError)
+    end
+
+    it "should raise an error for an unknown charset" do
+      expect {
+        Merb::Parse.decode_header_text("=?myso-qqqq-unknown?q?=FE?=")
+      }.to raise_error
+    end
+  end
+
+  describe Merb::Parse::HeaderParameter do
+    it "should pass clean parameters" do
+      res = Merb::Parse::HeaderParameter.decode('param', 'this is some text')
+
+      res.name.should == 'param'
+      res.value.should == 'this is some text'
+    end
+
+    it "should convert to UTF-8" do
+      res = Merb::Parse::HeaderParameter.decode('param*', "iso-8859-1''%FE")
+
+      res.name.should == 'param'
+      res.value.should == "\xC3\xBE"
+    end
+
+    it "should work on the RFC example" do
+      res = Merb::Parse::HeaderParameter.decode('param*', "us-ascii'en-us'This%20is%20%2A%2A%2Afun%2A%2A%2A")
+
+      res.name.should == 'param'
+      res.value.should == 'This is ***fun***'
+    end
+
+    it "should work on the RFC example with a continuation number" do
+      res = Merb::Parse::HeaderParameter::decode('param*1*', "us-ascii'en-us'This%20is%20%2A%2A%2Afun%2A%2A%2A")
+
+      res.name.should == 'param'
+      res.sequence.should == 1
+      res.value.should == 'This is ***fun***'
+    end
+
+    it "should raise an error when missing information" do
+      expect {
+        Merb::Parse::HeaderParameter.decode('param*1*', 'This%20is%20wrong')
+      }.to raise_error(ArgumentError)
+    end
+
+    it "should raise an error when encountering unexpected encoding specification" do
+      expect {
+        Merb::Parse::HeaderParameter.decode('param*2*', "us-ascii''This%20is%20wrong")
+      }.to raise_error(ArgumentError)
+    end
+
+  end
+
+  describe "collate_parameters" do
+    #TODO: this just sucks and should be moved to a convenience function
+    it "should pass the complex RFC example" do
+      ret = Merb::Parse::HeaderParameter.collate(
+        [
+          ["title*1*", "us-ascii'en'This%20is%20even%20more%20"],
+          ["title*2*", "%2A%2A%2Afun%2A%2A%2A%20"],
+          ["title*3", "isn't it!"]
+        ].inject({:charset => nil, :result => []}) {|result, p|
+          res = Merb::Parse::HeaderParameter.decode(*p, result[:charset])
+          result[:result] << res
+          result[:charset] = res.charset
+
+          result
+        }[:result]
+      )
+
+      ret.size.should == 1
+      ret.first.name.should == 'title'
+      ret.first.value.should == 'This is even more ***fun*** isn\'t it!'
+    end
+
+    it "should pass the documentation example" do
+      ret = Hash[
+        Merb::Parse::HeaderParameter.collate(
+          [
+            Merb::Parse::HeaderParameter.new('para*1', 'This is '),
+            Merb::Parse::HeaderParameter.new('para*2', 'fun!'),
+            Merb::Parse::HeaderParameter.new('parb', 'No, really!')
+          ]
+        ).to_a
+      ]
+
+      ret.keys.size.should == 2
+      ret['para'].should ==  'This is fun!'
+      ret['parb'].should ==  'No, really!'
+    end
+
+  end
+
+  describe "decode_content_type" do
+    it "should default to application/octet-stream" do
+      ct = Merb::Parse.parse_content_type('')
+
+      ct['media-type'].should == 'application/octet-stream'
+    end
+
+    it "should parse a single media type" do
+      ct = Merb::Parse.parse_content_type('text/plain')
+
+      ct['media-type'].should == 'text/plain'
+    end
+
+    it "should parse a single parameter" do
+      ct = Merb::Parse.parse_content_type('text/plain; charset=iso-8859-15')
+
+      ct['media-type'].should == 'text/plain'
+      ct['charset'].should == 'iso-8859-15'
+    end
+
+    it "should parse multiple parameters" do
+      ct = Merb::Parse.parse_content_type('text/plain; charset=iso-8859-15 ;    pet=duck')
+
+      ct['media-type'].should == 'text/plain'
+      ct['charset'].should == 'iso-8859-15'
+      ct['pet'].should == 'duck'
+    end
+
+    it "should downcase the media type and parameter keys" do
+      ct = Merb::Parse.parse_content_type('tEXt/PLAIN; CharSet=ISO-8859-15 ;    peT=dUcK')
+
+      ct['media-type'].should == 'text/plain'
+      ct['charset'].should == 'ISO-8859-15'
+      ct['pet'].should == 'dUcK'
+    end
+
+    it "should ignore spurious media-type parameters" do
+      ct = Merb::Parse.parse_content_type('text/plain; media-type=fake')
+
+      ct['media-type'].should == 'text/plain'
+    end
+
+    it "should support quoted parameter strings" do
+      ct = Merb::Parse.parse_content_type('text/plain; charset="iso-8859-15"')
+
+      ct['media-type'].should == 'text/plain'
+      ct['charset'].should == 'iso-8859-15'
+    end
+
+    it "should support escaping in quoted parameter strings" do
+      ct = Merb::Parse.parse_content_type('text/plain; charset="\\iso\"-8859-15\\\\"')
+
+      ct['media-type'].should == 'text/plain'
+      ct['charset'].should == 'iso"-8859-15\\'
+    end
+
+  end
+end
 
 describe Merb::Request, "#method" do
   

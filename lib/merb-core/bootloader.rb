@@ -552,7 +552,7 @@ class Merb::BootLoader::BeforeAppLoads < Merb::BootLoader
     orm_module_name = "merb_#{Merb.orm}"
     begin
       require orm_module_name
-    rescue => e
+    rescue LoadError => e
       Merb.logger.warn "Could not load ORM module #{orm_module_name}: #{e} (#{e.class})#{$/}Model loading will probably fail."
     end
 
