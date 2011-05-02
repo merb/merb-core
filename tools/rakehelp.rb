@@ -66,7 +66,6 @@ def base_gem_spec(pkg_name, pkg_version)
     s.name = pkg_name
     s.version = pkg_version
     s.platform = Gem::Platform::RUBY
-    s.has_rdoc = true
     s.extra_rdoc_files = [ "README" ]
 
     s.files = %w(COPYING LICENSE README Rakefile) +
