@@ -221,6 +221,10 @@ module Merb
     # Converts a query string snippet to a hash and adds it to existing
     # parameters.
     #
+    # @note On encoding-aware Ruby VMs, this assumes that either
+    #   `Encoding.default_internal` is set or that query parameters are
+    #   UTF-8.
+    #
     # @param [Hash] parms Parameters to add the normalized parameters to.
     # @param [String] name The key of the parameter to normalize.
     # @param [String] val The value of the parameter.
@@ -234,7 +238,7 @@ module Merb
       after = $' || ''
 
       if val.respond_to?(:force_encoding)
-        val.force_encoding(Encoding.default_internal)
+        val.force_encoding(Encoding.default_internal || 'utf-8')
       end
 
       if after == ""
