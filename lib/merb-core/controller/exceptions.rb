@@ -332,11 +332,13 @@ module Merb
   # Required to show exceptions in the log file
   #
   # @param [Exception] e The exception that a message is being generated for
+  # @param [Boolean] show_backtrace Set to `false` to hide the backtrace.
+  #   This is e.g. useful when logging handled HTTP exceptions.
   #
   # @api plugin
-  def self.exception(e)
-    "#{ e.message } - (#{ e.class })\n" <<  
-    "#{(e.backtrace or []).join("\n")}" 
+  def self.exception(e, show_backtrace = true)
+    "#{ e.message } - (#{ e.class })" <<  
+    (show_backtrace ? "\n#{(e.backtrace or []).join("\n")}" : "")
   end
 
 end
