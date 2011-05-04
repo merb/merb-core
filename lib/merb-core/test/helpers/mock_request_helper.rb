@@ -64,6 +64,27 @@ module Merb
 
       end
 
+      # Extend a Rack response array with controller-like methods
+      #
+      # @example
+      #   r = [200, {'X-Pet' => 'Dog'}, "Woof!"]
+      #   r.extend FakeControllerDuck
+      #   r.body
+      #   #=> "Woof!"
+      module FakeControllerDuck
+        def status
+          self[0].to_i
+        end
+
+        def headers
+          self[1]
+        end
+
+        def body
+          self[2]
+        end
+      end
+
       # Return a `FakeRequest` built with provided parameters.
       #
       # @note If you pass a post body, the content-type will be set to URL-encoded.
@@ -204,11 +225,13 @@ module Merb
 
 
       # A generic request that checks the router for the controller and action.
-      # This request goes through the Merb::Router and finishes at the controller.
+      # This request goes through Merb::Router and finishes at the controller.
       #
       # @note Uses Routes.
       #
-      # @param [String] path The path that should go to the router as the request uri.
+      # @param [String] path The path that should go to the router as the
+      #   request uri.
+      # @param [#to_s] method Request method, e.g, `:get`, `"PUT"`, ...
       # @param [Hash] params
       #   An optional hash that will end up as params in the controller instance.
       # @param [Hash] env
@@ -223,10 +246,18 @@ module Merb
       #     controller.stub!(:current_user).and_return(@user)
       #   end
       #
+      # @return [#status, #headers, #body] A somewhat controller-like duck
+      #   that might be a Rack response or a proper Controller instance.
+      #
       # @api plugin
-      # @deprecated
-      def mock_request(path, params = {}, env= {}, &block)
-        env[:request_method] ||= "GET"
+      def mock_request(path, method = :get, params = {}, env= {}, &block)
+        if method.is_a? Hash
+          env = params
+          params = method
+          method = params.delete(:request_method)
+        end
+
+        env[:request_method]  = (method || "GET").to_s.upcase
         env[:request_uri], env[:query_string] = path.split('?')
 
         multipart = env.delete(:test_with_multipart)
@@ -234,13 +265,24 @@ module Merb
         request = build_request(params, env)
 
         opts = check_request_for_route(request) # Check that the request will be routed correctly
-        controller_name = (opts[:namespace] ? opts.delete(:namespace) + '/' : '') + opts.delete(:controller)
-        klass = controller_name.underscore.camelize.constantize
 
-        action = opts.delete(:action).to_s
-        params.merge!(opts)
+        unless opts.is_a?(Array)
+          # should be a parameter Hash
+          controller_name = (opts[:namespace] ? opts.delete(:namespace) + '/' : '') + opts.delete(:controller)
+          klass = controller_name.underscore.camelize.constantize
 
-        multipart.nil? ? dispatch_to(klass, action, params, env, &block) : dispatch_multipart_to(klass, action, params, env, &block)
+          action = opts.delete(:action).to_s
+          params.merge!(opts)
+
+          if multipart.nil?
+            dispatch_to(klass, action, params, env, &block)
+          else
+            dispatch_multipart_to(klass, action, params, env, &block)
+          end
+        else
+          # likely a Rack response
+          opts.extend FakeControllerDuck
+        end
       end
 
 
@@ -287,7 +329,7 @@ module Merb
       # @api plugin
       # @deprecated
       def check_request_for_route(request)
-        match =  ::Merb::Router.match(request)
+        match =  ::Merb::Router.route_for(request)
         if match[0].nil? && match[1].empty?
           raise ::Merb::ControllerExceptions::BadRequest, "No routes match the request. Request uri: #{request.uri}"
         else
