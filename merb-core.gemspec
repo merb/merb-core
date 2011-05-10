@@ -36,8 +36,8 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'mime-types', '>= 1.16' # supports ruby-1.9
 
   # Development dependencies
-  gem.add_development_dependency 'rspec',  '>= 1.2.9'
-  gem.add_development_dependency 'webrat', '>= 0.3.1'
+  gem.add_development_dependency 'rspec',  '>= 2.5'
+  gem.add_development_dependency 'webrat', '>= 0.7'
   gem.add_development_dependency 'memcache-client', '>= 1.8.5' # for session specs
   gem.add_development_dependency 'yard', '>= 0.6'
 
