@@ -126,9 +126,8 @@ module Merb::Test::MultipartRequestHelper
   # @param &block
   #   The block is executed in the context of the controller.
   def multipart_post(path, params = {}, env = {}, &block)
-    env[:request_method] = "POST"
     env[:test_with_multipart] = true
-    mock_request(path, params, env, &block)
+    mock_request(path, :post, params, env, &block)
   end
 
   # An HTTP PUT request that operates through the router and uses multipart
@@ -146,9 +145,8 @@ module Merb::Test::MultipartRequestHelper
   # @param &block
   #   The block is executed in the context of the controller.
   def multipart_put(path, params = {}, env = {}, &block)
-    env[:request_method] = "PUT"
     env[:test_with_multipart] = true
-    mock_request(path, params, env, &block)
+    mock_request(path, :put, params, env, &block)
   end
 
   # @param [Hash] env

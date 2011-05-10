@@ -1,6 +1,7 @@
 source "http://rubygems.org"
 
 gem 'activesupport', '~> 3.0'
+gem 'i18n', '>= 0.5'
 gem 'erubis', '>= 2.6.2'
 gem 'rake'
 gem 'rack'
