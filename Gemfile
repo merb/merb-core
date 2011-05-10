@@ -6,6 +6,7 @@ gem 'erubis', '>= 2.6.2'
 gem 'rake'
 gem 'rack'
 gem 'mime-types', '>= 1.16'
+gem 'json'
 
 gem 'rspec',  '>= 2.5'
 gem 'webrat', '>= 0.7'

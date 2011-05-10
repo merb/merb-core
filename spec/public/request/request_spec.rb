@@ -99,7 +99,7 @@ describe Merb::Parse do
           ["title*2*", "%2A%2A%2Afun%2A%2A%2A%20"],
           ["title*3", "isn't it!"]
         ].inject({:charset => nil, :result => []}) {|result, p|
-          res = Merb::Parse::HeaderParameter.decode(*p, result[:charset])
+          res = Merb::Parse::HeaderParameter.decode(p[0], p[1], result[:charset])
           result[:result] << res
           result[:charset] = res.charset
 
