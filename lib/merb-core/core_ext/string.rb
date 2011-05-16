@@ -16,4 +16,11 @@ class String
   def /(o)
     File.join(self, o.to_s)
   end
+
+  # Shortcut to Pathname#relative_path_from
+  #
+  # @note Uses the "pathname" core module.
+  def relative_path_from(s)
+    Pathname.new(self).relative_path_from(Pathname.new(s)).to_s
+  end
 end
