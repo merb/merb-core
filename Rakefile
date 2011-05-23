@@ -1,7 +1,5 @@
 require 'rubygems'
 require 'rake'
-require "rake/rdoctask"
-require "rake/testtask"
 require "rspec/core/rake_task"
 require "fileutils"
 
@@ -64,14 +62,20 @@ task :rcov do
 end
 
 desc "Run all specs; set RAKE_TAG to filter specs (see rspec --tag parameter)"
-RSpec::Core::RakeTask.new(:spec) do |t|
-  options = ""
-  options += "--tag #{ENV['RAKE_TAG']}" unless ENV['RAKE_TAG'].nil?
-
-  t.pattern = "spec/**/*_spec.rb"
-  t.rspec_opts = options
-  t.fail_on_error = false
+task :spec do
+  Dir['spec/**/*_spec.rb'].each do |file|
+    puts file
+    sh "#{RUBY} -S rspec #{file}"
+  end
 end
+#RSpec::Core::RakeTask.new(:spec) do |t|
+#  options = ""
+#  options += "--tag #{ENV['RAKE_TAG']}" unless ENV['RAKE_TAG'].nil?
+#
+#  t.pattern = "spec/**/*_spec.rb"
+#  t.rspec_opts = options
+#  t.fail_on_error = false
+#end
 
 ##############################################################################
 # CODE STATISTICS
