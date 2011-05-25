@@ -15,7 +15,6 @@ task :default => :specs
 
 task :merb => [:clean, :doc, :package]
 
-
 ##############################################################################
 # Documentation
 ##############################################################################
@@ -64,8 +63,11 @@ end
 desc "Run all specs; set RAKE_TAG to filter specs (see rspec --tag parameter)"
 task :spec do
   Dir['spec/**/*_spec.rb'].each do |file|
-    puts file
-    sh "#{RUBY} -S rspec #{file}"
+
+    begin
+      ruby '-S', 'rspec', file, :verbose => false
+    rescue Exception
+    end
   end
 end
 #RSpec::Core::RakeTask.new(:spec) do |t|
