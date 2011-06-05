@@ -81,19 +81,17 @@ module Merb
     #
     # @api private
     def exiting=(bool)
-      Extlib.exiting = bool
       @exiting = bool
-      if bool
-        if Extlib.const_defined?("Pooling") && Extlib::Pooling.scavenger
-          Extlib::Pooling.scavenger.wakeup
-        end
+
+      if @exiting && !Merb::Config[:reap_workers_quickly]
         while prc = self.at_exit_procs.pop
           prc.call
-        end unless Merb::Config[:reap_workers_quickly]
+        end
       end
+
       @exiting
     end
-    
+
     # Register a proc to run when Merb is exiting gracefully. It will *not*
     # be run when Merb exits quickly.
     #
@@ -125,7 +123,7 @@ module Merb
     # @param [Boolean] use_db Should Merb use the merged environments DB connection.
     #
     # @api public
-    def merge_env(env,use_db=false)
+    def merge_env(env, use_db=false)
       if Merb.environment_info.nil?
         Merb.environment_info = {
           :real_env => Merb.environment,
@@ -145,7 +143,7 @@ module Merb
           Merb.logger.warn! "Environment file does not exist! #{env_file}"
         end
       end
-      
+
       # Mark specific environment to load when ORM loads,
       # if multiple environments are loaded, the last one
       # with use_db as TRUE will be loaded
@@ -433,9 +431,8 @@ module Merb
     #
     # @return [RegExp]
     #
-    # #### Notes
-    # Concatenates :deferred_actions configuration option values.
-    # 
+    # @note Concatenates `:deferred_actions` configuration option values.
+    #
     # @api public
     def deferred_actions
       @deferred ||= begin
@@ -488,7 +485,7 @@ module Merb
     # Set up default variables under Merb
     attr_accessor :klass_hashes, :orm, :test_framework, :template_engine
 
-    # Returns the default ORM for this application. For instance, `:datamapper`.
+    # Default ORM for this application. For instance, `:datamapper`.
     #
     # @return [Symbol] Default ORM.
     #
@@ -497,14 +494,7 @@ module Merb
       @orm ||= :none
     end
 
-    # @deprecated
-    def orm_generator_scope
-      Merb.logger.warn!("WARNING: Merb.orm_generator_scope is deprecated!")
-      return :merb_default if Merb.orm == :none
-      Merb.orm
-    end
-
-    # Returns the default test framework for this application. For instance `:rspec`.
+    # Default test framework for this application. For instance `:rspec`.
     #
     # @return [Symbol] Default test framework.
     #
@@ -513,13 +503,7 @@ module Merb
       @test_framework ||= :rspec
     end
 
-    # @deprecated
-    def test_framework_generator_scope
-      Merb.logger.warn!("WARNING: Merb.test_framework_generator_scope is deprecated")
-      Merb.test_framework
-    end
-
-    # Returns the default template engine for this application. For instance `:haml`.
+    # Default template engine for this application. For instance `:haml`.
     #
     # @return [Symbol] Default template engine.
     #
@@ -534,11 +518,12 @@ module Merb
     #
     # @return [Boolean] True if Merb is running as an application with bundled gems.
     #
-    # #### Notes
-    # Bundling required gems makes your application independent from the 
-    # environment it runs in. It is a good practice to freeze application 
-    # framework and gems and is very useful when application is run in 
-    # some sort of sandbox, for instance, shared hosting with preconfigured gems.
+    # @note
+    #   Bundling required gems makes your application independent from the
+    #   environment it runs in. It is a good practice to freeze application
+    #   framework and gems and is very useful when application is run in
+    #   some sort of sandbox, for instance, shared hosting with preconfigured
+    #   gems.
     #
     # @api public
     def bundled?

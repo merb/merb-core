@@ -23,4 +23,19 @@ class String
   def relative_path_from(s)
     Pathname.new(self).relative_path_from(Pathname.new(s)).to_s
   end
+
+  # Join strings with the line separator.
+  #
+  # @param [#to_s] args List of string-like objects
+  #
+  # @return [String] A single string.
+  #
+  # @example
+  #   $/
+  #   #=> "\n"
+  #   String.lines("a", "b", "c")
+  #   #=> "a\nb\nc"
+  def self.lines(*args)
+    args.map(&:to_s).join($/)
+  end
 end

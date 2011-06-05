@@ -1,38 +1,6 @@
 # encoding: UTF-8
 
 module Kernel
-  # Loads the given string as a gem.
-  #
-  # @api public
-  # @deprecated
-  def dependency(name, *opts, &blk)
-    warn "DEPRECATED: Use bundler to setup and load dependency #{name}."
-    options = opts.last.is_a?(Hash) ? opts.pop : {}
-    version = opts.pop unless opts.empty?
-    if version
-      warn "DEPRECATED: You want to load gem #{name} with specific version " \
-           "#{version}. This feature is not supported and the LATEST VERSION " \
-           "OF THE GEM WILL BE LOADED."
-    end
-    require (options[:require_as] ? options[:require_as] : name)
-    nil
-  end
-
-  # Loads both gem and library dependencies that are passed in as arguments.
-  #
-  # @api public
-  # @deprecated
-  def dependencies(*args)
-    args.map do |arg|
-      case arg
-      when String then dependency(arg)
-      when Hash then arg.map { |r,v| dependency(r, v) }
-      when Array then arg.map { |r| dependency(r) }
-      end
-    end
-    nil
-  end
-
   # Used in Merb.root/config/init.rb to tell Merb which ORM (Object Relational
   # Mapper) you wish to use. Currently Merb has plugins to support
   # ActiveRecord, DataMapper, and Sequel.
@@ -192,8 +160,7 @@ module Kernel
     printer = RubyProf::GraphHtmlPrinter.new(result)
     path = File.join(Merb.root, 'log', "#{name}.html")
     File.open(path, 'w') do |file|
-      printer.print(file, {:min_percent => min,
-                      :print_file => true})
+      printer.print(file, {:min_percent => min, :print_file => true})
     end
     return_result
   end
@@ -234,11 +201,11 @@ module Kernel
   # Define a module from a string name.
   #
   # @example
-  #   create_module('Foo::Bar::Baz') #=> Foo::Bar::Baz
+  #   make_module('Foo::Bar::Baz') #=> Foo::Bar::Baz
   #
-  # If the module already exists, no exception raised.
+  # If the module already exists, no exception is raised.
   #
-  # @param [String] name<String> The name of the full module name to make
+  # @param [String] name The name of the full module name to make
   #
   # @return [Module]
   def make_module(string)
