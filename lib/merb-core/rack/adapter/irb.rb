@@ -118,7 +118,13 @@ module Merb
         ARGV.clear # Avoid passing args to IRB
         m.open_sandbox! if sandboxed?
         require 'irb'
-        require 'irb/completion'
+
+        # suppress errors when running without readline support
+        begin
+          require 'irb/completion'
+        rescue
+        end
+
         if File.exists? ".irbrc"
           ENV['IRBRC'] = ".irbrc"
         end
