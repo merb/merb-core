@@ -692,15 +692,6 @@ module Merb
       @rakefiles ||= []
     end
 
-    # Find out what paths generators are loaded from.
-    #
-    # @return [Array(String)] Paths generators are loaded from.
-    #
-    # @api public
-    def generators
-      @generators ||= []
-    end
-
     # Add Rakefiles load path for plugins authors.
     #
     # @param [String] *rakefiles One or more Rakefile path(s) to add to
@@ -710,17 +701,6 @@ module Merb
     def add_rakefiles(*rakefiles)
       @rakefiles ||= []
       @rakefiles += rakefiles
-    end
-
-    # Add Generator load paths for plugin authors.
-    #
-    # @param [String] *generators One or more Generator path(s) to add
-    #   to the list of generators.
-    #
-    # @api public
-    def add_generators(*generators)
-      @generators ||= []
-      @generators += generators
     end
 
     # Install a signal handler for a given signal unless signals have
