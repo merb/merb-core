@@ -63,18 +63,5 @@ module Merb
     def self.add_rakefiles(*rakefiles)
       Merb.add_rakefiles(*rakefiles)
     end
-
-    # Add generator load paths.
-    #
-    # This is the recommended way to register your plugin's generators
-    # in Merb.
-    #
-    # @param [String, ...] *generators Generator paths to add to the list of
-    #   plugin generators.
-    #
-    # @api plugin
-    def self.add_generators(*generators)
-      Merb.add_generators(*generators)
-    end
   end
 end
